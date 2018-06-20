@@ -1,0 +1,63 @@
+[
+	{
+		"action": "index",
+		"index": "accounts123",
+		"indexType": "doc",
+		"documentId": "1",
+		"input": {
+			"user": "testUser1",
+			"postDate": "2013-01-30",
+			"message": "Working on ES"
+		},
+		"options": {
+			"routing": "routing",
+			"timeout": "10s",
+			"opType": "index",
+			"version": 10,
+			"versionType": "EXTERNAL"
+		}
+	},
+	{
+		"action": "delete",
+		"index": "accounts123",
+		"indexType": "doc",
+		"documentId": "1",
+		"input": {
+			"user": "testUser2",
+			"postDate": "2013-01-30",
+			"message": "Working on ES"
+		},
+		"options": {
+			"routing": "routing"
+		}
+	},
+	{
+		"action": "index",
+		"index": "accounts123",
+		"indexType": "doc",
+		"documentId": "3",
+		"input": {
+			"user": "testUser3",
+			"postDate": "2013-01-30",
+			"message": "Working on ES"
+		},
+		"options": {}
+	},
+	{
+		"action": "update",
+		"index": "accounts123",
+		"indexType": "doc",
+		"documentId": "3",
+		"input": {
+			"updated": "2017-01-01",
+			"reason": "daily update"
+		},
+		"options": {
+			"fetchSource": false,
+			"detectNoop": false,
+			"scriptedUpsert": false,
+			"docAsUpsert": true,
+			"waitForActiveShards": 1
+		}
+	}
+]
