@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema/mule/elasticsearch/current/mule-elasticsearch.xsd">
+
+    <configuration-properties doc:name="Configuration properties" doc:id="6d462be0-8440-4d31-be43-ef40b2f69fe0" file="mule-application.properties" />
+
+	<elasticsearch:config name="Elasticsearch_Config" doc:name="Elasticsearch Config" doc:id="bb2d83f4-da5b-46b1-9816-c243a8df0f0b" >
+		<elasticsearch:https-connection host="${elastic.host}" port="${elastic.port}" userName="${elastic.user}" password="${elastic.userPassword}" trustStorePath="${elastic.trustStore}" trustStorePassword="${elastic.trustStorePassword}" />
+	</elasticsearch:config>
+	
+	<elasticsearch:config name="Elasticsearch_HTTP_Config" doc:name="Elasticsearch Config" doc:id="bb2d83f4-da5b-46b1-9816-c243a8df0f0b" >
+		<elasticsearch:http-connection host="${elastic.host}" port="${elastic.port}" />
+	</elasticsearch:config>
+	
+	<elasticsearch:config name="Elasticsearch_HTTP_Basic_Auth_Config" doc:name="Elasticsearch Config" doc:id="bb2d83f4-da5b-46b1-9816-c243a8df0f0b" >
+		<elasticsearch:http-basic-auth-connection host="${elastic.host}" port="${elastic.port}" userName="${elastic.user}" password="${elastic.userPassword}"/>
+	</elasticsearch:config>
+
+	<flow name="setUpFlow" doc:id="2ec6ded0-a74e-465c-bb29-0f5d8fc1562b" >
+		<elasticsearch:bulk-operation doc:name="create index and insert documents"  doc:id="4c145b76-124b-49fd-a6cc-f8b0e56abd38" config-ref="Elasticsearch_Config" index="${search.index}" type="${search.type}" jsonfile="${search.sampleInputDataFile}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="cde45b90-57d1-4133-a37d-6d5508e912e6" message="#[payload]"/>
+	</flow>
+
+	<flow name="testMatchAllSearchFlow" doc:id="0a8db8fb-4667-428b-9c15-ffe219d60ac5" >
+		<elasticsearch:search doc:name="Search match all" doc:id="11f17840-9eeb-4980-bcf2-6412fdfc0b46" index="${search.index}" searchType="QUERY_THEN_FETCH" config-ref="Elasticsearch_Config">
+			<elasticsearch:query-configuration >
+				<elasticsearch:match-all-query />
+			</elasticsearch:query-configuration>
+			
+		<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC" terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}" sortByFieldName="${searchSource.sortBy}">
+				<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+			
+	</elasticsearch:search>
+	
+		<logger level="INFO" doc:name="Logger" doc:id="2fb72491-0752-4f31-bbd1-382d6be4d2f2" message="#[payload]"/>
+	</flow>
+	<flow name="testSearchMatchFlow" doc:id="85c7b7ae-dcba-43cb-964e-7d52af0777e3">
+		<elasticsearch:search doc:name="Search match" doc:id="ea8f39ce-b076-44f5-8593-b3e79b8b9c1f" config-ref="Elasticsearch_Config" searchType="DFS_QUERY_THEN_FETCH" index="${search.index}">
+			<elasticsearch:query-configuration >
+				<elasticsearch:match-query  searchString="${searchMatch.searchString}" field="${searchMatch.field}" fuzzyTranspositions="true" autoGenerateSynonymsPhraseQuery="true" cutoffFrequency="${searchMatch.cutoffFrequency}" zeroTermsQuery="ALL" operator="OR">
+				</elasticsearch:match-query>
+			</elasticsearch:query-configuration>
+			<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC" terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}" sortByFieldName="${searchSource.sortBy}">
+					<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="161db2fe-5c7f-4280-a82b-3c46548efa69" message="#[payload]" />
+	</flow>
+	<flow name="testMultiMatchFlow" doc:id="d4bac267-dc98-454b-9fe1-9cd675a979b7" >
+		<elasticsearch:search doc:name="Search multi match" doc:id="dbc9f544-10d2-406d-afc2-a444cddd6e4b" config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH">
+			<elasticsearch:query-configuration>
+				<elasticsearch:multi-match-query autoGenerateSynonymsPhraseQuery="true" tieBreaker="${multiMatchQuery.tieBreaker}" minimumShouldMatch="${multiMatchQuery.minimumShouldMatch}" searchString="${multiMatchQuery.searchString}" fuzzyTranspositions="true" zeroTermsQuery="ALL" operator="OR" type="BEST_FIELDS">
+				<elasticsearch:fields >
+					<elasticsearch:field value="gender" />
+					<elasticsearch:field value="lastname" />
+					<elasticsearch:field value="address" />
+				</elasticsearch:fields>
+				
+</elasticsearch:multi-match-query>
+			</elasticsearch:query-configuration>
+				<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC" terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}" sortByFieldName="${searchSource.sortBy}">
+					<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="e6d076e6-f0b2-4051-8f28-609f16f80135" message="#[payload]"/>
+	</flow>
+	<flow name="testSearchMatchPhraseFlow" doc:id="da7d6ff4-bf9e-4b1b-812e-0c171c827a39">
+		<elasticsearch:search doc:name="Search match phrase" doc:id="1a77185d-8262-46e6-84fe-e44c722a50f3" config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH">
+			<elasticsearch:query-configuration >
+				<elasticsearch:match-phrase-query queryString="${searchMatchPhrase.query}" analyzer="standard" boost="${searchMatchPhrase.boost}" field="${searchMatchPhrase.field}"/>
+			</elasticsearch:query-configuration>
+				<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC" terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}" sortByFieldName="${searchSource.sortBy}">
+					<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="875fe524-ff97-408f-bb85-7ae0cda165ce" message="#[payload]" />
+	</flow>
+	<flow name="testSearchMatchPrefixFlow" doc:id="7dae0679-7661-4b2c-9ef2-ca04b1aa0eb9" >
+		<elasticsearch:search doc:name="Search match phrase prefix" doc:id="6ddabb4c-00d5-4baa-ac24-36a302ab1e45" config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH">
+		<elasticsearch:query-configuration >
+			<elasticsearch:match-phrase-prefix-query field="${searchMatchPhrasePrefix.field}" queryString="${searchMatchPhrasePrefix.query}" analyzer="standard" maxExpansions="${searchMatchPhrasePrefix.maxExpansion}" boost="${searchMatchPhrasePrefix.boost}"/>
+		</elasticsearch:query-configuration>
+				<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC" terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}" sortByFieldName="${searchSource.sortBy}">
+					<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="2d764269-ea4b-48e1-afc3-a847c75ef69f" message="#[payload]"/>
+	</flow>
+	<flow name="testSearchCommomTermsFlow" doc:id="58656a76-c951-4453-a53b-806c4f51f387" >
+		<elasticsearch:search doc:name="Search common terms" doc:id="7a4e2b98-1c06-412e-a109-fed27686e290" config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH">
+		<elasticsearch:query-configuration>
+			<elasticsearch:common-terms-query fieldName="${searchCommonTerms.field}" highFreqMinimumShouldMatch="${searchCommonTerms.highFrequencyMinMatch}" lowFreqMinimumShouldMatch="${searchCommonTerms.lowFrequencyMinMatch}" queryString="${searchCommonTerms.query}" cutoffFrequency="${searchCommonTerms.cutoffFrequency}" boost="${searchCommonTerms.boost}" highFreqOperator="OR" lowFreqOperator="OR"/>
+		</elasticsearch:query-configuration>
+				<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC" terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}" sortByFieldName="${searchSource.sortBy}">
+					<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="2331ea82-598b-426f-9095-51cb08b18240" message="#[payload]"/>
+	</flow>
+	<flow name="testSearchQueryStringFlow" doc:id="db931aec-50c0-4f11-9a94-bc6c746b676d" >
+		<elasticsearch:search doc:name="Search query string" doc:id="d23ef24f-179c-40d5-8672-1aa63db4837c" config-ref="Elasticsearch_Config" searchType="DFS_QUERY_THEN_FETCH" index="${search.index}">
+		<elasticsearch:query-configuration>
+			<elasticsearch:query-string-query allowLeadingWildcard="true" enablePositionIncrements="true" queryString="${searchQueryString.queryString}" analyzeWildcard="true" autoGenerateSynonymsPhraseQuery="true" fuzzyTranspositions="true" lenient="true" phraseSlop="${searchQueryString.phraseSlop}" tieBreaker="${searchQueryString.tieBreaker}" boost="3" fuzzyMaxExpansions="10" fuzzyPrefixLength="0" minimumShouldMatch="${searchQueryString.minShouldMatch}" defaultOperator="OR">
+				<elasticsearch:field-and-boosts >
+					<elasticsearch:field-and-boost key="firstname" value="4"/>
+					<elasticsearch:field-and-boost key="lastname" value="2" />
+					<elasticsearch:field-and-boost key="address" value="1" />
+				</elasticsearch:field-and-boosts>
+			</elasticsearch:query-string-query>
+		</elasticsearch:query-configuration>
+				<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC" terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}" sortByFieldName="${searchSource.sortBy}">
+					<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="662a6c2a-a3c6-433e-a7a8-77da94db6b7c" message="#[payload]"/>
+	</flow>
+	<flow name="testSearchSimpleQueryStringFlow" doc:id="7ee4023e-8c45-469f-9905-6913de531e57" >
+		<elasticsearch:search doc:name="Search simple query string" doc:id="21a6e1de-49e9-4c2e-8d61-799fcdfa4e50" config-ref="Elasticsearch_Config" searchType="DFS_QUERY_THEN_FETCH" index="${search.index}">
+		<elasticsearch:query-configuration>
+			<elasticsearch:simple-query-string queryString="${searchSimpleQueryString.queryString}" analyzeWildcard="true" analyzer="standard" autoGenerateSynonymsPhraseQuery="true" fuzzyTranspositions="true" lenient="true" minimumShouldMatch="${searchSimpleQueryString.minShouldMatch}" simpleQueryStringFlag="ALL" defaultOperator="OR">
+					<elasticsearch:field-and-boosts >
+					<elasticsearch:field-and-boost key="firstname" value="4"/>
+					<elasticsearch:field-and-boost key="lastname" value="2" />
+					<elasticsearch:field-and-boost key="address" value="1" />
+				</elasticsearch:field-and-boosts>
+			</elasticsearch:simple-query-string>
+		</elasticsearch:query-configuration>
+				<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC" terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}" sortByFieldName="${searchSource.sortBy}">
+					<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="86ffea86-0453-4525-bef3-4f84b191e7c1" message="#[payload]"/>
+	</flow>
+		<flow name="testSearchUsingJsonRequestFlow" doc:id="9e10860e-06af-4958-9522-5d7bea2d1507" >
+		<elasticsearch:search-using-json-data doc:name="Search using json data" doc:id="9d28a451-c88a-4a36-8aec-290d85022924" config-ref="Elasticsearch_Config" index="${search.index}">
+			<elasticsearch:json-text >{
+    &quot;query&quot;: {
+        &quot;multi_match&quot; : {
+                &quot;query&quot; : &quot;Nanette Dale Virginia Owens&quot;,
+                &quot;type&quot;:       &quot;best_fields&quot;,
+                &quot;fields&quot;: [ &quot;lastname&quot;, &quot;firstname&quot; ] ,
+                &quot;operator&quot; : &quot;or&quot;
+        }
+    }
+}</elasticsearch:json-text>
+		</elasticsearch:search-using-json-data>
+		<logger level="INFO" doc:name="Logger" doc:id="a257c8cd-1096-453a-97cd-289f14bf2bf5" message="#[payload]"/>
+		<elasticsearch:search-using-json-data doc:name="Search using json data" doc:id="b354159a-e2f9-47e9-bec5-141c3d54a5f0" config-ref="Elasticsearch_Config" jsonfile="${searchJson.filePath}" index="${search.index}"/>
+		<logger level="INFO" doc:name="Logger" doc:id="19a3e260-1ec1-40fe-b8d6-868de6671a90" message="#[payload]"/>
+	</flow>
+	
+	<flow name="testSearchScrollInitFlow" doc:id="8d8be3da-199c-491c-98d4-b005cbacb681" >
+		<elasticsearch:search config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH" scrollIntervalTime="${searchScroll.timeInterval}" doc:name="Search">
+		<elasticsearch:query-configuration>
+			<elasticsearch:match-all-query doc:name="Search scroll match all" doc:id="59de7c93-353c-4598-b44c-955c4b81f84d" />
+		</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="1538bc79-cd54-472c-80be-79942f018aec" message="#[payload]"/>
+	</flow>
+	
+	<flow name="testSearchScrollFlow" doc:id="902b301a-01bf-4719-a927-42dade52572a" >
+		<elasticsearch:search-scroll timeValue="${searchScroll.timeInterval}" doc:name="Search scroll" doc:id="fc1748c6-d7c3-4576-ae7d-bb8b69dd0688" config-ref="Elasticsearch_Config" scrollId="#[vars.scrollId]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="29c3af58-59e4-47ea-a446-4cc7ae1d93bc" message="#[payload]"/>
+	</flow>
+
+	<flow name="tearDownFlow" doc:id="88b1f314-3c8e-4d22-b000-ea4acd0ab149">
+		<elasticsearch:delete-index doc:name="Delete index" doc:id="3b1ba37c-a425-45aa-8d1d-e2546205a87f" config-ref="Elasticsearch_Config" index="${search.index}"/>
+		<logger level="INFO" doc:name="Logger"
+			doc:id="72dac3a8-831e-428e-b380-af9711bac5c8" message="#[payload]" />
+	</flow>
+	
+	<flow name="testClearScrollFlow" doc:id="99c84f1d-1a9d-4cb0-acc1-c5058158ab78" >
+		<elasticsearch:clear-scroll doc:name="Clear scroll" doc:id="8abbe295-6b63-4f3d-98c3-0af7de05d205" config-ref="Elasticsearch_Config" scrollId="#[vars.scrollId]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="cf90d854-1983-4e4c-be12-9d011ce00179" message="#[payload]"/>
+	</flow>
+	
+		<flow name="testSearchWithoutIndexFlow" doc:id="0a8db8fb-4667-428b-9c15-ffe219d60ac5" >
+		<elasticsearch:search doc:name="Search without index" doc:id="11f17840-9eeb-4980-bcf2-6412fdfc0b46" config-ref="Elasticsearch_Config" searchType="QUERY_THEN_FETCH" >
+			<elasticsearch:query-configuration >
+				<elasticsearch:match-all-query />
+			</elasticsearch:query-configuration>
+			<elasticsearch:search-source-configuration from="10" sortOrder="ASC" fetchSource="false">
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="2fb72491-0752-4f31-bbd1-382d6be4d2f2" message="#[payload]" />
+	</flow>
+	
+	<flow name="SearchCommomTermsWithDefaultFlow" doc:id="58656a76-c951-4453-a53b-806c4f51f387" >
+		<elasticsearch:search doc:name="Search common terms" doc:id="7a4e2b98-1c06-412e-a109-fed27686e290" config-ref="Elasticsearch_Config" searchType="DFS_QUERY_THEN_FETCH" >
+			<elasticsearch:query-configuration >
+				<elasticsearch:common-terms-query fieldName="${searchCommonTerms.field}" queryString="${searchCommonTerms.query}"/>
+			</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="2331ea82-598b-426f-9095-51cb08b18240" message="#[payload]" />
+	</flow>
+	
+	<flow name="testSearchMatchWithDefaultFlow" doc:id="85c7b7ae-dcba-43cb-964e-7d52af0777e3" >
+		<elasticsearch:search doc:name="Search match" doc:id="ea8f39ce-b076-44f5-8593-b3e79b8b9c1f" config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH" >
+			<elasticsearch:query-configuration >
+				<elasticsearch:match-query field="${searchMatch.field}" searchString="${searchMatch.searchString}" autoGenerateSynonymsPhraseQuery="true" />
+			</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="161db2fe-5c7f-4280-a82b-3c46548efa69" message="#[payload]" />
+	</flow>
+	
+	<flow name="testSearchMatchPhraseWithDefaultFlow" doc:id="7dae0679-7661-4b2c-9ef2-ca04b1aa0eb9" >
+		<elasticsearch:search doc:name="Search match phrase" doc:id="1a77185d-8262-46e6-84fe-e44c722a50f3" config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH">
+			<elasticsearch:query-configuration>
+				<elasticsearch:match-phrase-query field="${searchMatchPhrase.field}" queryString="${searchMatchPhrase.query}"/>
+			</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		<elasticsearch:search doc:name="Search match phrase prefix" doc:id="6ddabb4c-00d5-4baa-ac24-36a302ab1e45" config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH" >
+			<elasticsearch:query-configuration >
+				<elasticsearch:match-phrase-prefix-query field="${searchMatchPhrasePrefix.field}" queryString="${searchMatchPhrasePrefix.query}"/>
+			</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="2d764269-ea4b-48e1-afc3-a847c75ef69f" message="#[payload]" />
+	</flow>
+	
+		<flow name="testMultiMatchWithDefaultFlow" doc:id="d4bac267-dc98-454b-9fe1-9cd675a979b7" >
+		<elasticsearch:search doc:name="Search multi match" doc:id="dbc9f544-10d2-406d-afc2-a444cddd6e4b" config-ref="Elasticsearch_Config" index="${search.index}" searchType="DFS_QUERY_THEN_FETCH" >
+			<elasticsearch:query-configuration >
+				<elasticsearch:multi-match-query tieBreaker="${multiMatchQuery.tieBreaker}" searchString="${multiMatchQuery.searchString}">
+					<elasticsearch:fields >
+						<elasticsearch:field value="gender" />
+						<elasticsearch:field value="lastname" />
+						<elasticsearch:field value="address" />
+					</elasticsearch:fields>
+				</elasticsearch:multi-match-query>
+			</elasticsearch:query-configuration>
+			<elasticsearch:search-source-configuration from="${searchSource.from}" size="${searchSource.size}" timeout="${searchSource.timeout}" sortOrder="ASC" sortByFieldName="${searchSource.sortBy}" terminateAfter="${searchSource.terminateAfter}" >
+				<elasticsearch:include-fields >
+					<elasticsearch:include-field value="account_number" />
+					<elasticsearch:include-field value="balance" />
+					<elasticsearch:include-field value="firstname" />
+				</elasticsearch:include-fields>
+				<elasticsearch:exclude-fields >
+					<elasticsearch:exclude-field value="lastname" />
+					<elasticsearch:exclude-field value="gender" />
+					<elasticsearch:exclude-field value="employer" />
+				</elasticsearch:exclude-fields>
+			</elasticsearch:search-source-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="e6d076e6-f0b2-4051-8f28-609f16f80135" message="#[payload]" />
+	</flow>
+	
+	<flow name="testSearchSimpleQueryStringWithDefaultFlow" doc:id="7ee4023e-8c45-469f-9905-6913de531e57" >
+		<elasticsearch:search doc:name="Search simple query string" doc:id="21a6e1de-49e9-4c2e-8d61-799fcdfa4e50" config-ref="Elasticsearch_Config" searchType="DFS_QUERY_THEN_FETCH" >
+			<elasticsearch:query-configuration >
+				<elasticsearch:simple-query-string queryString="${searchSimpleQueryString.queryString}" quoteFieldSuffix="'">
+				</elasticsearch:simple-query-string>
+			</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="86ffea86-0453-4525-bef3-4f84b191e7c1" message="#[payload]" />
+	</flow>
+	
+		<flow name="testSearchQueryStringWithDefaultFlow" doc:id="db931aec-50c0-4f11-9a94-bc6c746b676d" >
+		<elasticsearch:search doc:name="Search query string" doc:id="d23ef24f-179c-40d5-8672-1aa63db4837c" config-ref="Elasticsearch_Config" searchType="DFS_QUERY_THEN_FETCH" >
+			<elasticsearch:query-configuration >
+				<elasticsearch:query-string-query queryString="${searchQueryString.queryString}" analyzer="standard" fuzzyMaxExpansions="10" defaultField="firstname">
+				</elasticsearch:query-string-query>
+			</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		<logger level="INFO" doc:name="Logger" doc:id="662a6c2a-a3c6-433e-a7a8-77da94db6b7c" message="#[payload]" />
+	</flow>
+	
+</mule>
