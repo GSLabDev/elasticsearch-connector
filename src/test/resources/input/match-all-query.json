@@ -1,0 +1,10 @@
+{
+    "query": {
+        "multi_match" : {
+                "query" : "Nanette Dale Virginia Owens",
+                "type":       "best_fields",
+                "fields": [ "lastname", "firstname" ] ,
+                "operator" : "or"
+        }
+    }
+}
