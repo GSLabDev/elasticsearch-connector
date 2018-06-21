@@ -1,0 +1,847 @@
+:toc:               left
+:toc-title:         Elasticsearch Connector
+:toclevels:         2
+:last-update-label!:
+:docinfo:
+:source-highlighter: coderay
+:icons: font
+
+
+= Elasticsearch Connector Documentation Reference
+
+
+
+== Configurations
+---
+[[config]]
+=== Config
+
++++
+Default configuration
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+|Name | String | The name for this configuration. Connectors reference the configuration with this name. | | *x*{nbsp}
+| Connection a| <<config_connection, Connection>>
+ | The connection types that can be provided to this configuration. | | *x*{nbsp}
+| Expiration Policy a| <<ExpirationPolicy>> |  +++Configures the minimum amount of time that a dynamic configuration instance can remain idle before the runtime considers it eligible for expiration. This does not mean that the platform will expire the instance at the exact moment that it becomes eligible. The runtime will actually purge the instances when it sees it fit.+++ |  | {nbsp}
+|======================
+
+==== Connection Types
+[[config_connection]]
+===== Connection
+
+
+====== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Host a| String |  +++Provide Elasticsearch host IP or DNS name+++ |  +++0.0.0.0+++ | {nbsp}
+| Port a| Number |  +++Provide Elasticsearch port+++ |  +++9200+++ | {nbsp}
+| Reconnection a| <<Reconnection>> |  +++When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy+++ |  | {nbsp}
+| Pooling Profile a| <<PoolingProfile>> |  +++Characteristics of the connection pool+++ |  | {nbsp}
+|======================
+
+==== Associated Operations
+* <<clearScroll>> {nbsp}
+* <<closeIndex>> {nbsp}
+* <<createIndex>> {nbsp}
+* <<deleteDocument>> {nbsp}
+* <<deleteIndex>> {nbsp}
+* <<getDocument>> {nbsp}
+* <<indexDocument>> {nbsp}
+* <<openIndex>> {nbsp}
+* <<search>> {nbsp}
+* <<searchScroll>> {nbsp}
+* <<updateDocument>> {nbsp}
+
+
+
+== Operations
+
+[[clearScroll]]
+=== Clear Scroll
+`<elasticsearch:clear-scroll>`
+
++++
+The search contexts used by the Search Scroll operation are automatically deleted when the scroll times out. Clear scroll operation release search contexts as soon as they are not necessary anymore using the Clear Scroll.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Scroll ID a| String |  +++Scroll identifiers to clear+++ |  | *x*{nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<ClearScrollResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[closeIndex]]
+=== Close Index
+`<elasticsearch:close-index>`
+
++++
+The open and close index operation allow to close an index, and later on opening it. A closed index has almost no overhead on the cluster (except for maintaining its metadata), and is blocked for read/write operations. A closed index can be opened which will then go through the normal recovery process.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Index a| String |  +++The index to close+++ |  | *x*{nbsp}
+| Timeout a| String |  +++Timeout to wait for the all the nodes to acknowledge the index is closed+++ |  | *x*{nbsp}
+| Master Node Timeout a| String |  +++Timeout to connect to the master node+++ |  | *x*{nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<CloseIndexResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[createIndex]]
+=== Create Index
+`<elasticsearch:create-index>`
+
++++
+The createIndex Operation allows to instantiate an index.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Index a| String |  +++The index to create+++ |  | *x*{nbsp}
+| Index Settings a| Object |  +++Settings for this index+++ |  | {nbsp}
+| Type a| String |  +++The index type to define index+++ |  | {nbsp}
+| Index Mapping a| Object |  +++The mapping for index type, provided as a JSON string+++ |  | {nbsp}
+| Index Alias a| String |  +++The alias of the index+++ |  | {nbsp}
+| JSON Input file path a| String |  +++Path of the JSON file. The whole source including all of its sections (mappings, settings and aliases) can be provided in this json file.+++ |  | {nbsp}
+| Timeout a| String |  +++Timeout to wait for the all the nodes to acknowledge the index creation+++ |  | {nbsp}
+| Master Node Timeout a| String |  +++Timeout to connect to the master node+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<CreateIndexResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[deleteDocument]]
+=== Delete Document
+`<elasticsearch:delete-document>`
+
++++
+The deleteDocument operation allows to delete a typed JSON document from a specific index based on its id
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Index a| String |  +++Name of the index+++ |  | *x*{nbsp}
+| Type a| String |  +++Type of the index+++ |  | *x*{nbsp}
+| Document Id a| String |  +++ID of the document+++ |  | *x*{nbsp}
+| Routing value a| String |  +++Shard placement or routing is controlled by using a hash of the document?s id value. For more explicit control, the value fed into the hash function used by the router can be directly specified on a per-operation basis using this routing parameter.+++ |  | {nbsp}
+| Parent value a| String |  +++Parent value of the index request+++ |  | {nbsp}
+| Timeout a| String |  +++Timeout to wait for primary shard to become available+++ |  | {nbsp}
+| Refresh policy a| Enumeration, one of:
+
+** NONE
+** IMMEDIATE
+** WAIT_UNTIL |  +++Refresh policy+++ |  | {nbsp}
+| Version a| Number |  +++Version number of the indexed document+++ |  +++0+++ | {nbsp}
+| Version Type a| Enumeration, one of:
+
+** INTERNAL
+** EXTERNAL
+** EXTERNAL_GTE
+** FORCE |  +++Version type: internal, external, external_gte+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<DeleteResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[deleteIndex]]
+=== Delete Index
+`<elasticsearch:delete-index>`
+
++++
+The deleteIndex allows to delete an existing index.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Index a| String |  +++The index to delete+++ |  | *x*{nbsp}
+| Timeout a| String |  +++Timeout to wait for the all the nodes to acknowledge the index deletion+++ |  | {nbsp}
+| Mater Node Timeout a| String |  +++Timeout to connect to the master node+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<DeleteIndexResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[getDocument]]
+=== Get Document
+`<elasticsearch:get-document>`
+
++++
+The getDocument operation allows to get a typed JSON document from the index based on its id.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Index a| String |  +++Name of the index+++ |  | *x*{nbsp}
+| Type a| String |  +++Type of the index+++ |  | *x*{nbsp}
+| Document Id a| String |  +++ID of the document+++ |  | *x*{nbsp}
+| Source retrieval a| <<FetchSourceContext>> |  +++Enable or disable source retrieval+++ |  +++true+++ | {nbsp}
+| Routing a| String |  +++Shard placement or routing is controlled by using a hash of the document?s id value. For more explicit control, the value fed into the hash function used by the router can be directly specified on a per-operation basis using this routing parameter.+++ |  | *x*{nbsp}
+| Parent a| String |  +++Parent value of the index request+++ |  | *x*{nbsp}
+| Preference value a| String |  +++Preference value+++ |  | {nbsp}
+| Set realtime flag a| Boolean |  |  +++true+++ | {nbsp}
+| Refresh a| Boolean |  +++Perform a refresh before retrieving the document+++ |  +++false+++ | {nbsp}
+| Version a| Number |  +++Version number of the indexed document+++ |  +++0+++ | {nbsp}
+| Version Type a| Enumeration, one of:
+
+** INTERNAL
+** EXTERNAL
+** EXTERNAL_GTE
+** FORCE |  +++Version type: internal, external, external_gte,+++ |  | {nbsp}
+| Output Mime Type a| String |  +++The mime type of the payload that this operation outputs.+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| String
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[indexDocument]]
+=== Index Document
+`<elasticsearch:index-document>`
+
++++
+The indexDocument operation adds or updates a typed JSON document in a specific index, making it searchable.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Index a| String |  +++Name of the index+++ |  | *x*{nbsp}
+| Type a| String |  +++Type of the index+++ |  | *x*{nbsp}
+| Document Id a| String |  +++ID of the document+++ |  | *x*{nbsp}
+| Document Source a| Object |  +++The document source+++ |  | {nbsp}
+| JSON Input file path a| String |  +++Path of JSON file which contains the document source+++ |  | {nbsp}
+| Routing a| String |  +++Shard placement or routing is controlled by using a hash of the document?s id value. For more explicit control, the value fed into the hash function used by the router can be directly specified on a per-operation basis using this routing parameter.+++ |  | {nbsp}
+| Parent a| String |  +++Parent value of the index request+++ |  | {nbsp}
+| Timeout a| String |  +++Timeout to wait for primary shard to become available+++ |  | {nbsp}
+| Refresh policy a| Enumeration, one of:
+
+** NONE
+** IMMEDIATE
+** WAIT_UNTIL |  +++Refresh policy+++ |  | {nbsp}
+| Version a| Number |  +++Version number of the indexed document+++ |  +++0+++ | {nbsp}
+| Version Type a| Enumeration, one of:
+
+** INTERNAL
+** EXTERNAL
+** EXTERNAL_GTE
+** FORCE |  +++Version type: internal, external, external_gte+++ |  | {nbsp}
+| Operation type a| Enumeration, one of:
+
+** INDEX
+** CREATE
+** UPDATE
+** DELETE |  +++Type of the operation. When create type is used, the index operation will fail if a document by that id already exists in the index.+++ |  | {nbsp}
+| Pipeline a| String |  +++The name of the ingest pipeline to be executed before indexing the document+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<IndexResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[openIndex]]
+=== Open Index
+`<elasticsearch:open-index>`
+
++++
+The open and close index operation allow to close an index, and later on opening it. A closed index has almost no overhead on the cluster (except for maintaining its metadata), and is blocked for read/write operations. A closed index can be opened which will then go through the normal recovery process.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Index a| String |  +++The index to open+++ |  | *x*{nbsp}
+| Timeout a| String |  +++Timeout to wait for the all the nodes to acknowledge the index is opened+++ |  | {nbsp}
+| Mater Node Timeout a| String |  +++Timeout to connect to the master node+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<OpenIndexResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[search]]
+=== Search
+`<elasticsearch:search>`
+
++++
+The search operation allows you to execute a search query and get back search hits that match the query.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Query a| Object |  +++Query to search request+++ |  | *x*{nbsp}
+| Index a| String |  +++Restricts the request to an index+++ |  | {nbsp}
+| Type a| String |  +++Limits the request to a type+++ |  | {nbsp}
+| Routing a| String |  +++Set a routing parameter+++ |  | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<SearchResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[searchScroll]]
+=== Search Scroll
+`<elasticsearch:search-scroll>`
+
++++
+The Scroll API can be used to retrieve a large number of results from a search request.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Query a| Object |  +++Query to search scroll request+++ |  | *x*{nbsp}
+| Time Value a| Number |  +++Set the scroll interval+++ |  | *x*{nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+[[updateDocument]]
+=== Update Document
+`<elasticsearch:update-document>`
+
++++
+The updateDocument operation allows to update a document based on a script provided.
++++
+
+==== Parameters
+[cols=".^20%,.^20%,.^35%,.^20%,^.^5%", options="header"]
+|======================
+| Name | Type | Description | Default Value | Required
+| Configuration | String | The name of the configuration to use. | | *x*{nbsp}
+| Index a| String |  +++Name of the index+++ |  | *x*{nbsp}
+| Type a| String |  +++Type of the index+++ |  | *x*{nbsp}
+| Document Id a| String |  +++ID of the document+++ |  | *x*{nbsp}
+| Document Source a| Object |  +++The document source+++ |  | *x*{nbsp}
+| Document Source JSON file a| String |  +++Path of JSON file which contains the document source+++ |  | {nbsp}
+| Routing a| String |  +++Shard placement or routing is controlled by using a hash of the document?s id value. For more explicit control, the value fed into the hash function used by the router can be directly specified on a per-operation basis using this routing parameter.+++ |  | {nbsp}
+| Parent a| String |  +++Parent value of the index request+++ |  | {nbsp}
+| Timeout a| String |  +++Timeout to wait for primary shard to become available+++ |  | {nbsp}
+| Refresh policy a| Enumeration, one of:
+
+** NONE
+** IMMEDIATE
+** WAIT_UNTIL |  +++Refresh policy+++ |  | {nbsp}
+| Retry on Conflict a| Number |  +++How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update operation+++ |  +++0+++ | {nbsp}
+| Fetch Source a| Boolean |  +++Enable or disable source retrieval+++ |  +++false+++ | {nbsp}
+| Version a| Number |  +++Version number of the indexed document+++ |  +++0+++ | {nbsp}
+| Noop Detection a| Boolean |  +++Enable or disable the noop detection+++ |  +++true+++ | {nbsp}
+| Scripted Upsert a| Boolean |  +++Indicate that the script must run regardless of whether the document exists or not+++ |  +++false+++ | {nbsp}
+| Doc Upsert a| Boolean |  +++Indicate that the partial document must be used as the upsert document if it does not exist yet.+++ |  +++false+++ | {nbsp}
+| Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
+| Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> |  +++A retry strategy in case of connectivity errors+++ |  | {nbsp}
+|======================
+
+==== Output
+[cols=".^50%,.^50%"]
+|======================
+| *Type* a| <<UpdateResponse>>
+|======================
+
+==== For Configurations.
+* <<config>> {nbsp}
+
+==== Throws
+* ELASTICSEARCH:CONNECTIVITY {nbsp}
+* ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+
+
+
+== Types
+[[Reconnection]]
+=== Reconnection
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Fails Deployment a| Boolean | When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy |  | 
+| Reconnection Strategy a| * <<reconnect>>
+* <<reconnect-forever>> | The reconnection strategy to use |  | 
+|======================
+
+[[reconnect]]
+=== Reconnect
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Frequency a| Number | How often (in ms) to reconnect |  | 
+| Count a| Number | How many reconnection attempts to make |  | 
+|======================
+
+[[reconnect-forever]]
+=== Reconnect Forever
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Frequency a| Number | How often (in ms) to reconnect |  | 
+|======================
+
+[[PoolingProfile]]
+=== Pooling Profile
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Max Active a| Number | Controls the maximum number of Mule components that can be borrowed from a session at one time. When set to a negative value, there is no limit to the number of components that may be active at one time. When maxActive is exceeded, the pool is said to be exhausted. |  | 
+| Max Idle a| Number | Controls the maximum number of Mule components that can sit idle in the pool at any time. When set to a negative value, there is no limit to the number of Mule components that may be idle at one time. |  | 
+| Max Wait a| Number | Specifies the number of milliseconds to wait for a pooled component to become available when the pool is exhausted and the exhaustedAction is set to WHEN_EXHAUSTED_WAIT. |  | 
+| Min Eviction Millis a| Number | Determines the minimum amount of time an object may sit idle in the pool before it is eligible for eviction. When non-positive, no objects will be evicted from the pool due to idle time alone. |  | 
+| Eviction Check Interval Millis a| Number | Specifies the number of milliseconds between runs of the object evictor. When non-positive, no object evictor is executed. |  | 
+| Exhausted Action a| Enumeration, one of:
+
+** WHEN_EXHAUSTED_GROW
+** WHEN_EXHAUSTED_WAIT
+** WHEN_EXHAUSTED_FAIL | Specifies the behavior of the Mule component pool when the pool is exhausted. Possible values are: "WHEN_EXHAUSTED_FAIL", which will throw a NoSuchElementException, "WHEN_EXHAUSTED_WAIT", which will block by invoking Object.wait(long) until a new or idle object is available, or WHEN_EXHAUSTED_GROW, which will create a new Mule instance and return it, essentially making maxActive meaningless. If a positive maxWait value is supplied, it will block for at most that many milliseconds, after which a NoSuchElementException will be thrown. If maxThreadWait is a negative value, it will block indefinitely. |  | 
+| Initialisation Policy a| Enumeration, one of:
+
+** INITIALISE_NONE
+** INITIALISE_ONE
+** INITIALISE_ALL | Determines how components in a pool should be initialized. The possible values are: INITIALISE_NONE (will not load any components into the pool on startup), INITIALISE_ONE (will load one initial component into the pool on startup), or INITIALISE_ALL (will load all components in the pool on startup) |  | 
+| Disabled a| Boolean | Whether pooling should be disabled |  | 
+|======================
+
+[[ExpirationPolicy]]
+=== Expiration Policy
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Max Idle Time a| Number | A scalar time value for the maximum amount of time a dynamic configuration instance should be allowed to be idle before it's considered eligible for expiration |  | 
+| Time Unit a| Enumeration, one of:
+
+** NANOSECONDS
+** MICROSECONDS
+** MILLISECONDS
+** SECONDS
+** MINUTES
+** HOURS
+** DAYS | A time unit that qualifies the maxIdleTime attribute |  | 
+|======================
+
+[[ClearScrollResponse]]
+=== Clear Scroll Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Num Freed a| Number |  |  | 
+| Succeeded a| Boolean |  |  | 
+|======================
+
+[[CloseIndexResponse]]
+=== Close Index Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Acknowledged a| Boolean |  |  | 
+|======================
+
+[[CreateIndexResponse]]
+=== Create Index Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Acknowledged a| Boolean |  |  | 
+| Shards Acked a| Boolean |  |  | 
+| Shards Acknowledged a| Boolean |  |  | 
+|======================
+
+[[DeleteResponse]]
+=== Delete Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Forced Refresh a| Boolean |  |  | 
+| Id a| String |  |  | 
+| Index a| String |  |  | 
+| Primary Term a| Number |  |  | 
+| Result a| Enumeration, one of:
+
+** CREATED
+** UPDATED
+** DELETED
+** NOT_FOUND
+** NOOP |  |  | 
+| Seq No a| Number |  |  | 
+| Shard Id a| <<ShardId>> |  |  | 
+| Shard Info a| <<ShardInfo>> |  |  | 
+| Type a| String |  |  | 
+| Version a| Number |  |  | 
+|======================
+
+[[ShardId]]
+=== Shard Id
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Id a| Number |  |  | 
+| Index a| <<Index>> |  |  | 
+| Index Name a| String |  |  | 
+|======================
+
+[[Index]]
+=== Index
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| UUID a| String |  |  | 
+| Name a| String |  |  | 
+|======================
+
+[[ShardInfo]]
+=== Shard Info
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Failed a| Number |  |  | 
+| Failures a| Array of <<Failure>> |  |  | 
+| Successful a| Number |  |  | 
+| Total a| Number |  |  | 
+|======================
+
+[[Failure]]
+=== Failure
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Cause a| Any |  |  | 
+|======================
+
+[[DeleteIndexResponse]]
+=== Delete Index Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Acknowledged a| Boolean |  |  | 
+|======================
+
+[[FetchSourceContext]]
+=== Fetch Source Context
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Filter a| Any |  |  | 
+|======================
+
+[[IndexResponse]]
+=== Index Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Forced Refresh a| Boolean |  |  | 
+| Id a| String |  |  | 
+| Index a| String |  |  | 
+| Primary Term a| Number |  |  | 
+| Result a| Enumeration, one of:
+
+** CREATED
+** UPDATED
+** DELETED
+** NOT_FOUND
+** NOOP |  |  | 
+| Seq No a| Number |  |  | 
+| Shard Id a| <<ShardId>> |  |  | 
+| Shard Info a| <<ShardInfo>> |  |  | 
+| Type a| String |  |  | 
+| Version a| Number |  |  | 
+|======================
+
+[[OpenIndexResponse]]
+=== Open Index Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Acknowledged a| Boolean |  |  | 
+| Shards Acknowledged a| Boolean |  |  | 
+|======================
+
+[[SearchResponse]]
+=== Search Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Aggregations a| Array of <<Aggregation>> |  |  | 
+| Clusters a| <<Clusters>> |  |  | 
+| Failed Shards a| Number |  |  | 
+| Hits a| Array of Array of Array of Any |  |  | 
+| Num Reduce Phases a| Number |  |  | 
+| Profile Results a| Object |  |  | 
+| Scroll Id a| String |  |  | 
+| Shard Failures a| Array of <<ShardSearchFailure>> |  |  | 
+| Skipped Shards a| Number |  |  | 
+| Successful Shards a| Number |  |  | 
+| Suggest a| Array of Array of Array of <<Option>> |  |  | 
+| Timed Out a| Boolean |  |  | 
+| Took a| <<TimeValue>> |  |  | 
+| Total Shards a| Number |  |  | 
+|======================
+
+[[Clusters]]
+=== Clusters
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Skipped a| Number |  |  | 
+| Successful a| Number |  |  | 
+| Total a| Number |  |  | 
+|======================
+
+[[ShardSearchFailure]]
+=== Shard Search Failure
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Cause a| Any |  |  | 
+|======================
+
+[[Option]]
+=== Option
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Highlighted a| <<Text>> |  |  | 
+| Score a| Number |  |  | 
+| Text a| <<Text>> |  |  | 
+|======================
+
+[[TimeValue]]
+=== Time Value
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Days a| Number |  |  | 
+| Days Frac a| Number |  |  | 
+| Hours a| Number |  |  | 
+| Hours Frac a| Number |  |  | 
+| Micros a| Number |  |  | 
+| Micros Frac a| Number |  |  | 
+| Millis a| Number |  |  | 
+| Millis Frac a| Number |  |  | 
+| Minutes a| Number |  |  | 
+| Minutes Frac a| Number |  |  | 
+| Nanos a| Number |  |  | 
+| Seconds a| Number |  |  | 
+| Seconds Frac a| Number |  |  | 
+| String Rep a| String |  |  | 
+|======================
+
+[[UpdateResponse]]
+=== Update Response
+
+[cols=".^20%,.^25%,.^30%,.^15%,.^10%", options="header"]
+|======================
+| Field | Type | Description | Default Value | Required
+| Forced Refresh a| Boolean |  |  | 
+| Get Result a| Array of Array of Any |  |  | 
+| Id a| String |  |  | 
+| Index a| String |  |  | 
+| Primary Term a| Number |  |  | 
+| Result a| Enumeration, one of:
+
+** CREATED
+** UPDATED
+** DELETED
+** NOT_FOUND
+** NOOP |  |  | 
+| Seq No a| Number |  |  | 
+| Shard Id a| <<ShardId>> |  |  | 
+| Shard Info a| <<ShardInfo>> |  |  | 
+| Type a| String |  |  | 
+| Version a| Number |  |  | 
+|======================
+
