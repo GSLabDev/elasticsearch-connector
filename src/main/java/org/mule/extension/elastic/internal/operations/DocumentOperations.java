@@ -5,16 +5,12 @@ package org.mule.extension.elastic.internal.operations;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.http.Header;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.nio.entity.NStringEntity;
 import org.elasticsearch.action.DocWriteRequest.OpType;
 import org.elasticsearch.action.delete.DeleteRequest;
@@ -31,12 +27,9 @@ import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.VersionType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import org.mule.extension.elastic.api.DocumentFetchSourceOptions;
 import org.mule.extension.elastic.api.IndexDocumentOptions;
 import org.mule.extension.elastic.api.JsonData;
-import org.mule.extension.elastic.api.DocumentFetchSourceOptions;
 import org.mule.extension.elastic.internal.connection.ElasticsearchConnection;
 import org.mule.extension.elastic.internal.utils.ElasticsearchUtils;
 import org.mule.runtime.extension.api.annotation.param.Connection;
@@ -58,12 +51,7 @@ public class DocumentOperations {
     /**
      * Logging object
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(IndexOperations.class);
-
-    /**
-     * Set the content-type in header
-     */
-    private static final Header HEADER = new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+    private static final Logger logger = LoggerFactory.getLogger(IndexOperations.class);
 
     /**
      * Index Document operation adds or updates a typed JSON document in a specific index, making it searchable.
@@ -99,7 +87,6 @@ public class DocumentOperations {
      *            Name of the ingest pipeline to be executed before indexing the document
      * @return IndexResponse
      * @throws IOException
-     * @throws ParseException
      */
 
     @MediaType(value = ANY, strict = false)
@@ -114,11 +101,11 @@ public class DocumentOperations {
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Operation type") @Optional OpType operationType,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Pipeline") @Optional @Summary("The name of the ingest pipeline to be executed before indexing the document") String pipeline)
-            throws IOException, ParseException {
+            throws IOException {
 
         IndexRequest indexRequest;
         if (inputSource.getJsonInputPath() != null) {
-            indexRequest = new IndexRequest(index, type, documentId).source(getJsonObjectFromFile(inputSource.getJsonInputPath()), XContentType.JSON);
+            indexRequest = new IndexRequest(index, type, documentId).source(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
         } else {
             indexRequest = new IndexRequest(index, type, documentId).source(inputSource.getIndexMapping());
         }
@@ -146,8 +133,8 @@ public class DocumentOperations {
         if (pipeline != null) {
             indexRequest.setPipeline(pipeline);
         }
-        IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, HEADER);
-        LOGGER.info("Index Response : " + indexResp);
+        IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        logger.info("Index Response : " + indexResp);
         return indexResp;
     }
 
@@ -195,11 +182,11 @@ public class DocumentOperations {
 
             String[] includes = Strings.EMPTY_ARRAY, excludes = Strings.EMPTY_ARRAY;
 
-            if (!fetchSourceContext.getIncludeFields().equals(null)) {
+            if (fetchSourceContext.getIncludeFields() != null) {
                 includes = fetchSourceContext.getIncludeFields().toArray(new String[0]);
             }
 
-            if (!fetchSourceContext.getExcludeFields().equals(null)) {
+            if (fetchSourceContext.getExcludeFields() != null) {
                 excludes = fetchSourceContext.getExcludeFields().toArray(new String[0]);
             }
 
@@ -226,8 +213,8 @@ public class DocumentOperations {
 
         getRequest.realtime(realtime);
         getRequest.refresh(refresh);
-        GetResponse getResp = esConnection.getElasticsearchConnection().get(getRequest, HEADER);
-        LOGGER.info("Get Response : " + getResp);
+        GetResponse getResp = esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        logger.info("Get Response : " + getResp);
         return getResp.getSourceAsString();
     }
 
@@ -286,8 +273,8 @@ public class DocumentOperations {
             deleteRequest.version(version);
         }
 
-        DeleteResponse deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, HEADER);
-        LOGGER.info("Get Response : " + deleteResp);
+        DeleteResponse deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        logger.info("Get Response : " + deleteResp);
         return deleteResp;
     }
 
@@ -330,7 +317,6 @@ public class DocumentOperations {
      *            Indicate that the partial document must be used as the upsert document if it does not exist yet.
      * @return UpdateResponse
      * @throws IOException
-     * @throws ParseException
      */
     @MediaType(value = ANY, strict = false)
     public UpdateResponse updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
@@ -345,12 +331,11 @@ public class DocumentOperations {
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Noop Detection") @Optional(defaultValue = "true") boolean detectNoop,
             @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Scripted Upsert") @Optional(defaultValue = "false") boolean scriptedUpsert,
-            @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert)
-            throws IOException, ParseException {
+            @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert) throws IOException {
 
         UpdateRequest updateRequest = new UpdateRequest(index, type, documentId);
         if (inputSource.getJsonInputPath() != null) {
-            updateRequest.doc(getJsonObjectFromFile(inputSource.getJsonInputPath()), XContentType.JSON);
+            updateRequest.doc(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
         } else {
             updateRequest.doc(inputSource.getIndexMapping());
         }
@@ -377,39 +362,9 @@ public class DocumentOperations {
         updateRequest.detectNoop(detectNoop);
         updateRequest.scriptedUpsert(scriptedUpsert);
         updateRequest.docAsUpsert(docAsUpsert);
-        UpdateResponse updateResp = esConnection.getElasticsearchConnection().update(updateRequest, HEADER);
-        LOGGER.info("Update Response : " + updateResp);
+        UpdateResponse updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        logger.info("Update Response : " + updateResp);
         return updateResp;
-    }
-
-    /**
-     * Bulk operation makes it possible to perform many index, delete and update operations in a single API call.
-     * 
-     * @param jsonInputPath
-     *            JSON file path in proper format.
-     * @param bulkOperations
-     *            list of operations to be performed like index, delete, update.
-     * @param timeout
-     *            Time to wait for the bulk request to be performed
-     * @param refreshPolicy
-     *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
-     *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh
-     *            to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
-     * @param waitForActiveShards
-     *            Sets the number of shard copies that must be active before proceeding with the index/update/delete operations.
-     * @param inputJSON
-     *            Pass the contents of the JSON file directly instead of file.
-     * @return BulkResponse
-     * @throws ParseException
-     * 
-     */
-
-    private String getJsonObjectFromFile(String jsonFilePath) throws IOException, ParseException {
-        JSONParser parser = new JSONParser();
-        Object obj = parser.parse(new FileReader(jsonFilePath));
-        JSONObject jsonObject = (JSONObject) obj;
-        return jsonObject.toJSONString();
     }
 
     /**

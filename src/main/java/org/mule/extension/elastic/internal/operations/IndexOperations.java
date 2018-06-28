@@ -8,9 +8,6 @@ import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 import java.io.IOException;
 import java.util.Map;
 
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
-import org.apache.http.message.BasicHeader;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.action.admin.indices.close.CloseIndexRequest;
 import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
@@ -46,12 +43,7 @@ public class IndexOperations {
     /**
      * Logging object
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(IndexOperations.class);
-
-    /**
-     * Set the content-type in header
-     */
-    private static final Header HEADER = new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+    private static final Logger logger = LoggerFactory.getLogger(IndexOperations.class);
 
     /**
      * The createIndex Operation allows to instantiate an index.
@@ -87,8 +79,7 @@ public class IndexOperations {
             @Placement(tab = "Optional Arguments", order = 6) @Optional @DisplayName("Index Alias") String indexAlias,
             @Placement(tab = "Optional Arguments", order = 7) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
             @Placement(tab = "Optional Arguments", order = 8) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Master Node Timeout") String masterNodeTimeout,
-            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards)
-            throws IOException {
+            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards) throws IOException {
 
         CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
 
@@ -99,7 +90,7 @@ public class IndexOperations {
             }
             createIndexReq.settings(settingsBuilder);
         }
-        
+
         if (indexAlias != null) {
             createIndexReq.alias(new Alias(indexAlias));
         }
@@ -124,8 +115,8 @@ public class IndexOperations {
             createIndexReq.waitForActiveShards(waitForActiveShards);
         }
 
-        CreateIndexResponse createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, HEADER);
-        LOGGER.info("Create Index Response : ", createIndexResp);
+        CreateIndexResponse createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonHeader());
+        logger.info("Create Index Response : ", createIndexResp);
         return createIndexResp;
     }
 
@@ -164,8 +155,8 @@ public class IndexOperations {
             deleteIndexRequest.indicesOptions(indOptions);
         }
 
-        DeleteIndexResponse deleteIndexResp = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, HEADER);
-        LOGGER.info("Delete Index Response : " + deleteIndexResp);
+        DeleteIndexResponse deleteIndexResp = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        logger.info("Delete Index Response : " + deleteIndexResp);
         return deleteIndexResp;
     }
 
@@ -209,8 +200,8 @@ public class IndexOperations {
             openIndexRequest.indicesOptions(indOptions);
         }
 
-        OpenIndexResponse openIndexResp = esConnection.getElasticsearchConnection().indices().open(openIndexRequest, HEADER);
-        LOGGER.info("Open Index Response : " + openIndexResp);
+        OpenIndexResponse openIndexResp = esConnection.getElasticsearchConnection().indices().open(openIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        logger.info("Open Index Response : " + openIndexResp);
         return openIndexResp;
 
     }
@@ -248,8 +239,8 @@ public class IndexOperations {
             closeIndexRequest.indicesOptions(indOptions);
         }
 
-        CloseIndexResponse closeIndexResp = esConnection.getElasticsearchConnection().indices().close(closeIndexRequest, HEADER);
-        LOGGER.info("Close Index Response : " + closeIndexResp);
+        CloseIndexResponse closeIndexResp = esConnection.getElasticsearchConnection().indices().close(closeIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        logger.info("Close Index Response : " + closeIndexResp);
         return closeIndexResp;
     }
 

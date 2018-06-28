@@ -19,18 +19,19 @@ public class InfoOperation {
     /**
      * Logging object
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(InfoOperation.class);
+    private static final Logger logger = LoggerFactory.getLogger(InfoOperation.class);
 
     /**
      * To retrieve the cluster information.
-     * @throws IOException 
+     * 
+     * @throws IOException
      * 
      */
 
     @MediaType(value = ANY, strict = false)
     public MainResponse info(@Connection ElasticsearchConnection esConnection) throws IOException {
         MainResponse response = esConnection.getElasticsearchConnection().info();
-        LOGGER.debug("Info response : ", response);
+        logger.debug("Info response : ", response);
         return response;
     }
 

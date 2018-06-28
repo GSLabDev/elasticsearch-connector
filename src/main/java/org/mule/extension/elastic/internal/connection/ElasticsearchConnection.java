@@ -37,16 +37,16 @@ import org.slf4j.LoggerFactory;
  */
 public final class ElasticsearchConnection {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchConnection.class);
+    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchConnection.class);
     private RestHighLevelClient client;
 
     public ElasticsearchConnection(String host, int port) {
-        LOGGER.info("Using host:" + host + " and port:" + port);
+        logger.info("Using host:" + host + " and port:" + port);
         this.client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port, "http")));
     }
 
     public ElasticsearchConnection(String host, int port, String username, String password) {
-        LOGGER.info("Using host:" + host + " port:" + port + " and user:" + username);
+        logger.info("Using host:" + host + " port:" + port + " and user:" + username);
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 
@@ -95,6 +95,6 @@ public final class ElasticsearchConnection {
 
     public void invalidate() throws IOException {
         this.client.close();
-        LOGGER.info("Connection invalidated......!");
+        logger.info("Connection invalidated......!");
     }
 }
