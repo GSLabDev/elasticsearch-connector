@@ -27,7 +27,6 @@ import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.VersionType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
-import org.json.simple.parser.ParseException;
 import org.mule.extension.elastic.api.DocumentFetchSourceOptions;
 import org.mule.extension.elastic.api.IndexDocumentOptions;
 import org.mule.extension.elastic.api.JsonData;
@@ -88,7 +87,6 @@ public class DocumentOperations {
      *            Name of the ingest pipeline to be executed before indexing the document
      * @return IndexResponse
      * @throws IOException
-     * @throws ParseException
      */
 
     @MediaType(value = ANY, strict = false)
@@ -319,7 +317,6 @@ public class DocumentOperations {
      *            Indicate that the partial document must be used as the upsert document if it does not exist yet.
      * @return UpdateResponse
      * @throws IOException
-     * @throws ParseException
      */
     @MediaType(value = ANY, strict = false)
     public UpdateResponse updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
@@ -334,8 +331,7 @@ public class DocumentOperations {
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Noop Detection") @Optional(defaultValue = "true") boolean detectNoop,
             @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Scripted Upsert") @Optional(defaultValue = "false") boolean scriptedUpsert,
-            @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert)
-            throws IOException, ParseException {
+            @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert) throws IOException {
 
         UpdateRequest updateRequest = new UpdateRequest(index, type, documentId);
         if (inputSource.getJsonInputPath() != null) {
