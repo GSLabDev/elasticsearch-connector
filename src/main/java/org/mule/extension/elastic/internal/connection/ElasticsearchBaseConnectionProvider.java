@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class ElasticsearchBaseConnectionProvider implements CachedConnectionProvider<ElasticsearchConnection> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchBaseConnectionProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchBaseConnectionProvider.class);
 
     @Parameter
     @DisplayName("Host")
@@ -50,7 +50,7 @@ public abstract class ElasticsearchBaseConnectionProvider implements CachedConne
         try {
             connection.invalidate();
         } catch (IOException e) {
-            LOGGER.error("Error while disconnecting [" + getHost() + ":" + getPort() + "]: " + e.getMessage(), e);
+            logger.error("Error while disconnecting [" + getHost() + ":" + getPort() + "]: " + e.getMessage(), e);
         }
     }
 
