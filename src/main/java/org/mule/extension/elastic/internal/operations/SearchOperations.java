@@ -47,7 +47,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SearchOperations {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SearchOperations.class);
+    private static final Logger logger = LoggerFactory.getLogger(SearchOperations.class);
 
     /**
      * 
@@ -96,7 +96,7 @@ public class SearchOperations {
         scrollRequest.scroll(new Scroll(TimeValue.timeValueMinutes(timeValue)));
 
         SearchResponse searchResponse = esConnection.getElasticsearchConnection().searchScroll(scrollRequest);
-        LOGGER.debug("search response" + searchResponse);
+        logger.debug("search response" + searchResponse);
         return searchResponse;
     }
 
@@ -129,7 +129,7 @@ public class SearchOperations {
         Map<String, String> params = Collections.singletonMap("pretty", "true");
         Response response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(HttpGet.METHOD_NAME, "/" + resource, params, entity);
 
-        LOGGER.debug("RequestLine:" + response.getRequestLine());
+        logger.debug("RequestLine:" + response.getRequestLine());
         String responseBody = EntityUtils.toString(response.getEntity());
 
         return Result.<String, StatusLine>builder()
