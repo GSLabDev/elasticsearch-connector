@@ -6,7 +6,7 @@
 * Supported Mule Runtime Versions: v4.1.1
 * New Features and Functionality :
   
-  Elasticsearch connector supports different connection configurations like HTTP, HTTP with basic authentication and HTTPS. It supports different operations like : 
+  Elasticsearch connector supports different connection configurations like HTTP and HTTPS. It supports different operations like : 
 	
 		Create Index
 		Delete Index

@@ -49,40 +49,36 @@ public final class ElasticsearchConnection {
         logger.info("Using host:" + host + " port:" + port + " and user:" + username);
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-
         RestClientBuilder builder = RestClient.builder(new HttpHost(host, port)).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
-
             @Override
             public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
                 return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
             }
         });
-
         this.client = new RestHighLevelClient(builder);
-
     }
 
     public ElasticsearchConnection(String host, int port, String userName, String password, String trustStoreType, String trustStorePath, String trustStorePassword)
             throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, KeyManagementException {
-
         KeyStore truststore = KeyStore.getInstance(trustStoreType);
-
         Path keyStorePath = Paths.get(trustStorePath);
-
         try (InputStream is = Files.newInputStream(keyStorePath)) {
             truststore.load(is, trustStorePassword.toCharArray());
         }
-
         SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
-        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
-
         SSLContext sslContext = sslBuilder.build();
         RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "https")).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
 
             @Override
             public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider).setSSLContext(sslContext);
+                if (userName != null && password != null) {
+                    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
+                    return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider).setSSLContext(sslContext);
+                } else {
+                    return httpClientBuilder.setSSLContext(sslContext);
+                }
+
             }
         });
 

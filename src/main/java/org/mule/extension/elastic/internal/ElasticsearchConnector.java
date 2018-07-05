@@ -12,7 +12,6 @@ import org.mule.extension.elastic.api.querytype.MultiMatchQuery;
 import org.mule.extension.elastic.api.querytype.Query;
 import org.mule.extension.elastic.api.querytype.QueryStringQuery;
 import org.mule.extension.elastic.api.querytype.SimpleQueryString;
-import org.mule.extension.elastic.internal.connection.HttpBasicAuthConnectionProvider;
 import org.mule.extension.elastic.internal.connection.HttpConnectionProvider;
 import org.mule.extension.elastic.internal.connection.HttpsConnectionProvider;
 import org.mule.extension.elastic.internal.operations.DocumentOperations;
@@ -48,7 +47,6 @@ import org.mule.runtime.extension.api.annotation.license.RequiresEnterpriseLicen
 
 @ConnectionProviders({
     HttpConnectionProvider.class,
-    HttpBasicAuthConnectionProvider.class,
     HttpsConnectionProvider.class
 })
 

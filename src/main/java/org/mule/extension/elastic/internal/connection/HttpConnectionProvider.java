@@ -3,8 +3,11 @@
  */
 package org.mule.extension.elastic.internal.connection;
 
+import org.mule.extension.elastic.api.UserConfiguration;
 import org.mule.runtime.api.connection.ConnectionException;
 import org.mule.runtime.extension.api.annotation.Alias;
+import org.mule.runtime.extension.api.annotation.dsl.xml.ParameterDsl;
+import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 
 /**
@@ -16,9 +19,18 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 @Alias("http-connection")
 public class HttpConnectionProvider extends ElasticsearchBaseConnectionProvider {
 
+    @ParameterGroup(name = "User Credentials")
+    @ParameterDsl(allowInlineDefinition = true)
+    private UserConfiguration userConfiguration;
+
     @Override
     public ElasticsearchConnection connect() throws ConnectionException {
-        return new ElasticsearchConnection(getHost(), getPort());
+        if (userConfiguration.getUserName() != null && userConfiguration.getPassword() != null) {
+            return new ElasticsearchConnection(getHost(), getPort(), userConfiguration.getUserName(), userConfiguration.getPassword());
+        } else {
+            return new ElasticsearchConnection(getHost(), getPort());
+        }
+
     }
 
 }

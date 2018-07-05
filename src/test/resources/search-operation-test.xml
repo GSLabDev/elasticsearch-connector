@@ -16,10 +16,6 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<elasticsearch:http-connection host="${elastic.host}" port="${elastic.port}" />
 	</elasticsearch:config>
 	
-	<elasticsearch:config name="Elasticsearch_HTTP_Basic_Auth_Config" doc:name="Elasticsearch Config" doc:id="bb2d83f4-da5b-46b1-9816-c243a8df0f0b" >
-		<elasticsearch:http-basic-auth-connection host="${elastic.host}" port="${elastic.port}" userName="${elastic.user}" password="${elastic.userPassword}"/>
-	</elasticsearch:config>
-
 	<flow name="setUpFlow" doc:id="2ec6ded0-a74e-465c-bb29-0f5d8fc1562b" >
 		<elasticsearch:bulk-operation doc:name="create index and insert documents"  doc:id="4c145b76-124b-49fd-a6cc-f8b0e56abd38" config-ref="${elastic.config}" index="${search.index}" type="${search.type}" jsonfile="${search.sampleInputDataFile}"/>
 		<logger level="INFO" doc:name="Logger" doc:id="cde45b90-57d1-4133-a37d-6d5508e912e6" message="#[payload]"/>
