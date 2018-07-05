@@ -3,6 +3,7 @@
  */
 package org.mule.extension.elastic.api;
 
+import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
@@ -15,16 +16,18 @@ import org.mule.runtime.extension.api.annotation.param.display.Password;
 public class UserConfiguration {
 
     /**
-     * ElasticSearch instance user name
+     * Elasticsearch instance username. Keep this blank for anonymous user.
      */
     @Parameter
+    @Optional
     @DisplayName("User Name")
     private String userName;
 
     /**
-     * ElasticSearch instance user password
+     * Elasticsearch instance password. Keep this blank for anonymous user.
      */
     @Parameter
+    @Optional
     @DisplayName("Password")
     @Password
     private String password;
