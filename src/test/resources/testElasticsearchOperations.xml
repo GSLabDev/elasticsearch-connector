@@ -18,10 +18,6 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<elasticsearch:http-connection host="${elastic.host}" port="${elastic.port}" />
 	</elasticsearch:config>
 	
-	<elasticsearch:config name="Elasticsearch_HTTP_Basic_Auth_Config" doc:name="Elasticsearch Config" doc:id="bb2d83f4-da5b-46b1-9816-c243a8df0f0b" >
-		<elasticsearch:http-basic-auth-connection host="${elastic.host}" port="${elastic.port}" userName="${elastic.user}" password="${elastic.userPassword}"/>
-	</elasticsearch:config>
-	
 		<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="0c6ae51d-e285-4759-b1ba-8f01efc5f7c7" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>

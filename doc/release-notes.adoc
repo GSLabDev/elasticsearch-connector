@@ -15,7 +15,7 @@ Read through this user guide to understand how to set up and configure a basic f
 link:elasticsearch-connector-user-manual.adoc[Elasticsearch Connector User Guide]
 
 
-== Elasticsearch connector V1.0 - DATE
+== Elasticsearch connector V1.0 - <DATE>
 
 === Version V1.0 Compatibility
 
@@ -47,9 +47,7 @@ link:elasticsearch-connector-user-manual.adoc[Elasticsearch Connector User Guide
 
 
 === Support Resources
-////
-could also be named See Also
-////
-* Learn how to link:/mule-user-guide/v/3.7/installing-connectors[Install Anypoint Connectors] using Anypoint Exchange.
+
+* Learn how to link:https://docs.mulesoft.com/anypoint-studio/v/7.1/add-modules-in-studio-to[Install Anypoint Connectors].
 * Access MuleSoft’ link:http://forum.mulesoft.org/mulesoft[Forum] to pose questions and get help from Mule’s broad community of users.
 * To access MuleSoft’s expert support team, link:http://www.mulesoft.com/mule-esb-subscription[subscribe] to Mule ESB Enterprise and log in to MuleSoft’s link:http://www.mulesoft.com/support-login[Customer Portal].

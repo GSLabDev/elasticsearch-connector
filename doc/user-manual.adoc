@@ -102,9 +102,9 @@ image:Elasticsearch-connector-configuration.png[Elasticsearch-connector-config]
 
 [[authentication]]
 === Authentication
-To access Elasticsearch you have three following possible ways : 
+To access Elasticsearch you have two following possible ways : 
 
-==== 1. NO AUTHENTICATION + 
+==== 1. NO AUTHENTICATION (HTTP) + 
 In NO AUTHENTICATION, you need to provide your Elasticsearch host and port in a global configuration. NO AUTHENTICATION is generally recommended for quick testing. +
 For installation and starting Elasticsearch, refer link:++https://www.elastic.co/guide/en/elasticsearch/reference/current/_installation.html++[Installation].
 
@@ -115,33 +115,18 @@ Following parameters are required for *HTTP* configuration:
 |Field |Description
 |*Elasticsearch Host* |Elasticsearch host IP or host name to connect
 |*Elasticsearch Port* |Port of Elasticsearch
-|===
-
-image:Elasticsearch-http-global-element-props.png[Elasticsearch-HTTP-config]
-
-TIP: Default Elasticsearch port is 9200. +
-
-==== 2. BASIC AUTHENTICATION + 
-Along with host and port, basic authentication will require two additional fields:
-[start=1]
-. Username 
-[start=2]
-. Password
-
-Following parameters are required for *HTTP* configuration with basic authentication:
-
-[%header%autowidth.spread]
-|===
-|Field |Description
-|*Elasticsearch Host* |Enter the Elasticsearch host IP or host name to connect
-|*Elasticsearch Port* |Enter the  port of Elasticsearch engine
 |*Username* |Username from user credentials
 |*Password* |Password from user credentials
 |===
 
-image:Elasticsearch-http-basic-element-props.png[Elasticsearch-HTTP--basic-config]
+image:Elasticsearch-http-global-element-props.png[Elasticsearch-HTTP-config]
 
-==== 3. CERTIFICATE BASED AUTHENTICATION + 
+TIP: Keep Elasticsearch instance username and password credentials blank for anonymous user. +
+
+[NOTE]
+Default Elasticsearch port is 9200.
+ 
+==== 2. CERTIFICATE BASED AUTHENTICATION (HTTPS) + 
 Implementing CERTIFICATE BASED AUTHENTICATION mechanism involves a few extra steps, but ìs preferred if your Elasticsearch is exposed to external users, as it ensures better security. + 
 To make the Elasticsearch run on HTTPS, generate server and client certificates on Elasticsearch host using X-pack. Please refer link:++https://www.elastic.co/guide/en/elasticsearch/reference/current/configuring-tls.html#node-certificates++[Encrypting communications in Elasticseach] for detailed information about running Elasticsearch on HTTPS and generating required certificates. +
 
@@ -159,6 +144,8 @@ To make the Elasticsearch run on HTTPS, generate server and client certificates 
 |===
 
 image:Elasticsearch-https-global-element-props.png[Elasticsearch-HTTPS-config]
+
+TIP: Keep Elasticsearch instance username and password credentials blank for anonymous user. +
 
 [NOTE]
 Access link:++https://www.elastic.co/guide/en/elasticsearch/reference/current/setup-xpack.html++[X-Pack] for detailed information to provide security and many other capabilities. By default, when you install Elasticsearch, X-Pack is also installed.
@@ -412,9 +399,6 @@ Paste this XML code into Anypoint Studio to experiment with the flow described a
 	<logger level="INFO" doc:name="Log the Delete Index Information" doc:id="e28fb4fc-ec2a-4843-8f3d-435225075bf0" message="Delete Index Response #[payload]"/>
 </flow>
 ----
-
-
-
 
 
 == Resources
