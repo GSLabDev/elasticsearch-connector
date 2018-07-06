@@ -24,7 +24,10 @@ public class InfoOperation {
     /**
      * To retrieve the cluster information.
      * 
-     * @throws IOException
+	 * @param esConnection
+     *            The Elasticsearch connection
+	 * @return MainResponse Cluster information
+     * @throws IOException throws IOException
      * 
      */
 

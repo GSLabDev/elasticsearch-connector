@@ -56,18 +56,18 @@ public class DocumentOperations {
     /**
      * Index Document operation adds or updates a typed JSON document in a specific index, making it searchable.
      * 
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            Name of the index
      * @param type
      *            Type of the index
      * @param documentId
      *            ID of the document
-     * @param documentSource
-     *            document source
-     * @param jsonInputPath
-     *            Path of JSON file which contains the document source
      * @param routing
      *            Routing is used to determine in which shard the document will reside in
+	 * @param inputSource
+     *            Get the JSON input file path or index mapping.
      * @param parent
      *            A parent-child relationship can be established between documents in the same index by making one mapping type the parent of another
      * @param timeout
@@ -86,7 +86,7 @@ public class DocumentOperations {
      * @param pipeline
      *            Name of the ingest pipeline to be executed before indexing the document
      * @return IndexResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
 
     @MediaType(value = ANY, strict = false)
@@ -141,6 +141,8 @@ public class DocumentOperations {
     /**
      * Get Document operation allows to get a typed JSON document from the index based on its id.
      * 
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            Name of the index
      * @param type
@@ -149,6 +151,8 @@ public class DocumentOperations {
      *            ID of the document
      * @param fetchSourceContext
      *            Enable or disable source retrieval
+	 * @param realtime
+     *            Set realtime flag
      * @param routing
      *            Routing is used to determine in which shard the document will reside in
      * @param parent
@@ -162,7 +166,7 @@ public class DocumentOperations {
      * @param versionType
      *            Version type: internal, external, external_gte,
      * @return Result that includes the index, type, id and version of the document
-     * @throws IOException
+     * @throws IOException throws IOException
      */
 
     @MediaType(value = ANY, strict = false)
@@ -221,6 +225,8 @@ public class DocumentOperations {
     /**
      * Delete Document operation allows to delete a typed JSON document from a specific index based on its id
      * 
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            Name of the index
      * @param type
@@ -243,7 +249,7 @@ public class DocumentOperations {
      * @param versionType
      *            Version type: internal, external, external_gte
      * @return DeleteResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
     @MediaType(value = ANY, strict = false)
     public DeleteResponse deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
@@ -281,18 +287,18 @@ public class DocumentOperations {
     /**
      * Update Document operation allows to update a document based on a script provided.
      * 
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            Name of the index
      * @param type
      *            Type of the index
      * @param documentId
      *            ID of the document
-     * @param documentSource
-     *            Document source
-     * @param documentSourceJsonFilePath
-     *            Path of JSON file which contains the document source
      * @param routing
      *            Routing is used to determine in which shard the document will reside in
+	 * @param inputSource
+     *            Input document source
      * @param parent
      *            Parent value of the index request
      * @param timeout
@@ -316,7 +322,7 @@ public class DocumentOperations {
      * @param docAsUpsert
      *            Indicate that the partial document must be used as the upsert document if it does not exist yet.
      * @return UpdateResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
     @MediaType(value = ANY, strict = false)
     public UpdateResponse updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
@@ -370,6 +376,8 @@ public class DocumentOperations {
     /**
      * Bulk operation makes it possible to perform many index, delete and update operations in a single API call.
      * 
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            Index name on which bulk operation Performed
      * 
@@ -378,7 +386,8 @@ public class DocumentOperations {
      * 
      * @param jsonData
      *            Input file / data with list of operations to be performed like index, delete, update.
-     * 
+	 * @return Response
+     * @throws IOException throws IOException
      */
 
     @MediaType(value = ANY, strict = false)
