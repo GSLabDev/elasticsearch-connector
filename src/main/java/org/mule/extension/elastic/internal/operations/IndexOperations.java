@@ -47,13 +47,17 @@ public class IndexOperations {
 
     /**
      * The createIndex Operation allows to instantiate an index.
-     * 
+     *
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            The index to create
      * @param type
      *            The index type to define index
      * @param indexSettings
      *            Settings for this index
+	 * @param indexSettingFile
+     *            Index Settings JSON
      * @param indexMapping
      *            The mapping for index type, provided as a JSON string
      * @param indexAlias
@@ -64,8 +68,10 @@ public class IndexOperations {
      *            Timeout to wait for the all the nodes to acknowledge the index creation
      * @param masterNodeTimeout
      *            Timeout to connect to the master node
+	 * @param waitForActiveShards
+     *            The number of active shard copies to wait for before the create index
      * @return CreateIndexResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
 
     @MediaType(value = ANY, strict = false)
@@ -122,15 +128,19 @@ public class IndexOperations {
 
     /**
      * The Delete index operation allows to delete an existing index.
-     * 
+     *
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            The index to delete
      * @param timeout
      *            Timeout to wait for the all the nodes to acknowledge the index deletion
      * @param masterNodeTimeout
      *            Timeout to connect to the master node
+	 * @param indicesOpts
+     *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
      * @return DeleteIndexResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
     @MediaType(value = ANY, strict = false)
     public DeleteIndexResponse deleteIndex(@Connection ElasticsearchConnection esConnection,
@@ -162,15 +172,21 @@ public class IndexOperations {
 
     /**
      * Open Index operation allow to open an index.
-     * 
+     *
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            The index to open
      * @param timeout
      *            Timeout to wait for the all the nodes to acknowledge the index is opened. It is the time to wait for an open index to become available to elasticsearch.
      * @param masterNodeTimeout
      *            Timeout to connect to the master node
+	 * @param waitForActiveShards
+     *            The number of active shard copies to wait for
+	 * @param indicesOpts
+     *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
      * @return OpenIndexResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
     @MediaType(value = ANY, strict = false)
     public OpenIndexResponse openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
@@ -209,15 +225,19 @@ public class IndexOperations {
     /**
      * A closed index has almost no overhead. It is used to close an Index. If you want to keep your data but save resources (memory/CPU), a good alternative to deleting an index
      * is to close them.
-     * 
+     *
+	 * @param esConnection
+     *            The Elasticsearch connection
      * @param index
      *            The index to close
      * @param timeout
      *            Time to wait for the all the nodes to acknowledge if the index is closed
      * @param masterNodeTimeout
      *            Timeout to connect to the master node
+	 * @param indicesOpt
+     *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
      * @return CloseIndexResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
     @MediaType(value = ANY, strict = false)
     public CloseIndexResponse closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
