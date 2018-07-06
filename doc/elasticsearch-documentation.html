@@ -2076,6 +2076,7 @@ table.CodeRay td.code>pre{padding:0}
 </li>
 <li><a href="#_operations">Operations</a>
 <ul class="sectlevel2">
+<li><a href="#bulkOperation">Bulk Operation</a></li>
 <li><a href="#clearScroll">Clear Scroll</a></li>
 <li><a href="#closeIndex">Close Index</a></li>
 <li><a href="#createIndex">Create Index</a></li>
@@ -2083,9 +2084,11 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#deleteIndex">Delete Index</a></li>
 <li><a href="#getDocument">Get Document</a></li>
 <li><a href="#indexDocument">Index Document</a></li>
+<li><a href="#info">Info</a></li>
 <li><a href="#openIndex">Open Index</a></li>
 <li><a href="#search">Search</a></li>
 <li><a href="#searchScroll">Search Scroll</a></li>
+<li><a href="#searchUsingJsonData">Search Using Json Data</a></li>
 <li><a href="#updateDocument">Update Document</a></li>
 </ul>
 </li>
@@ -2094,10 +2097,12 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#Reconnection">Reconnection</a></li>
 <li><a href="#reconnect">Reconnect</a></li>
 <li><a href="#reconnect-forever">Reconnect Forever</a></li>
-<li><a href="#PoolingProfile">Pooling Profile</a></li>
 <li><a href="#ExpirationPolicy">Expiration Policy</a></li>
+<li><a href="#Response">Response</a></li>
+<li><a href="#HttpHost">Http Host</a></li>
 <li><a href="#ClearScrollResponse">Clear Scroll Response</a></li>
 <li><a href="#CloseIndexResponse">Close Index Response</a></li>
+<li><a href="#IndexOptions">Index Options</a></li>
 <li><a href="#CreateIndexResponse">Create Index Response</a></li>
 <li><a href="#DeleteResponse">Delete Response</a></li>
 <li><a href="#ShardId">Shard Id</a></li>
@@ -2105,15 +2110,27 @@ table.CodeRay td.code>pre{padding:0}
 <li><a href="#ShardInfo">Shard Info</a></li>
 <li><a href="#Failure">Failure</a></li>
 <li><a href="#DeleteIndexResponse">Delete Index Response</a></li>
-<li><a href="#FetchSourceContext">Fetch Source Context</a></li>
+<li><a href="#DocumentFetchSourceOptions">Document Fetch Source Options</a></li>
 <li><a href="#IndexResponse">Index Response</a></li>
+<li><a href="#MainResponse">Main Response</a></li>
+<li><a href="#Build">Build</a></li>
+<li><a href="#Version">Version</a></li>
 <li><a href="#OpenIndexResponse">Open Index Response</a></li>
 <li><a href="#SearchResponse">Search Response</a></li>
 <li><a href="#Clusters">Clusters</a></li>
 <li><a href="#ShardSearchFailure">Shard Search Failure</a></li>
 <li><a href="#Option">Option</a></li>
 <li><a href="#TimeValue">Time Value</a></li>
+<li><a href="#SearchSourceConfiguration">Search Source Configuration</a></li>
 <li><a href="#UpdateResponse">Update Response</a></li>
+<li><a href="#MatchQuery">Match Query</a></li>
+<li><a href="#MultiMatchQuery">Multi Match Query</a></li>
+<li><a href="#MatchAllQuery">Match All Query</a></li>
+<li><a href="#MatchPhraseQuery">Match Phrase Query</a></li>
+<li><a href="#MatchPhrasePrefixQuery">Match Phrase Prefix Query</a></li>
+<li><a href="#CommonTermsQuery">Common Terms Query</a></li>
+<li><a href="#QueryStringQuery">Query String Query</a></li>
+<li><a href="#SimpleQueryString">Simple Query String</a></li>
 </ul>
 </li>
 </ul>
@@ -2160,8 +2177,15 @@ Default configuration
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Connection</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#config_connection">Connection</a></p>
+<td class="tableblock halign-left valign-middle"><div><div class="ulist">
+<ul>
+<li>
+<p><a href="#config_http-connection">HTTP Connection</a> &#160;</p>
+</li>
+<li>
+<p><a href="#config_https-connection">HTTPS Connection</a> &#160;</p>
+</li>
+</ul>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">The connection types that can be provided to this configuration.</p></td>
 <td class="tableblock halign-left valign-middle"></td>
@@ -2182,7 +2206,7 @@ Default configuration
 <div class="sect3">
 <h4 id="_connection_types">Connection Types</h4>
 <div class="sect4">
-<h5 id="config_connection">Connection</h5>
+<h5 id="config_http-connection">HTTP Connection</h5>
 <div class="sect5">
 <h6 id="_parameters_2">Parameters</h6>
 <table class="tableblock frame-all grid-all spread">
@@ -2208,17 +2232,35 @@ Default configuration
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide Elasticsearch host IP or DNS name</p></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">0.0.0.0</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">ElasticSearch instance host IP or DNS name</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Port</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>Number</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide Elasticsearch port</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">ElasticSearch instance port</p></td>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">9200</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">User Name</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Elasticsearch instance username. Keep this blank for anonymous user.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Password</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Elasticsearch instance password. Keep this blank for anonymous user.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
@@ -2230,12 +2272,101 @@ Default configuration
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="sect4">
+<h5 id="config_https-connection">HTTPS Connection</h5>
+<div class="sect5">
+<h6 id="_parameters_3">Parameters</h6>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 20%;">
+<col style="width: 5%;">
+</colgroup>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Pooling Profile</p></td>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-center valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Host</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#PoolingProfile">Pooling Profile</a></p>
+<p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Characteristics of the connection pool</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">ElasticSearch instance host IP or DNS name</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Port</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">ElasticSearch instance port</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">9200</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">User Name</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Elasticsearch instance username. Keep this blank for anonymous user.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Password</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Elasticsearch instance password. Keep this blank for anonymous user.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Type of the TrustStore</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">jks</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Path</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">TrustStore file path</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Password</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Trust store password</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Reconnection</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#Reconnection">Reconnection</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">When the application is deployed, a connectivity test is performed on all connectors. If set to true, deployment will fail if the test doesn't pass after exhausting the associated reconnection strategy</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -2248,6 +2379,9 @@ Default configuration
 <h4 id="_associated_operations">Associated Operations</h4>
 <div class="ulist">
 <ul>
+<li>
+<p><a href="#bulkOperation">Bulk Operation</a> &#160;</p>
+</li>
 <li>
 <p><a href="#clearScroll">Clear Scroll</a> &#160;</p>
 </li>
@@ -2270,6 +2404,9 @@ Default configuration
 <p><a href="#indexDocument">Index Document</a> &#160;</p>
 </li>
 <li>
+<p><a href="#info">Info</a> &#160;</p>
+</li>
+<li>
 <p><a href="#openIndex">Open Index</a> &#160;</p>
 </li>
 <li>
@@ -2277,6 +2414,9 @@ Default configuration
 </li>
 <li>
 <p><a href="#searchScroll">Search Scroll</a> &#160;</p>
+</li>
+<li>
+<p><a href="#searchUsingJsonData">Search Using Json Data</a> &#160;</p>
 </li>
 <li>
 <p><a href="#updateDocument">Update Document</a> &#160;</p>
@@ -2291,17 +2431,17 @@ Default configuration
 <h2 id="_operations">Operations</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="clearScroll">Clear Scroll</h3>
+<h3 id="bulkOperation">Bulk Operation</h3>
 <div class="paragraph">
-<p><code>&lt;elasticsearch:clear-scroll&gt;</code></p>
+<p><code>&lt;elasticsearch:bulk-operation&gt;</code></p>
 </div>
 <div class="paragraph">
 <p>
-The search contexts used by the Search Scroll operation are automatically deleted when the scroll times out. Clear scroll operation release search contexts as soon as they are not necessary anymore using the Clear Scroll.
+Bulk operation makes it possible to perform many index, delete and update operations in a single API call.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_3">Parameters</h4>
+<h4 id="_parameters_4">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -2328,13 +2468,40 @@ The search contexts used by the Search Scroll operation are automatically delete
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Scroll ID</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Scroll identifiers to clear</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index name on which bulk operation Performed</p></td>
 <td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Type name on which bulk operation Performed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">File</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide the JSON file path</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Text</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide the JSON string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
@@ -2384,7 +2551,7 @@ The search contexts used by the Search Scroll operation are automatically delete
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#ClearScrollResponse">Clear Scroll Response</a></p>
+<p><a href="#Response">Response</a></p>
 </div></div></td>
 </tr>
 </tbody>
@@ -2415,17 +2582,17 @@ The search contexts used by the Search Scroll operation are automatically delete
 </div>
 </div>
 <div class="sect2">
-<h3 id="closeIndex">Close Index</h3>
+<h3 id="clearScroll">Clear Scroll</h3>
 <div class="paragraph">
-<p><code>&lt;elasticsearch:close-index&gt;</code></p>
+<p><code>&lt;elasticsearch:clear-scroll&gt;</code></p>
 </div>
 <div class="paragraph">
 <p>
-The open and close index operation allow to close an index, and later on opening it. A closed index has almost no overhead on the cluster (except for maintaining its metadata), and is blocked for read/write operations. A closed index can be opened which will then go through the normal recovery process.
+The search contexts used by the Search Scroll operation are automatically deleted when the scroll times out. Clear scroll operation release search contexts as soon as they are not necessary anymore using the Clear Scroll.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_4">Parameters</h4>
+<h4 id="_parameters_5">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -2452,29 +2619,11 @@ The open and close index operation allow to close an index, and later on opening
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Index</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Scroll ID</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The index to close</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to wait for the all the nodes to acknowledge the index is closed</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Master Node Timeout</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to connect to the master node</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Scroll identifier to clear scroll</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
 </tr>
@@ -2526,7 +2675,7 @@ The open and close index operation allow to close an index, and later on opening
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#CloseIndexResponse">Close Index Response</a></p>
+<p><a href="#ClearScrollResponse">Clear Scroll Response</a></p>
 </div></div></td>
 </tr>
 </tbody>
@@ -2557,17 +2706,17 @@ The open and close index operation allow to close an index, and later on opening
 </div>
 </div>
 <div class="sect2">
-<h3 id="createIndex">Create Index</h3>
+<h3 id="closeIndex">Close Index</h3>
 <div class="paragraph">
-<p><code>&lt;elasticsearch:create-index&gt;</code></p>
+<p><code>&lt;elasticsearch:close-index&gt;</code></p>
 </div>
 <div class="paragraph">
 <p>
-The createIndex Operation allows to instantiate an index.
+A closed index has almost no overhead. It is used to close an Index. If you want to keep your data but save resources (memory/CPU), a good alternative to deleting an index is to close them.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_5">Parameters</h4>
+<h4 id="_parameters_6">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -2598,70 +2747,34 @@ The createIndex Operation allows to instantiate an index.
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The index to create</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The index to close</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Index Settings</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Object</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Settings for this index</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Type</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The index type to define index</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Index Mapping</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Object</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The mapping for index type, provided as a JSON string</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Index Alias</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The alias of the index</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">JSON Input file path</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Path of the JSON file. The whole source including all of its sections (mappings, settings and aliases) can be provided in this json file.</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to wait for the all the nodes to acknowledge the index creation</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Time to wait for the all the nodes to acknowledge if the index is closed</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Master Node Timeout</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Mater Node Timeout</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to connect to the master node</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Indices Opt</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#IndexOptions">Index Options</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -2713,7 +2826,7 @@ The createIndex Operation allows to instantiate an index.
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#CreateIndexResponse">Create Index Response</a></p>
+<p><a href="#CloseIndexResponse">Close Index Response</a></p>
 </div></div></td>
 </tr>
 </tbody>
@@ -2744,17 +2857,222 @@ The createIndex Operation allows to instantiate an index.
 </div>
 </div>
 <div class="sect2">
+<h3 id="createIndex">Create Index</h3>
+<div class="paragraph">
+<p><code>&lt;elasticsearch:create-index&gt;</code></p>
+</div>
+<div class="paragraph">
+<p>
+The createIndex Operation allows to instantiate an index.
+</p>
+</div>
+<div class="sect3">
+<h4 id="_parameters_7">Parameters</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 20%;">
+<col style="width: 5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-center valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Configuration</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of the configuration to use.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The index to create</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index Settings</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Object</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Settings for this index</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index Settings JSON</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index Settings JSON</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Type for Mapping</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The index type to define index</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index Mapping</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Object</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The mapping for index type, provided as a JSON string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">JSON Input file path for mapping</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Path of the JSON file. The whole source including all of its sections (mappings, settings and aliases) can be provided in this json file.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index Alias</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The alias of the index</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to wait for the all the nodes to acknowledge the index creation</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Master Node Timeout</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to connect to the master node</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Wait for Active Shards</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The number of active shard copies to wait for before the create index</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of a variable on which the operation's output will be placed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Value</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">#[payload]</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Reconnection Strategy</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="ulist">
+<ul>
+<li>
+<p><a href="#reconnect">Reconnect</a></p>
+</li>
+<li>
+<p><a href="#reconnect-forever">Reconnect Forever</a></p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A retry strategy in case of connectivity errors</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_output_4">Output</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#CreateIndexResponse">Create Index Response</a></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_for_configurations_4">For Configurations.</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#config">Config</a> &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_throws_4">Throws</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>ELASTICSEARCH:CONNECTIVITY &#160;</p>
+</li>
+<li>
+<p>ELASTICSEARCH:RETRY_EXHAUSTED &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="deleteDocument">Delete Document</h3>
 <div class="paragraph">
 <p><code>&lt;elasticsearch:delete-document&gt;</code></p>
 </div>
 <div class="paragraph">
 <p>
-The deleteDocument operation allows to delete a typed JSON document from a specific index based on its id
+Delete Document operation allows to delete a typed JSON document from a specific index based on its id
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_6">Parameters</h4>
+<h4 id="_parameters_8">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -2812,7 +3130,7 @@ The deleteDocument operation allows to delete a typed JSON document from a speci
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Shard placement or routing is controlled by using a hash of the document?s id value. For more explicit control, the value fed into the hash function used by the router can be directly specified on a per-operation basis using this routing parameter.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Routing is used to determine in which shard the document will reside in</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -2830,7 +3148,7 @@ The deleteDocument operation allows to delete a typed JSON document from a speci
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to wait for primary shard to become available</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Time to wait for primary shard to become available</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -2852,7 +3170,7 @@ The deleteDocument operation allows to delete a typed JSON document from a speci
 </li>
 </ul>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Refresh policy</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for : Wait for the changes made by the request to be made visible by a refresh before replying. This doesn?t force an immediate refresh, rather, it waits for a refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -2928,7 +3246,7 @@ The deleteDocument operation allows to delete a typed JSON document from a speci
 </table>
 </div>
 <div class="sect3">
-<h4 id="_output_4">Output</h4>
+<h4 id="_output_5">Output</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 50%;">
@@ -2945,7 +3263,7 @@ The deleteDocument operation allows to delete a typed JSON document from a speci
 </table>
 </div>
 <div class="sect3">
-<h4 id="_for_configurations_4">For Configurations.</h4>
+<h4 id="_for_configurations_5">For Configurations.</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2955,7 +3273,7 @@ The deleteDocument operation allows to delete a typed JSON document from a speci
 </div>
 </div>
 <div class="sect3">
-<h4 id="_throws_4">Throws</h4>
+<h4 id="_throws_5">Throws</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -2975,11 +3293,11 @@ The deleteDocument operation allows to delete a typed JSON document from a speci
 </div>
 <div class="paragraph">
 <p>
-The deleteIndex allows to delete an existing index.
+The Delete index operation allows to delete an existing index.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_7">Parameters</h4>
+<h4 id="_parameters_9">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -3033,6 +3351,15 @@ The deleteIndex allows to delete an existing index.
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Indices Opts</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#IndexOptions">Index Options</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
@@ -3070,7 +3397,7 @@ The deleteIndex allows to delete an existing index.
 </table>
 </div>
 <div class="sect3">
-<h4 id="_output_5">Output</h4>
+<h4 id="_output_6">Output</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 50%;">
@@ -3087,7 +3414,7 @@ The deleteIndex allows to delete an existing index.
 </table>
 </div>
 <div class="sect3">
-<h4 id="_for_configurations_5">For Configurations.</h4>
+<h4 id="_for_configurations_6">For Configurations.</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3097,7 +3424,7 @@ The deleteIndex allows to delete an existing index.
 </div>
 </div>
 <div class="sect3">
-<h4 id="_throws_5">Throws</h4>
+<h4 id="_throws_6">Throws</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3117,11 +3444,11 @@ The deleteIndex allows to delete an existing index.
 </div>
 <div class="paragraph">
 <p>
-The getDocument operation allows to get a typed JSON document from the index based on its id.
+Get Document operation allows to get a typed JSON document from the index based on its id.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_8">Parameters</h4>
+<h4 id="_parameters_10">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -3177,10 +3504,10 @@ The getDocument operation allows to get a typed JSON document from the index bas
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Source retrieval</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#FetchSourceContext">Fetch Source Context</a></p>
+<p><a href="#DocumentFetchSourceOptions">Document Fetch Source Options</a></p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Enable or disable source retrieval</p></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
@@ -3188,9 +3515,9 @@ The getDocument operation allows to get a typed JSON document from the index bas
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Shard placement or routing is controlled by using a hash of the document?s id value. For more explicit control, the value fed into the hash function used by the router can be directly specified on a per-operation basis using this routing parameter.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Routing is used to determine in which shard the document will reside in</p></td>
 <td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Parent</p></td>
@@ -3199,7 +3526,7 @@ The getDocument operation allows to get a typed JSON document from the index bas
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Parent value of the index request</p></td>
 <td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Preference value</p></td>
@@ -3215,7 +3542,7 @@ The getDocument operation allows to get a typed JSON document from the index bas
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>Boolean</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set realtime flag</p></td>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -3309,7 +3636,7 @@ The getDocument operation allows to get a typed JSON document from the index bas
 </table>
 </div>
 <div class="sect3">
-<h4 id="_output_6">Output</h4>
+<h4 id="_output_7">Output</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 50%;">
@@ -3326,7 +3653,7 @@ The getDocument operation allows to get a typed JSON document from the index bas
 </table>
 </div>
 <div class="sect3">
-<h4 id="_for_configurations_6">For Configurations.</h4>
+<h4 id="_for_configurations_7">For Configurations.</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3336,7 +3663,7 @@ The getDocument operation allows to get a typed JSON document from the index bas
 </div>
 </div>
 <div class="sect3">
-<h4 id="_throws_6">Throws</h4>
+<h4 id="_throws_7">Throws</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -3356,11 +3683,11 @@ The getDocument operation allows to get a typed JSON document from the index bas
 </div>
 <div class="paragraph">
 <p>
-The indexDocument operation adds or updates a typed JSON document in a specific index, making it searchable.
+Index Document operation adds or updates a typed JSON document in a specific index, making it searchable.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_9">Parameters</h4>
+<h4 id="_parameters_11">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -3414,29 +3741,11 @@ The indexDocument operation adds or updates a typed JSON document in a specific 
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Document Source</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Object</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The document source</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">JSON Input file path</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Path of JSON file which contains the document source</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Routing</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Shard placement or routing is controlled by using a hash of the document?s id value. For more explicit control, the value fed into the hash function used by the router can be directly specified on a per-operation basis using this routing parameter.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Routing is used to determine in which shard the document will reside in</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -3445,7 +3754,7 @@ The indexDocument operation adds or updates a typed JSON document in a specific 
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Parent value of the index request</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A parent-child relationship can be established between documents in the same index by making one mapping type the parent of another</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -3476,7 +3785,7 @@ The indexDocument operation adds or updates a typed JSON document in a specific 
 </li>
 </ul>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Refresh policy</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for : Wait for the changes made by the request to be made visible by a refresh before replying. This doesn?t force an immediate refresh, rather, it waits for a refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -3485,7 +3794,7 @@ The indexDocument operation adds or updates a typed JSON document in a specific 
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>Number</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Version number of the indexed document</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Version number of the indexed document. It will control the version of the document the operation is intended to be executed against.</p></td>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -3544,149 +3853,25 @@ The indexDocument operation adds or updates a typed JSON document in a specific 
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of the ingest pipeline to be executed before indexing the document</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Name of the ingest pipeline to be executed before indexing the document</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">JSON Input file path</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of a variable on which the operation's output will be placed</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide the JSON file path</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Value</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Document Source</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
+<p>Object</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</p></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">#[payload]</p></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Reconnection Strategy</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="ulist">
-<ul>
-<li>
-<p><a href="#reconnect">Reconnect</a></p>
-</li>
-<li>
-<p><a href="#reconnect-forever">Reconnect Forever</a></p>
-</li>
-</ul>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">A retry strategy in case of connectivity errors</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_output_7">Output</h4>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
-</colgroup>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#IndexResponse">Index Response</a></p>
-</div></div></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect3">
-<h4 id="_for_configurations_7">For Configurations.</h4>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#config">Config</a> &#160;</p>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_throws_7">Throws</h4>
-<div class="ulist">
-<ul>
-<li>
-<p>ELASTICSEARCH:CONNECTIVITY &#160;</p>
-</li>
-<li>
-<p>ELASTICSEARCH:RETRY_EXHAUSTED &#160;</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="openIndex">Open Index</h3>
-<div class="paragraph">
-<p><code>&lt;elasticsearch:open-index&gt;</code></p>
-</div>
-<div class="paragraph">
-<p>
-The open and close index operation allow to close an index, and later on opening it. A closed index has almost no overhead on the cluster (except for maintaining its metadata), and is blocked for read/write operations. A closed index can be opened which will then go through the normal recovery process.
-</p>
-</div>
-<div class="sect3">
-<h4 id="_parameters_10">Parameters</h4>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 20%;">
-<col style="width: 35%;">
-<col style="width: 20%;">
-<col style="width: 5%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-middle">Name</th>
-<th class="tableblock halign-left valign-middle">Type</th>
-<th class="tableblock halign-left valign-middle">Description</th>
-<th class="tableblock halign-left valign-middle">Default Value</th>
-<th class="tableblock halign-center valign-middle">Required</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Configuration</p></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">String</p></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of the configuration to use.</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Index</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The index to open</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to wait for the all the nodes to acknowledge the index is opened</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Mater Node Timeout</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to connect to the master node</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide the Document source</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -3738,7 +3923,7 @@ The open and close index operation allow to close an index, and later on opening
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#OpenIndexResponse">Open Index Response</a></p>
+<p><a href="#IndexResponse">Index Response</a></p>
 </div></div></td>
 </tr>
 </tbody>
@@ -3769,17 +3954,17 @@ The open and close index operation allow to close an index, and later on opening
 </div>
 </div>
 <div class="sect2">
-<h3 id="search">Search</h3>
+<h3 id="info">Info</h3>
 <div class="paragraph">
-<p><code>&lt;elasticsearch:search&gt;</code></p>
+<p><code>&lt;elasticsearch:info&gt;</code></p>
 </div>
 <div class="paragraph">
 <p>
-The search operation allows you to execute a search query and get back search hits that match the query.
+To retrieve the cluster information.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_11">Parameters</h4>
+<h4 id="_parameters_12">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -3804,42 +3989,6 @@ The search operation allows you to execute a search query and get back search hi
 <td class="tableblock halign-left valign-middle"><p class="tableblock">The name of the configuration to use.</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Query</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Object</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Query to search request</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Index</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Restricts the request to an index</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Type</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Limits the request to a type</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Routing</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Set a routing parameter</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
@@ -3889,7 +4038,7 @@ The search operation allows you to execute a search query and get back search hi
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p><a href="#SearchResponse">Search Response</a></p>
+<p><a href="#MainResponse">Main Response</a></p>
 </div></div></td>
 </tr>
 </tbody>
@@ -3920,17 +4069,17 @@ The search operation allows you to execute a search query and get back search hi
 </div>
 </div>
 <div class="sect2">
-<h3 id="searchScroll">Search Scroll</h3>
+<h3 id="openIndex">Open Index</h3>
 <div class="paragraph">
-<p><code>&lt;elasticsearch:search-scroll&gt;</code></p>
+<p><code>&lt;elasticsearch:open-index&gt;</code></p>
 </div>
 <div class="paragraph">
 <p>
-The Scroll API can be used to retrieve a large number of results from a search request.
+Open Index operation allow to open an index.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_12">Parameters</h4>
+<h4 id="_parameters_13">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -3957,22 +4106,67 @@ The Scroll API can be used to retrieve a large number of results from a search r
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Object</p>
+<p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Query to search scroll request</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The index to open</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Time Value</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to wait for the all the nodes to acknowledge the index is opened. It is the time to wait for an open index to become available to elasticsearch.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Mater Node Timeout</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to connect to the master node</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Wait for Active Shards</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>Number</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Set the scroll interval</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The number of active shard copies to wait for before the create</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Indices Opts</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#IndexOptions">Index Options</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded</p></td>
 <td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of a variable on which the operation's output will be placed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Value</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">#[payload]</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Reconnection Strategy</p></td>
@@ -3989,6 +4183,23 @@ The Scroll API can be used to retrieve a large number of results from a search r
 <td class="tableblock halign-left valign-middle"><p class="tableblock">A retry strategy in case of connectivity errors</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_output_10">Output</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#OpenIndexResponse">Open Index Response</a></p>
+</div></div></td>
 </tr>
 </tbody>
 </table>
@@ -4018,17 +4229,511 @@ The Scroll API can be used to retrieve a large number of results from a search r
 </div>
 </div>
 <div class="sect2">
+<h3 id="search">Search</h3>
+<div class="paragraph">
+<p><code>&lt;elasticsearch:search&gt;</code></p>
+</div>
+<div class="sect3">
+<h4 id="_parameters_14">Parameters</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 20%;">
+<col style="width: 5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-center valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Configuration</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of the configuration to use.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Query Type</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>One of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#MatchQuery">Match Query</a></p>
+</li>
+<li>
+<p><a href="#MultiMatchQuery">Multi Match Query</a></p>
+</li>
+<li>
+<p><a href="#MatchAllQuery">Match All Query</a></p>
+</li>
+<li>
+<p><a href="#MatchPhraseQuery">Match Phrase Query</a></p>
+</li>
+<li>
+<p><a href="#MatchPhrasePrefixQuery">Match Phrase Prefix Query</a></p>
+</li>
+<li>
+<p><a href="#CommonTermsQuery">Common Terms Query</a></p>
+</li>
+<li>
+<p><a href="#QueryStringQuery">Query String Query</a></p>
+</li>
+<li>
+<p><a href="#SimpleQueryString">Simple Query String</a></p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Different types of elastic search query query configuration</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search Source</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#SearchSourceConfiguration">Search Source Configuration</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search source configuration to control the search behavior.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Restricts the search request to an index</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search Type</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>DFS_QUERY_THEN_FETCH</p>
+</li>
+<li>
+<p>QUERY_THEN_FETCH</p>
+</li>
+<li>
+<p>QUERY_AND_FETCH</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The type of the search operation to perform</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Limits the search request to a type</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Routing</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search the document using routing</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Scroll Interval Time</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Scroll interval time keep the search context alive(minutes). If value is non-zero, scroll search is initiated.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of a variable on which the operation's output will be placed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Value</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">#[payload]</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Reconnection Strategy</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="ulist">
+<ul>
+<li>
+<p><a href="#reconnect">Reconnect</a></p>
+</li>
+<li>
+<p><a href="#reconnect-forever">Reconnect Forever</a></p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A retry strategy in case of connectivity errors</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_output_11">Output</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#SearchResponse">Search Response</a></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_for_configurations_11">For Configurations.</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#config">Config</a> &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_throws_11">Throws</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>ELASTICSEARCH:CONNECTIVITY &#160;</p>
+</li>
+<li>
+<p>ELASTICSEARCH:RETRY_EXHAUSTED &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="searchScroll">Search Scroll</h3>
+<div class="paragraph">
+<p><code>&lt;elasticsearch:search-scroll&gt;</code></p>
+</div>
+<div class="sect3">
+<h4 id="_parameters_15">Parameters</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 20%;">
+<col style="width: 5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-center valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Configuration</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of the configuration to use.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Scroll Id</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Scroll identifier returned in last scroll request</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Keep alive time</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set the scroll interval time keep the search context alive(minutes)</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of a variable on which the operation's output will be placed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Value</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">#[payload]</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Reconnection Strategy</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="ulist">
+<ul>
+<li>
+<p><a href="#reconnect">Reconnect</a></p>
+</li>
+<li>
+<p><a href="#reconnect-forever">Reconnect Forever</a></p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A retry strategy in case of connectivity errors</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_output_12">Output</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#SearchResponse">Search Response</a></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_for_configurations_12">For Configurations.</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#config">Config</a> &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_throws_12">Throws</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>ELASTICSEARCH:CONNECTIVITY &#160;</p>
+</li>
+<li>
+<p>ELASTICSEARCH:RETRY_EXHAUSTED &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="searchUsingJsonData">Search Using Json Data</h3>
+<div class="paragraph">
+<p><code>&lt;elasticsearch:search-using-json-data&gt;</code></p>
+</div>
+<div class="sect3">
+<h4 id="_parameters_16">Parameters</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 20%;">
+<col style="width: 35%;">
+<col style="width: 20%;">
+<col style="width: 5%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Name</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-center valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Configuration</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">String</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of the configuration to use.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Index</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Restricts the search request to an index</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Output Mime Type</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The mime type of the payload that this operation outputs.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">File</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide the JSON file path</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Text</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide the JSON string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The name of a variable on which the operation's output will be placed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Target Value</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">#[payload]</p></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Reconnection Strategy</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="ulist">
+<ul>
+<li>
+<p><a href="#reconnect">Reconnect</a></p>
+</li>
+<li>
+<p><a href="#reconnect-forever">Reconnect Forever</a></p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A retry strategy in case of connectivity errors</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_output_13">Output</h4>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 50%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Type</strong></p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock"><strong>Attributes Type</strong></p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#StatusLine">[StatusLine]</a></p>
+</div></div></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_for_configurations_13">For Configurations.</h4>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="#config">Config</a> &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_throws_13">Throws</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>ELASTICSEARCH:CONNECTIVITY &#160;</p>
+</li>
+<li>
+<p>ELASTICSEARCH:RETRY_EXHAUSTED &#160;</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
 <h3 id="updateDocument">Update Document</h3>
 <div class="paragraph">
 <p><code>&lt;elasticsearch:update-document&gt;</code></p>
 </div>
 <div class="paragraph">
 <p>
-The updateDocument operation allows to update a document based on a script provided.
+Update Document operation allows to update a document based on a script provided.
 </p>
 </div>
 <div class="sect3">
-<h4 id="_parameters_13">Parameters</h4>
+<h4 id="_parameters_17">Parameters</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -4082,29 +4787,11 @@ The updateDocument operation allows to update a document based on a script provi
 <td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Document Source</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Object</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">The document source</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock"><strong>x</strong>&#160;</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Document Source JSON file</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>String</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Path of JSON file which contains the document source</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
-</tr>
-<tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Routing</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Shard placement or routing is controlled by using a hash of the document?s id value. For more explicit control, the value fed into the hash function used by the router can be directly specified on a per-operation basis using this routing parameter.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Routing is used to determine in which shard the document will reside in</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -4122,7 +4809,7 @@ The updateDocument operation allows to update a document based on a script provi
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout to wait for primary shard to become available</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Time to wait for primary shard to become available</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -4144,7 +4831,7 @@ The updateDocument operation allows to update a document based on a script provi
 </li>
 </ul>
 </div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Refresh policy</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for : Wait for the changes made by the request to be made visible by a refresh before replying. This doesn?t force an immediate refresh, rather, it waits for a refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
@@ -4203,6 +4890,24 @@ The updateDocument operation allows to update a document based on a script provi
 <td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
 </tr>
 <tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">JSON Input file path</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide the JSON file path</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Document Source</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Object</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Provide the Document source</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-center valign-middle"><p class="tableblock">&#160;</p></td>
+</tr>
+<tr>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Target Variable</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>String</p>
@@ -4240,7 +4945,7 @@ The updateDocument operation allows to update a document based on a script provi
 </table>
 </div>
 <div class="sect3">
-<h4 id="_output_10">Output</h4>
+<h4 id="_output_14">Output</h4>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 50%;">
@@ -4257,7 +4962,7 @@ The updateDocument operation allows to update a document based on a script provi
 </table>
 </div>
 <div class="sect3">
-<h4 id="_for_configurations_11">For Configurations.</h4>
+<h4 id="_for_configurations_14">For Configurations.</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -4267,7 +4972,7 @@ The updateDocument operation allows to update a document based on a script provi
 </div>
 </div>
 <div class="sect3">
-<h4 id="_throws_11">Throws</h4>
+<h4 id="_throws_14">Throws</h4>
 <div class="ulist">
 <ul>
 <li>
@@ -4407,127 +5112,6 @@ The updateDocument operation allows to update a document based on a script provi
 </table>
 </div>
 <div class="sect2">
-<h3 id="PoolingProfile">Pooling Profile</h3>
-<table class="tableblock frame-all grid-all spread">
-<colgroup>
-<col style="width: 20%;">
-<col style="width: 25%;">
-<col style="width: 30%;">
-<col style="width: 15%;">
-<col style="width: 10%;">
-</colgroup>
-<thead>
-<tr>
-<th class="tableblock halign-left valign-middle">Field</th>
-<th class="tableblock halign-left valign-middle">Type</th>
-<th class="tableblock halign-left valign-middle">Description</th>
-<th class="tableblock halign-left valign-middle">Default Value</th>
-<th class="tableblock halign-left valign-middle">Required</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Max Active</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Number</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Controls the maximum number of Mule components that can be borrowed from a session at one time. When set to a negative value, there is no limit to the number of components that may be active at one time. When maxActive is exceeded, the pool is said to be exhausted.</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-left valign-middle"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Max Idle</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Number</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Controls the maximum number of Mule components that can sit idle in the pool at any time. When set to a negative value, there is no limit to the number of Mule components that may be idle at one time.</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-left valign-middle"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Max Wait</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Number</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Specifies the number of milliseconds to wait for a pooled component to become available when the pool is exhausted and the exhaustedAction is set to WHEN_EXHAUSTED_WAIT.</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-left valign-middle"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Min Eviction Millis</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Number</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Determines the minimum amount of time an object may sit idle in the pool before it is eligible for eviction. When non-positive, no objects will be evicted from the pool due to idle time alone.</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-left valign-middle"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Eviction Check Interval Millis</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Number</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Specifies the number of milliseconds between runs of the object evictor. When non-positive, no object evictor is executed.</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-left valign-middle"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Exhausted Action</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Enumeration, one of:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>WHEN_EXHAUSTED_GROW</p>
-</li>
-<li>
-<p>WHEN_EXHAUSTED_WAIT</p>
-</li>
-<li>
-<p>WHEN_EXHAUSTED_FAIL</p>
-</li>
-</ul>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Specifies the behavior of the Mule component pool when the pool is exhausted. Possible values are: "WHEN_EXHAUSTED_FAIL", which will throw a NoSuchElementException, "WHEN_EXHAUSTED_WAIT", which will block by invoking Object.wait(long) until a new or idle object is available, or WHEN_EXHAUSTED_GROW, which will create a new Mule instance and return it, essentially making maxActive meaningless. If a positive maxWait value is supplied, it will block for at most that many milliseconds, after which a NoSuchElementException will be thrown. If maxThreadWait is a negative value, it will block indefinitely.</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-left valign-middle"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Initialisation Policy</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Enumeration, one of:</p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>INITIALISE_NONE</p>
-</li>
-<li>
-<p>INITIALISE_ONE</p>
-</li>
-<li>
-<p>INITIALISE_ALL</p>
-</li>
-</ul>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Determines how components in a pool should be initialized. The possible values are: INITIALISE_NONE (will not load any components into the pool on startup), INITIALISE_ONE (will load one initial component into the pool on startup), or INITIALISE_ALL (will load all components in the pool on startup)</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-left valign-middle"></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Disabled</p></td>
-<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Boolean</p>
-</div></div></td>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Whether pooling should be disabled</p></td>
-<td class="tableblock halign-left valign-middle"></td>
-<td class="tableblock halign-left valign-middle"></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="sect2">
 <h3 id="ExpirationPolicy">Expiration Policy</h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -4587,6 +5171,133 @@ The updateDocument operation allows to update a document based on a script provi
 </ul>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"><p class="tableblock">A time unit that qualifies the maxIdleTime attribute</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="Response">Response</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Entity</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#HttpEntity">[HttpEntity]</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Headers</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Array of <a href="#Header">[Header]</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Host</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#HttpHost">Http Host</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Request Line</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#RequestLine">[RequestLine]</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Status Line</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#StatusLine">[StatusLine]</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="HttpHost">Http Host</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Address</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Any</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Host Name</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Port</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Scheme Name</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-left valign-middle"></td>
 </tr>
@@ -4661,6 +5372,92 @@ The updateDocument operation allows to update a document based on a script provi
 </div></div></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="IndexOptions">Index Options</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Ignore Unavailable</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Allow No Indices</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Expand To Open Indices</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Expand To Closed Indices</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Allow Aliases To Multiple Indices</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Forbid Closed Indices</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Ignore Aliases</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 </tr>
 </tbody>
@@ -5063,7 +5860,7 @@ The updateDocument operation allows to update a document based on a script provi
 </table>
 </div>
 <div class="sect2">
-<h3 id="FetchSourceContext">Fetch Source Context</h3>
+<h3 id="DocumentFetchSourceOptions">Document Fetch Source Options</h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
 <col style="width: 20%;">
@@ -5083,11 +5880,29 @@ The updateDocument operation allows to update a document based on a script provi
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-middle"><p class="tableblock">Filter</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fetch Source</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
-<p>Any</p>
+<p>Boolean</p>
 </div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fetch the source of the search document</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
 <td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Include Fields</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Array of String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">List of the field that are included into the document source</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Exclude Fields</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Array of String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">List of the field that are excluded from the document source</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-left valign-middle"></td>
 </tr>
@@ -5218,6 +6033,174 @@ The updateDocument operation allows to update a document based on a script provi
 <td class="tableblock halign-left valign-middle"><p class="tableblock">Version</p></td>
 <td class="tableblock halign-left valign-middle"><div><div class="paragraph">
 <p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="MainResponse">Main Response</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Available</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Build</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#Build">Build</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Cluster Name</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#ClusterName">[ClusterName]</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Cluster Uuid</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Node Name</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Version</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#Version">Version</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="Build">Build</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Snapshot</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="Version">Version</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">RC</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Alpha</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Beta</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Release</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-left valign-middle"></td>
@@ -5698,6 +6681,165 @@ The updateDocument operation allows to update a document based on a script provi
 </table>
 </div>
 <div class="sect2">
+<h3 id="SearchSourceConfiguration">Search Source Configuration</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">From</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Retrieve search result from a certain offset</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Size</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The number of search hits to return</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">10</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Timeout</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Time allowed to finish the search operation</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sort Order</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ASC</p>
+</li>
+<li>
+<p>DESC</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The sort order of search result using default field (_score).</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sort By Field Name</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Field name to sort the search result</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fetch Source</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fetch the source of the search document</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Include Fields</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Array of String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">List of the field that are included into the document source</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Exclude Fields</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Array of String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">List of the field that are excluded from the document source</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Profile</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable the profiling to the execution of search queries</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Explain</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Explain the execution of search queries</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Terminate After</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The maximum number of documents to collect for each shard</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Track Scores</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable the search source tracking</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Track Total Hits</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable the total hits tracking</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Version</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Returns a version for each search hit.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
 <h3 id="UpdateResponse">Update Response</h3>
 <table class="tableblock frame-all grid-all spread">
 <colgroup>
@@ -5832,6 +6974,1029 @@ The updateDocument operation allows to update a document based on a script provi
 <p>Number</p>
 </div></div></td>
 <td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="MatchQuery">Match Query</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Restrict the search request to field</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search String</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search text string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzziness</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#Fuzziness">[Fuzziness]</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable fuzzy matching on the match query</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzzy Transpositions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Allow the fuzzy transpositions match</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Prefix Length</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Prefix length option on the match query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Max Expansions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Max expansion to control the fuzzy process of the query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">50</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Operator</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OR</p>
+</li>
+<li>
+<p>AND</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set the match query operator</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Lenient</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Ignore exceptions caused by data-type mismatches</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Zero Terms Query</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ALL</p>
+</li>
+<li>
+<p>NONE</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set the zero terms query option</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Cutoff Frequency</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Specify an absolute or relative document frequency</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Auto Generate Synonyms Phrase Query</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable the auto generate synonyms phrase</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="MultiMatchQuery">Multi Match Query</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fields</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Array of String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Restrict the search request to list of field</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Type</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>BEST_FIELDS</p>
+</li>
+<li>
+<p>CROSS_FIELDS</p>
+</li>
+<li>
+<p>MOST_FIELDS</p>
+</li>
+<li>
+<p>PHRASE</p>
+</li>
+<li>
+<p>PHRASE_PREFIX</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Type of the multi match query is executed internally</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Tie Breaker</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The tie breaker parameter used to select field in a group of field based on score
+</p><p class="tableblock"> 0.0 - Take the single best score out of multiple field
+</p><p class="tableblock"> 1.0 - Add together the scores of the multiple field
+</p><p class="tableblock"> 0.0 &lt; n &lt; 1.0 - Take the single best score plus tie_breaker multiplied by each of the scores from other matching fields.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Minimum Should Match</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set minimum should match with possible value using integer and percentage.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search String</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search text string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzziness</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p><a href="#Fuzziness">[Fuzziness]</a></p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable fuzzy matching on the match query</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzzy Transpositions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Allow the fuzzy transpositions match</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Prefix Length</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Prefix length option on the match query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Max Expansions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Max expansion to control the fuzzy process of the query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">50</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Operator</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OR</p>
+</li>
+<li>
+<p>AND</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set the match query operator</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Lenient</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Ignore exceptions caused by data-type mismatches</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Zero Terms Query</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ALL</p>
+</li>
+<li>
+<p>NONE</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set the zero terms query option</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Cutoff Frequency</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Specify an absolute or relative document frequency</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Auto Generate Synonyms Phrase Query</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable the auto generate synonyms phrase</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="MatchAllQuery">Match All Query</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Boost</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sets the boost value of the query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">1.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="MatchPhraseQuery">Match Phrase Query</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Restrict the search request to field</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Query String</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search text string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Boost</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sets the boost value of the query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">1.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyzer</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The analyzer name used to analyze the query string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="MatchPhrasePrefixQuery">Match Phrase Prefix Query</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Max Expansions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Number of suffixes the last term will be expanded</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">50</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Field</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Restrict the search request to field</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Query String</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search text string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Boost</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sets the boost value of the query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">1.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyzer</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The analyzer name used to analyze the query string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="CommonTermsQuery">Common Terms Query</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Field Name</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Restrict the search request to field</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Query String</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Search text string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyzer</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The analyzer name used to analyze the query string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Boost</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sets the boost value of the query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Cutoff Frequency</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Specify an absolute or relative document frequency</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">High Freq Minimum Should Match</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set minimum should match with possible value using integer and percentage.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">High Freq Operator</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OR</p>
+</li>
+<li>
+<p>AND</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">High frequency query operator</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Low Freq Minimum Should Match</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set minimum should match with possible value using integer and percentage.
+</p><p class="tableblock"> @see &lt;a href="http://google.com"&gt;Minimum Should Matchedit&lt;/a&gt;</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Low Freq Operator</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OR</p>
+</li>
+<li>
+<p>AND</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Low frequency query operator</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="QueryStringQuery">Query String Query</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Allow Leading Wildcard</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Allow first wildcard (* or ?) in query string</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Default Field</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The default field for query terms if no prefix field is specified.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable Position Increments</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set to true to enable position increments in result queries.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Escape</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Allow escape in query string</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Phrase Slop</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sets the default slop for phrases. If zero, then exact phrase matches are required.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Tie Breaker</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The disjunction max tie breaker for multi fields</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Query String</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The actual query to be parsed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Field And Boost</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Object</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">List of the field name and associated field boost</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyzer</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The analyzer name used to analyze the query string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyze Wildcard</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyze the wildcards terms from the query string</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Auto Generate Synonyms Phrase Query</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable auto generated synonyms phrase queries</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Boost</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sets the boost value of the query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">1.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Default Operator</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OR</p>
+</li>
+<li>
+<p>AND</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The default operator used if no explicit query operator is specified</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzzy Max Expansions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Controls the number of terms fuzzy queries will expand to.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">50</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzzy Prefix Length</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set the prefix length for fuzzy queries</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzzy Transpositions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set to false to disable fuzzy transpositions</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Lenient</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">If set to true will cause format based failures (like providing text to a numeric field) to be ignored.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Minimum Should Match</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set minimum should match with possible value using integer and percentage.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Quote Field Suffix</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A suffix to append to fields for quoted parts of the query string.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="sect2">
+<h3 id="SimpleQueryString">Simple Query String</h3>
+<table class="tableblock frame-all grid-all spread">
+<colgroup>
+<col style="width: 20%;">
+<col style="width: 25%;">
+<col style="width: 30%;">
+<col style="width: 15%;">
+<col style="width: 10%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-middle">Field</th>
+<th class="tableblock halign-left valign-middle">Type</th>
+<th class="tableblock halign-left valign-middle">Description</th>
+<th class="tableblock halign-left valign-middle">Default Value</th>
+<th class="tableblock halign-left valign-middle">Required</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Simple Query String Flag</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>ALL</p>
+</li>
+<li>
+<p>AND</p>
+</li>
+<li>
+<p>ESCAPE</p>
+</li>
+<li>
+<p>FUZZY</p>
+</li>
+<li>
+<p>NEAR</p>
+</li>
+<li>
+<p>NONE</p>
+</li>
+<li>
+<p>NOT</p>
+</li>
+<li>
+<p>OR</p>
+</li>
+<li>
+<p>PHRASE</p>
+</li>
+<li>
+<p>PRECEDENCE</p>
+</li>
+<li>
+<p>PREFIX</p>
+</li>
+<li>
+<p>SLOP</p>
+</li>
+<li>
+<p>WHITESPACE</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Specify which parsing flag should be enabled</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Query String</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The actual query to be parsed</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">x</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Field And Boost</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Object</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">List of the field name and associated field boost</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyzer</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The analyzer name used to analyze the query string</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyze Wildcard</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Analyze the wildcards terms from the query string</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Auto Generate Synonyms Phrase Query</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Enable auto generated synonyms phrase queries</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Boost</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Sets the boost value of the query</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">1.0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Default Operator</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Enumeration, one of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>OR</p>
+</li>
+<li>
+<p>AND</p>
+</li>
+</ul>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">The default operator used if no explicit query operator is specified</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzzy Max Expansions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Controls the number of terms fuzzy queries will expand to.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">50</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzzy Prefix Length</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Number</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set the prefix length for fuzzy queries</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">0</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Fuzzy Transpositions</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set to false to disable fuzzy transpositions</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">true</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Lenient</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>Boolean</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">If set to true will cause format based failures (like providing text to a numeric field) to be ignored.</p></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">false</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Minimum Should Match</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Set minimum should match with possible value using integer and percentage.</p></td>
+<td class="tableblock halign-left valign-middle"></td>
+<td class="tableblock halign-left valign-middle"></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">Quote Field Suffix</p></td>
+<td class="tableblock halign-left valign-middle"><div><div class="paragraph">
+<p>String</p>
+</div></div></td>
+<td class="tableblock halign-left valign-middle"><p class="tableblock">A suffix to append to fields for quoted parts of the query string.</p></td>
 <td class="tableblock halign-left valign-middle"></td>
 <td class="tableblock halign-left valign-middle"></td>
 </tr>
