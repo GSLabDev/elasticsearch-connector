@@ -52,15 +52,15 @@ public class SearchOperations {
     /**
      * 
      * @param esConnection
-     *            The elastic search connection
+     *            The Elasticsearch connection
      * @param searchRequestConfiguration
      *            Search request configuration
      * @param queryConfiguration
-     *            Different types of elastic search query query configuration
+     *            Different types of Elasticsearch query query configuration
      * @param searchSourceConfiguration
      *            Search source configuration to control the search behavior.
      * @return SearchResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
@@ -79,13 +79,13 @@ public class SearchOperations {
     /**
      * 
      * @param esConnection
-     *            The elastic search connection
+     *            The Elasticsearch connection
      * @param scrollId
      *            Scroll identifier returned in last scroll request
      * @param timeValue
      *            Set the scroll interval time keep the search context alive(minutes)
      * @return SearchResponse
-     * @throws IOException
+     * @throws IOException throws IOException
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
@@ -103,13 +103,13 @@ public class SearchOperations {
     /**
      * 
      * @param esConnection
-     *            The elastic search connection
+     *            The Elasticsearch connection
      * @param index
      *            Restricts the search request to an index
      * @param jsonData
-     *            JSON file or string containing elastic search query configuration
+     *            JSON file or string containing Elasticsearch query configuration
      * @return Search Result
-     * @throws IOException
+     * @throws IOException throws IOException
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
@@ -145,11 +145,11 @@ public class SearchOperations {
      * are not necessary anymore using the Clear Scroll.
      * 
      * @param esConnection
-     *            The elastic search connection
+     *            The Elasticsearch connection
      * @param scrollId
      *            Scroll identifier to clear scroll
-     * @return
-     * @throws IOException
+     * @return ClearScrollResponse
+     * @throws IOException throws IOException
      */
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     public ClearScrollResponse clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll ID") String scrollId) throws IOException {
