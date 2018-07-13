@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema/mule/elasticsearch/current/mule-elasticsearch.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="8392248e-98e1-42da-bd19-1faee78c422c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<elasticsearch:config name="Elasticsearch_Config" doc:name="Elasticsearch Config" doc:id="88f2eedb-53cc-498a-985d-1c9eb8be2042" >
+		<elasticsearch:http-connection host="${elastic.host}" />
+	</elasticsearch:config>
+	
+	<configuration-properties doc:name="Configuration properties" doc:id="96e66225-99ad-4221-a68c-4c596fb50c57" file="mule-application.properties" />
+	<flow name="DocumentStore" doc:id="6f18edae-31ae-44f8-819a-9cf062a92acc" >
+		<http:listener doc:name="Listener" doc:id="7226082d-691d-46ed-b9cf-39a19f0ecf9b" config-ref="HTTP_Listener_config" path="/documentstore"/>
+		<elasticsearch:bulk-operation doc:name="Dataset Upload" doc:id="2c8400f3-7cb0-4a66-b24d-24c0a6fcdbe2" index="${bulk.index}" type="${bulk.type}" jsonfile="${bulk.dataset}" config-ref="Elasticsearch_Config"/>
+		<logger level="INFO" doc:name="Log dataset insert response" doc:id="8ff5a4ae-10d0-4c07-94f0-e7e976b4b83e" message="Inserted Dataset #[payload]"/>
+		<elasticsearch:get-document doc:name="Get document" doc:id="d3ec0cd4-f1d9-44de-90cf-f4a78cfbdb1f" config-ref="Elasticsearch_Config" index="${get.index}" type="${get.type}" documentId="${get.id}"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="e3feff1a-5965-409a-ac6e-d2cdecf0e3cc" mimeType="application/json"/>
+		<logger level="INFO" doc:name="Log the get document details" doc:id="6c9112f9-4216-445a-bdb5-b64f6e6a469e" message="Document Generated #[payload]"/>
+	</flow>
+</mule>
