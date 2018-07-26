@@ -13,7 +13,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	<elasticsearch:config name="Elasticsearch_Config" doc:name="Elasticsearch Config" doc:id="ed143c83-6d89-4f6b-846d-35c1508baa05" >
 		<elasticsearch:http-connection host="${elastic.host}" />
 	</elasticsearch:config>
-	<configuration-properties doc:name="Configuration properties" doc:id="9326223b-07dd-4189-93c8-cd3236703b31" file="config/configuration.yaml" />
+	<configuration-properties doc:name="Configuration properties" doc:id="9326223b-07dd-4189-93c8-cd3236703b31" file="mule-application.properties" />
 	<flow name="DocumentIndexOperations" doc:id="712c5ec8-4d0a-46d7-96ea-115076ec24e6">
 		<http:listener doc:name="Listener"
 			doc:id="f24fa5ea-c596-4bae-85b1-671aaf4a07b1" config-ref="HTTP_Listener_config"
