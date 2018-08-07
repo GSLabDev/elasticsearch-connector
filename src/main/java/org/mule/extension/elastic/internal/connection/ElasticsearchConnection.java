@@ -8,14 +8,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.KeyManagementException;
 import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-
 import javax.net.ssl.SSLContext;
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -27,13 +21,15 @@ import org.apache.http.ssl.SSLContexts;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.mule.extension.elastic.internal.error.ElasticsearchError;
+import org.mule.extension.elastic.internal.error.exception.ElasticsearchException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
  * 
- *         Provides HTTP, HTTP with basic authentication and HTTPS connection with ElasticSearch server
+ *         Provides HTTP and HTTPS connection with Elasticsearch
  */
 public final class ElasticsearchConnection {
 
@@ -50,6 +46,7 @@ public final class ElasticsearchConnection {
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
         RestClientBuilder builder = RestClient.builder(new HttpHost(host, port)).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+
             @Override
             public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
                 return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
@@ -58,31 +55,35 @@ public final class ElasticsearchConnection {
         this.client = new RestHighLevelClient(builder);
     }
 
-    public ElasticsearchConnection(String host, int port, String userName, String password, String trustStoreType, String trustStorePath, String trustStorePassword)
-            throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException, KeyManagementException {
-        KeyStore truststore = KeyStore.getInstance(trustStoreType);
-        Path keyStorePath = Paths.get(trustStorePath);
-        try (InputStream is = Files.newInputStream(keyStorePath)) {
-            truststore.load(is, trustStorePassword.toCharArray());
-        }
-        SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
-        SSLContext sslContext = sslBuilder.build();
-        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "https")).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+    public ElasticsearchConnection(String host, int port, String userName, String password, String trustStoreType, String trustStorePath, String trustStorePassword) {
+        KeyStore truststore;
+        try {
+            truststore = KeyStore.getInstance(trustStoreType);
 
-            @Override
-            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-                if (userName != null && password != null) {
-                    final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                    credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
-                    return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider).setSSLContext(sslContext);
-                } else {
-                    return httpClientBuilder.setSSLContext(sslContext);
-                }
-
+            Path keyStorePath = Paths.get(trustStorePath);
+            try (InputStream is = Files.newInputStream(keyStorePath)) {
+                truststore.load(is, trustStorePassword.toCharArray());
             }
-        });
+            SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
+            SSLContext sslContext = sslBuilder.build();
+            RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "https")).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
 
-        this.client = new RestHighLevelClient(builder);
+                @Override
+                public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+                    if (userName != null && password != null) {
+                        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+                        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
+                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider).setSSLContext(sslContext);
+                    } else {
+                        return httpClientBuilder.setSSLContext(sslContext);
+                    }
+                }
+            });
+
+            this.client = new RestHighLevelClient(builder);
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.INVALID_AUTH, e);
+        }
     }
 
     public RestHighLevelClient getElasticsearchConnection() {

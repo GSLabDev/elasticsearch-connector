@@ -117,8 +117,11 @@ Bulk operation makes it possible to perform many index, delete and update operat
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[clearScroll]]
@@ -151,8 +154,11 @@ The search contexts used by the Search Scroll operation are automatically delete
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[closeIndex]]
@@ -188,8 +194,11 @@ A closed index has almost no overhead. It is used to close an Index. If you want
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[createIndex]]
@@ -231,8 +240,11 @@ The createIndex Operation allows to instantiate an index.
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[deleteDocument]]
@@ -282,8 +294,11 @@ Delete Document operation allows to delete a typed JSON document from a specific
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[deleteIndex]]
@@ -319,8 +334,11 @@ The Delete index operation allows to delete an existing index.
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[getDocument]]
@@ -369,8 +387,11 @@ Get Document operation allows to get a typed JSON document from the index based 
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[indexDocument]]
@@ -429,8 +450,11 @@ Index Document operation adds or updates a typed JSON document in a specific ind
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[info]]
@@ -462,8 +486,11 @@ To retrieve the cluster information.
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[openIndex]]
@@ -482,7 +509,7 @@ Open Index operation allow to open an index.
 | Index a| String |  +++The index to open+++ |  | *x*{nbsp}
 | Timeout a| String |  +++Timeout to wait for the all the nodes to acknowledge the index is opened. It is the time to wait for an open index to become available to elasticsearch.+++ |  | {nbsp}
 | Mater Node Timeout a| String |  +++Timeout to connect to the master node+++ |  | {nbsp}
-| Wait for Active Shards a| Number |  +++The number of active shard copies to wait for before the create+++ |  +++0+++ | {nbsp}
+| Wait for Active Shards a| Number |  +++The number of active shard copies to wait for+++ |  +++0+++ | {nbsp}
 | Indices Opts a| <<IndexOptions>> |  +++IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded+++ |  | {nbsp}
 | Target Variable a| String |  +++The name of a variable on which the operation's output will be placed+++ |  | {nbsp}
 | Target Value a| String |  +++An expression that will be evaluated against the operation's output and the outcome of that expression will be stored in the target variable+++ |  +++#[payload]+++ | {nbsp}
@@ -500,8 +527,11 @@ Open Index operation allow to open an index.
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[search]]
@@ -523,7 +553,7 @@ Open Index operation allow to open an index.
 * <<MatchPhrasePrefixQuery>>
 * <<CommonTermsQuery>>
 * <<QueryStringQuery>>
-* <<SimpleQueryString>> |  +++Different types of elastic search query query configuration+++ |  | *x*{nbsp}
+* <<SimpleQueryString>> |  +++Different types of Elasticsearch query query configuration+++ |  | *x*{nbsp}
 | Search Source a| <<SearchSourceConfiguration>> |  +++Search source configuration to control the search behavior.+++ |  | {nbsp}
 | Index a| String |  +++Restricts the search request to an index+++ |  | {nbsp}
 | Search Type a| Enumeration, one of:
@@ -550,8 +580,11 @@ Open Index operation allow to open an index.
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[searchScroll]]
@@ -582,8 +615,11 @@ Open Index operation allow to open an index.
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[searchUsingJsonData]]
@@ -617,8 +653,11 @@ Open Index operation allow to open an index.
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 [[updateDocument]]
@@ -669,8 +708,11 @@ Update Document operation allows to update a document based on a script provided
 * <<config>> {nbsp}
 
 ==== Throws
+* ELASTICSEARCH:INVALID_CONNECTION {nbsp}
 * ELASTICSEARCH:CONNECTIVITY {nbsp}
 * ELASTICSEARCH:RETRY_EXHAUSTED {nbsp}
+* ELASTICSEARCH:OPERATION_FAILED {nbsp}
+* ELASTICSEARCH:INVALID_AUTH {nbsp}
 
 
 

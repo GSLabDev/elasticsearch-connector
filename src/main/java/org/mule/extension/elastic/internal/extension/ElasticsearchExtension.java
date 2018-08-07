@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2003-2017, Great Software Laboratory Pvt. Ltd. The software in this package is published under the terms of the Commercial Free Software license V.1, a copy of which has been included with this distribution in the LICENSE.md file.
  */
-package org.mule.extension.elastic.internal;
+package org.mule.extension.elastic.internal.extension;
 
 import org.mule.extension.elastic.api.querytype.CommonTermsQuery;
 import org.mule.extension.elastic.api.querytype.MatchAllQuery;
@@ -12,8 +12,10 @@ import org.mule.extension.elastic.api.querytype.MultiMatchQuery;
 import org.mule.extension.elastic.api.querytype.Query;
 import org.mule.extension.elastic.api.querytype.QueryStringQuery;
 import org.mule.extension.elastic.api.querytype.SimpleQueryString;
-import org.mule.extension.elastic.internal.connection.HttpConnectionProvider;
-import org.mule.extension.elastic.internal.connection.HttpsConnectionProvider;
+import org.mule.extension.elastic.internal.connection.provider.HttpConnectionProvider;
+import org.mule.extension.elastic.internal.connection.provider.HttpsConnectionProvider;
+import org.mule.extension.elastic.internal.error.ElasticsearchError;
+import org.mule.extension.elastic.internal.error.ExecuteErrorsProvider;
 import org.mule.extension.elastic.internal.operations.DocumentOperations;
 import org.mule.extension.elastic.internal.operations.IndexOperations;
 import org.mule.extension.elastic.internal.operations.InfoOperation;
@@ -24,6 +26,8 @@ import org.mule.runtime.extension.api.annotation.Operations;
 import org.mule.runtime.extension.api.annotation.SubTypeMapping;
 import org.mule.runtime.extension.api.annotation.connectivity.ConnectionProviders;
 import org.mule.runtime.extension.api.annotation.dsl.xml.Xml;
+import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
+import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.license.RequiresEnterpriseLicense;
 
 /**
@@ -32,6 +36,7 @@ import org.mule.runtime.extension.api.annotation.license.RequiresEnterpriseLicen
  *         ElasticSearch Connector provides integration with the ElasticSearch server from a mule flow. It supports HTTP, HTTP with basic authentication and HTTPS connection.
  */
 @Xml(prefix = "elasticsearch")
+@ErrorTypes(ElasticsearchError.class)
 @Extension(name = "Elasticsearch", category = Category.CERTIFIED, vendor = "Great Software Laboratory Pvt. Ltd.")
 @RequiresEnterpriseLicense(allowEvaluationLicense = true)
 @SubTypeMapping(baseType = Query.class, subTypes = {
@@ -57,6 +62,7 @@ import org.mule.runtime.extension.api.annotation.license.RequiresEnterpriseLicen
     InfoOperation.class
 })
 
-public class ElasticsearchConnector {
+@Throws(ExecuteErrorsProvider.class)
+public class ElasticsearchExtension {
 
 }
