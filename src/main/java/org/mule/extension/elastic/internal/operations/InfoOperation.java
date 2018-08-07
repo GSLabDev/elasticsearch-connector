@@ -5,10 +5,10 @@ package org.mule.extension.elastic.internal.operations;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 
-import java.io.IOException;
-
 import org.elasticsearch.action.main.MainResponse;
 import org.mule.extension.elastic.internal.connection.ElasticsearchConnection;
+import org.mule.extension.elastic.internal.error.ElasticsearchError;
+import org.mule.extension.elastic.internal.error.exception.ElasticsearchException;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.slf4j.Logger;
@@ -24,16 +24,20 @@ public class InfoOperation {
     /**
      * To retrieve the cluster information.
      * 
-	 * @param esConnection
+     * @param esConnection
      *            The Elasticsearch connection
-	 * @return MainResponse Cluster information
-     * @throws IOException throws IOException
+     * @return MainResponse Cluster information
      * 
      */
 
     @MediaType(value = ANY, strict = false)
-    public MainResponse info(@Connection ElasticsearchConnection esConnection) throws IOException {
-        MainResponse response = esConnection.getElasticsearchConnection().info();
+    public MainResponse info(@Connection ElasticsearchConnection esConnection) {
+        MainResponse response;
+        try {
+            response = esConnection.getElasticsearchConnection().info();
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+        }
         logger.debug("Info response : ", response);
         return response;
     }

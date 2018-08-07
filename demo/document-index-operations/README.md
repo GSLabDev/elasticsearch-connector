@@ -31,8 +31,8 @@ Field Name        | Value
 -------------     | -------------
 elastic.host 	  | Host name or IP of Elasticsearch
 elastic.port      | Port on which Elasticsearch is running
-document.path	  | Path to indexDocument.json available in src/main/resources/ directory
-document.updatepath | Path to UpdateIndexDocument.json available in src/main/resources/ directory
+document.path	  | Absolute path to indexDocument.json available in src/main/resources/ directory
+document.updatepath | Absolute path to UpdateIndexDocument.json available in src/main/resources/ directory
 
 4. In ***Anypoint Studio***, Right click in the ***project folder → Run As → Mule Application***
 

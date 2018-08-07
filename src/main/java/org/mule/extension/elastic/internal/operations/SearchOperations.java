@@ -3,7 +3,6 @@
  */
 package org.mule.extension.elastic.internal.operations;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -28,6 +27,8 @@ import org.mule.extension.elastic.api.SearchRequestConfiguration;
 import org.mule.extension.elastic.api.SearchSourceConfiguration;
 import org.mule.extension.elastic.api.querytype.Query;
 import org.mule.extension.elastic.internal.connection.ElasticsearchConnection;
+import org.mule.extension.elastic.internal.error.ElasticsearchError;
+import org.mule.extension.elastic.internal.error.exception.ElasticsearchException;
 import org.mule.extension.elastic.internal.utils.ElasticsearchUtils;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -60,20 +61,23 @@ public class SearchOperations {
      * @param searchSourceConfiguration
      *            Search source configuration to control the search behavior.
      * @return SearchResponse
-     * @throws IOException throws IOException
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     public SearchResponse search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
             @DisplayName("Query Type") @Placement(order = 1, tab = "Query") Query<? extends QueryBuilder> queryConfiguration,
-            @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration) throws IOException {
+            @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration) {
 
         SearchSourceBuilder searchSourceBuilder = searchSourceConfiguration != null ? searchSourceConfiguration.getSearchSourceBuilderOptions() : new SearchSourceBuilder();
         searchSourceBuilder.query(queryConfiguration.getQuery());
         SearchRequest searchRequest = searchRequestConfiguration.getSearchRequest();
         searchRequest.source(searchSourceBuilder);
 
-        return esConnection.getElasticsearchConnection().search(searchRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        try {
+            return esConnection.getElasticsearchConnection().search(searchRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+        }
     }
 
     /**
@@ -85,17 +89,21 @@ public class SearchOperations {
      * @param timeValue
      *            Set the scroll interval time keep the search context alive(minutes)
      * @return SearchResponse
-     * @throws IOException throws IOException
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     public SearchResponse searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last request") String scrollId,
-            @DisplayName("Keep alive time") @Summary("Keep the search context alive for the minutes time") long timeValue) throws IOException {
+            @DisplayName("Keep alive time") @Summary("Keep the search context alive for the minutes time") long timeValue) {
 
         SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
         scrollRequest.scroll(new Scroll(TimeValue.timeValueMinutes(timeValue)));
 
-        SearchResponse searchResponse = esConnection.getElasticsearchConnection().searchScroll(scrollRequest);
+        SearchResponse searchResponse;
+        try {
+            searchResponse = esConnection.getElasticsearchConnection().searchScroll(scrollRequest);
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+        }
         logger.debug("search response" + searchResponse);
         return searchResponse;
     }
@@ -109,35 +117,44 @@ public class SearchOperations {
      * @param jsonData
      *            JSON file or string containing Elasticsearch query configuration
      * @return Search Result
-     * @throws IOException throws IOException
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     public Result<String, StatusLine> searchUsingJsonData(@Connection ElasticsearchConnection esConnection, @Optional String index,
-            @ParameterGroup(name = "JSON Query") JsonData jsonData) throws IOException {
+            @ParameterGroup(name = "JSON Query") JsonData jsonData) {
 
         String resource = index != null ? index.trim() + "/_search" : "/_search";
         String jsonContent;
 
         if (jsonData.getJsonfile() != null) {
-            jsonContent = ElasticsearchUtils.readFileToString(jsonData.getJsonfile());
+            try {
+                jsonContent = ElasticsearchUtils.readFileToString(jsonData.getJsonfile());
+            } catch (Exception e) {
+                throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            }
         } else {
             jsonContent = jsonData.getJsonText();
         }
 
         HttpEntity entity = new NStringEntity(jsonContent, ContentType.APPLICATION_JSON);
         Map<String, String> params = Collections.singletonMap("pretty", "true");
-        Response response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(HttpGet.METHOD_NAME, "/" + resource, params, entity);
+        Response response;
+        try {
+            response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(HttpGet.METHOD_NAME, "/" + resource, params, entity);
 
-        logger.debug("RequestLine:" + response.getRequestLine());
-        String responseBody = EntityUtils.toString(response.getEntity());
+            logger.debug("RequestLine:" + response.getRequestLine());
+            String responseBody = EntityUtils.toString(response.getEntity());
 
-        return Result.<String, StatusLine>builder()
-                .output(responseBody)
-                .attributes(response.getStatusLine())
-                .length(response.getEntity().getContentLength())
-                .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
-                .build();
+            return Result.<String, StatusLine>builder()
+                    .output(responseBody)
+                    .attributes(response.getStatusLine())
+                    .length(response.getEntity().getContentLength())
+                    .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
+                    .build();
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+
+        }
     }
 
     /**
@@ -149,12 +166,15 @@ public class SearchOperations {
      * @param scrollId
      *            Scroll identifier to clear scroll
      * @return ClearScrollResponse
-     * @throws IOException throws IOException
      */
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
-    public ClearScrollResponse clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll ID") String scrollId) throws IOException {
+    public ClearScrollResponse clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll ID") String scrollId) {
         ClearScrollRequest clearScrollrequest = new ClearScrollRequest();
         clearScrollrequest.addScrollId(scrollId);
-        return esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest);
+        try {
+            return esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest);
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+        }
     }
 }
