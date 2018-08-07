@@ -5,7 +5,6 @@ package org.mule.extension.elastic.internal.operations;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.elasticsearch.action.admin.indices.alias.Alias;
@@ -23,6 +22,8 @@ import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.mule.extension.elastic.api.IndexOptions;
 import org.mule.extension.elastic.internal.connection.ElasticsearchConnection;
+import org.mule.extension.elastic.internal.error.ElasticsearchError;
+import org.mule.extension.elastic.internal.error.exception.ElasticsearchException;
 import org.mule.extension.elastic.internal.utils.ElasticsearchUtils;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -48,7 +49,7 @@ public class IndexOperations {
     /**
      * The createIndex Operation allows to instantiate an index.
      *
-	 * @param esConnection
+     * @param esConnection
      *            The Elasticsearch connection
      * @param index
      *            The index to create
@@ -56,7 +57,7 @@ public class IndexOperations {
      *            The index type to define index
      * @param indexSettings
      *            Settings for this index
-	 * @param indexSettingFile
+     * @param indexSettingFile
      *            Index Settings JSON
      * @param indexMapping
      *            The mapping for index type, provided as a JSON string
@@ -68,10 +69,10 @@ public class IndexOperations {
      *            Timeout to wait for the all the nodes to acknowledge the index creation
      * @param masterNodeTimeout
      *            Timeout to connect to the master node
-	 * @param waitForActiveShards
+     * @param waitForActiveShards
      *            The number of active shard copies to wait for before the create index
      * @return CreateIndexResponse
-     * @throws IOException throws IOException
+     * 
      */
 
     @MediaType(value = ANY, strict = false)
@@ -85,7 +86,7 @@ public class IndexOperations {
             @Placement(tab = "Optional Arguments", order = 6) @Optional @DisplayName("Index Alias") String indexAlias,
             @Placement(tab = "Optional Arguments", order = 7) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
             @Placement(tab = "Optional Arguments", order = 8) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Master Node Timeout") String masterNodeTimeout,
-            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards) throws IOException {
+            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards) {
 
         CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
 
@@ -102,7 +103,11 @@ public class IndexOperations {
         }
 
         if (jsonInputPath != null) {
-            createIndexReq.mapping(type, ElasticsearchUtils.readFileToString(jsonInputPath), XContentType.JSON);
+            try {
+                createIndexReq.mapping(type, ElasticsearchUtils.readFileToString(jsonInputPath), XContentType.JSON);
+            } catch (Exception e) {
+                throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            }
         } else if (indexMapping != null) {
             createIndexReq.mapping(type, indexMapping);
 
@@ -121,7 +126,12 @@ public class IndexOperations {
             createIndexReq.waitForActiveShards(waitForActiveShards);
         }
 
-        CreateIndexResponse createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonHeader());
+        CreateIndexResponse createIndexResp;
+        try {
+            createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonHeader());
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+        }
         logger.info("Create Index Response : ", createIndexResp);
         return createIndexResp;
     }
@@ -129,7 +139,7 @@ public class IndexOperations {
     /**
      * The Delete index operation allows to delete an existing index.
      *
-	 * @param esConnection
+     * @param esConnection
      *            The Elasticsearch connection
      * @param index
      *            The index to delete
@@ -137,17 +147,17 @@ public class IndexOperations {
      *            Timeout to wait for the all the nodes to acknowledge the index deletion
      * @param masterNodeTimeout
      *            Timeout to connect to the master node
-	 * @param indicesOpts
+     * @param indicesOpts
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
      * @return DeleteIndexResponse
-     * @throws IOException throws IOException
+     * 
      */
     @MediaType(value = ANY, strict = false)
     public DeleteIndexResponse deleteIndex(@Connection ElasticsearchConnection esConnection,
             @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
             @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") String masterNodeTimeout,
-            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpts) throws IOException {
+            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpts) {
 
         DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(index);
 
@@ -165,7 +175,12 @@ public class IndexOperations {
             deleteIndexRequest.indicesOptions(indOptions);
         }
 
-        DeleteIndexResponse deleteIndexResp = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        DeleteIndexResponse deleteIndexResp;
+        try {
+            deleteIndexResp = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+        }
         logger.info("Delete Index Response : " + deleteIndexResp);
         return deleteIndexResp;
     }
@@ -173,7 +188,7 @@ public class IndexOperations {
     /**
      * Open Index operation allow to open an index.
      *
-	 * @param esConnection
+     * @param esConnection
      *            The Elasticsearch connection
      * @param index
      *            The index to open
@@ -181,19 +196,19 @@ public class IndexOperations {
      *            Timeout to wait for the all the nodes to acknowledge the index is opened. It is the time to wait for an open index to become available to elasticsearch.
      * @param masterNodeTimeout
      *            Timeout to connect to the master node
-	 * @param waitForActiveShards
+     * @param waitForActiveShards
      *            The number of active shard copies to wait for
-	 * @param indicesOpts
+     * @param indicesOpts
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
      * @return OpenIndexResponse
-     * @throws IOException throws IOException
+     * 
      */
     @MediaType(value = ANY, strict = false)
     public OpenIndexResponse openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
             @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") String masterNodeTimeout,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
-            @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts) throws IOException {
+            @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts) {
 
         OpenIndexRequest openIndexRequest = new OpenIndexRequest(index);
 
@@ -216,7 +231,12 @@ public class IndexOperations {
             openIndexRequest.indicesOptions(indOptions);
         }
 
-        OpenIndexResponse openIndexResp = esConnection.getElasticsearchConnection().indices().open(openIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        OpenIndexResponse openIndexResp;
+        try {
+            openIndexResp = esConnection.getElasticsearchConnection().indices().open(openIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+        }
         logger.info("Open Index Response : " + openIndexResp);
         return openIndexResp;
 
@@ -226,7 +246,7 @@ public class IndexOperations {
      * A closed index has almost no overhead. It is used to close an Index. If you want to keep your data but save resources (memory/CPU), a good alternative to deleting an index
      * is to close them.
      *
-	 * @param esConnection
+     * @param esConnection
      *            The Elasticsearch connection
      * @param index
      *            The index to close
@@ -234,16 +254,16 @@ public class IndexOperations {
      *            Time to wait for the all the nodes to acknowledge if the index is closed
      * @param masterNodeTimeout
      *            Timeout to connect to the master node
-	 * @param indicesOpt
+     * @param indicesOpt
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
      * @return CloseIndexResponse
-     * @throws IOException throws IOException
+     * 
      */
     @MediaType(value = ANY, strict = false)
     public CloseIndexResponse closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
             @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") String masterNodeTimeout,
-            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt) throws IOException {
+            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt) {
 
         CloseIndexRequest closeIndexRequest = new CloseIndexRequest(index);
 
@@ -259,7 +279,12 @@ public class IndexOperations {
             closeIndexRequest.indicesOptions(indOptions);
         }
 
-        CloseIndexResponse closeIndexResp = esConnection.getElasticsearchConnection().indices().close(closeIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        CloseIndexResponse closeIndexResp;
+        try {
+            closeIndexResp = esConnection.getElasticsearchConnection().indices().close(closeIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+        }
         logger.info("Close Index Response : " + closeIndexResp);
         return closeIndexResp;
     }
