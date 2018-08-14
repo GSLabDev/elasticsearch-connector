@@ -39,7 +39,7 @@ public class IndexDocumentOptions {
         return jsonInputPath;
     }
 
-    public Map<String, Object> getIndexMapping() {
+    public Map<String, Object> getDocumentSource() {
         return documentSource;
     }
 

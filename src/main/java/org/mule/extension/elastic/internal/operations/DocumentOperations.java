@@ -107,7 +107,7 @@ public class DocumentOperations {
             if (inputSource.getJsonInputPath() != null) {
                 indexRequest = new IndexRequest(index, type, documentId).source(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
             } else {
-                indexRequest = new IndexRequest(index, type, documentId).source(inputSource.getIndexMapping());
+                indexRequest = new IndexRequest(index, type, documentId).source(inputSource.getDocumentSource());
             }
             if (routing != null) {
                 indexRequest.routing(routing);
@@ -359,7 +359,7 @@ public class DocumentOperations {
                 throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
             }
         } else {
-            updateRequest.doc(inputSource.getIndexMapping());
+            updateRequest.doc(inputSource.getDocumentSource());
 
         }
 
