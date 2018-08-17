@@ -116,4 +116,11 @@
 		</repository>
 	</repositories>
 
+	<scm>
+		<connection>scm:git@github.com:GSLabDev/elasticsearch-connector.git</connection>
+		<developerConnection>scm:git:git@github.com:GSLabDev/elasticsearch-connector.git</developerConnection>
+		<url>https://github.com/GSLabDev/elasticsearch-connector</url>
+		<tag>HEAD</tag>
+	</scm>
+
 </project>
