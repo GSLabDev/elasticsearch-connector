@@ -1,7 +1,13 @@
 # Different Elasticsearch operations that can be performed on Documents and Indices
 
 ### Introduction
-This usecase demonstrates the use of different document and index operations of Elasticsearch connector like Create Index, Index Document, Get Document, Update Document, Delete Document, Delete Index.
+This usecase demonstrates the use of different document and index operations of Elasticsearch connector as mentioned below and if successful returns the ***true*** message.
+1. Create Index
+2. Index Document
+3. Get Document
+4. Update Document
+5. Delete Document
+6. Delete Index
 
 ### Pre-requisites
 1. Elasticsearch running on HTTP
