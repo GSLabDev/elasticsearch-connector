@@ -35,7 +35,7 @@ Field Name        | Value
 -------------     | -------------
 elastic.host 	  | Host name or IP of Elasticsearch
 elastic.port      | Port on which Elasticsearch is running
-bulk.dataset      | Path to shakespeare dataset
+bulk.dataset      | Path to shakespeare dataset (Sample dataset has been included in resources folder.)
 
 4. In ***Anypoint Studio***, Right click on the ***project folder → Run As → Mule Application***.
 
