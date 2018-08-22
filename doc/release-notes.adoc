@@ -15,7 +15,7 @@ Read through this user guide to understand how to set up and configure a basic f
 link:elasticsearch-connector-user-manual.adoc[Elasticsearch Connector User Guide]
 
 
-== Elasticsearch connector V1.0.0 - August 22, 2018
+== Elasticsearch connector v1.0.0 - August 22, 2018
 
 === Version V1.0 Compatibility
 
