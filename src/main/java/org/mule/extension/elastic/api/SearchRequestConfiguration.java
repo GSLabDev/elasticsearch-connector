@@ -3,10 +3,6 @@
  */
 package org.mule.extension.elastic.api;
 
-import org.elasticsearch.action.search.SearchRequest;
-import org.elasticsearch.action.search.SearchType;
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.search.Scroll;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
@@ -17,6 +13,15 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
  *
  */
 public class SearchRequestConfiguration {
+
+    /**
+     * Search query method types
+     */
+    public enum SearchType {
+        DEFAULT,
+        DFS_QUERY_THEN_FETCH,
+        QUERY_THEN_FETCH;
+    }
 
     /**
      * Restricts the search request to an index
@@ -73,29 +78,4 @@ public class SearchRequestConfiguration {
         return scrollIntervalTime;
     }
 
-    public SearchRequest getSearchRequest() {
-        SearchRequest searchRequest = new SearchRequest();
-
-        if (getIndex() != null) {
-            searchRequest.indices(getIndex());
-        }
-
-        searchRequest.searchType(getSearchType() != null ? getSearchType() : SearchType.DEFAULT);
-
-        if (getType() != null) {
-            // Limits the request to a type
-            searchRequest.types(getType());
-        }
-
-        if (getRouting() != null) {
-            // Set a routing parameter
-            searchRequest.routing(getRouting());
-        }
-
-        if (getScrollIntervalTime() != 0) {
-            searchRequest.scroll(new Scroll(TimeValue.timeValueMinutes(getScrollIntervalTime())));
-        }
-
-        return searchRequest;
-    }
 }
