@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * 
  *         ElasticSearch search, search scroll, search using JSON data and clear search scroll operations
  */
-public class SearchOperations {
+public class SearchOperations extends BaseSearchOperation {
 
     private static final Logger logger = LoggerFactory.getLogger(SearchOperations.class);
 
@@ -68,9 +68,9 @@ public class SearchOperations {
             @DisplayName("Query Type") @Placement(order = 1, tab = "Query") Query<? extends QueryBuilder> queryConfiguration,
             @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration) {
 
-        SearchSourceBuilder searchSourceBuilder = searchSourceConfiguration != null ? searchSourceConfiguration.getSearchSourceBuilderOptions() : new SearchSourceBuilder();
+        SearchSourceBuilder searchSourceBuilder = searchSourceConfiguration != null ? getSearchSourceBuilderOptions(searchSourceConfiguration) : new SearchSourceBuilder();
         searchSourceBuilder.query(queryConfiguration.getQuery());
-        SearchRequest searchRequest = searchRequestConfiguration.getSearchRequest();
+        SearchRequest searchRequest = getSearchRequest(searchRequestConfiguration);
         searchRequest.source(searchSourceBuilder);
 
         try {
