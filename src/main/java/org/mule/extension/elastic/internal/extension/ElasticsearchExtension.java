@@ -3,15 +3,6 @@
  */
 package org.mule.extension.elastic.internal.extension;
 
-import org.mule.extension.elastic.api.querytype.CommonTermsQuery;
-import org.mule.extension.elastic.api.querytype.MatchAllQuery;
-import org.mule.extension.elastic.api.querytype.MatchPhrasePrefixQuery;
-import org.mule.extension.elastic.api.querytype.MatchPhraseQuery;
-import org.mule.extension.elastic.api.querytype.MatchQuery;
-import org.mule.extension.elastic.api.querytype.MultiMatchQuery;
-import org.mule.extension.elastic.api.querytype.Query;
-import org.mule.extension.elastic.api.querytype.QueryStringQuery;
-import org.mule.extension.elastic.api.querytype.SimpleQueryString;
 import org.mule.extension.elastic.internal.connection.provider.HttpConnectionProvider;
 import org.mule.extension.elastic.internal.connection.provider.HttpsConnectionProvider;
 import org.mule.extension.elastic.internal.error.ElasticsearchError;
@@ -20,6 +11,15 @@ import org.mule.extension.elastic.internal.operations.DocumentOperations;
 import org.mule.extension.elastic.internal.operations.IndexOperations;
 import org.mule.extension.elastic.internal.operations.InfoOperation;
 import org.mule.extension.elastic.internal.operations.SearchOperations;
+import org.mule.extension.elastic.internal.querytype.CommonTermsQuery;
+import org.mule.extension.elastic.internal.querytype.MatchAllQuery;
+import org.mule.extension.elastic.internal.querytype.MatchPhrasePrefixQuery;
+import org.mule.extension.elastic.internal.querytype.MatchPhraseQuery;
+import org.mule.extension.elastic.internal.querytype.MatchQuery;
+import org.mule.extension.elastic.internal.querytype.MultiMatchQuery;
+import org.mule.extension.elastic.internal.querytype.Query;
+import org.mule.extension.elastic.internal.querytype.QueryStringQuery;
+import org.mule.extension.elastic.internal.querytype.SimpleQueryString;
 import org.mule.runtime.api.meta.Category;
 import org.mule.runtime.extension.api.annotation.Extension;
 import org.mule.runtime.extension.api.annotation.Operations;
