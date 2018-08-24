@@ -5,11 +5,6 @@ package org.mule.extension.elastic.api;
 
 import java.util.List;
 
-import org.elasticsearch.common.unit.TimeValue;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.elasticsearch.search.sort.FieldSortBuilder;
-import org.elasticsearch.search.sort.ScoreSortBuilder;
-import org.elasticsearch.search.sort.SortOrder;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
@@ -19,6 +14,14 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
  *         Search source request configuration parameters
  */
 public class SearchSourceConfiguration {
+
+    /**
+     * Search sorting types
+     */
+    public enum SortOrder {
+        ASC,
+        DESC;
+    }
 
     /**
      * Retrieve search result from a certain offset
@@ -172,43 +175,5 @@ public class SearchSourceConfiguration {
 
     public boolean isVersion() {
         return version;
-    }
-
-    /**
-     * Create and returns the search source builder
-     * 
-     * @return SearchSourceBuilder
-     */
-    public SearchSourceBuilder getSearchSourceBuilderOptions() {
-
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
-
-        if (getTimeout() != 0) {
-            searchSourceBuilder.timeout(TimeValue.timeValueMinutes(getTimeout()));
-        }
-
-        if (getSortOrder() != null) {
-            searchSourceBuilder.sort(new ScoreSortBuilder().order(getSortOrder()));
-        }
-
-        if (getSortByFieldName() != null) {
-            searchSourceBuilder.sort(new FieldSortBuilder(getSortByFieldName()).order(getSortOrder() != null ? getSortOrder() : SortOrder.DESC));
-        }
-
-        searchSourceBuilder.fetchSource(isFetchSource());
-
-        if (getIncludeFields() != null && getExcludeFields() != null) {
-
-            searchSourceBuilder.fetchSource(getIncludeFields().toArray(new String[0]), getExcludeFields().toArray(new String[0]));
-        }
-
-        return searchSourceBuilder.from(getFrom())
-                .size(getSize())
-                .profile(isProfile())
-                .explain(isExplain())
-                .terminateAfter(getTerminateAfter())
-                .trackScores(isTrackScores())
-                .trackTotalHits(isTrackTotalHits())
-                .version(isVersion());
     }
 }

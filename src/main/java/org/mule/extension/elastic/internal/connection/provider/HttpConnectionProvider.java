@@ -3,8 +3,8 @@
  */
 package org.mule.extension.elastic.internal.connection.provider;
 
-import org.mule.extension.elastic.api.UserConfiguration;
 import org.mule.extension.elastic.internal.connection.ElasticsearchConnection;
+import org.mule.extension.elastic.internal.connection.provider.configuration.UserConfiguration;
 import org.mule.extension.elastic.internal.error.ElasticsearchError;
 import org.mule.extension.elastic.internal.error.exception.ElasticsearchException;
 import org.mule.runtime.extension.api.annotation.Alias;
