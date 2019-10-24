@@ -11,6 +11,7 @@ import org.mule.extension.elastic.internal.error.ElasticsearchError;
 import org.mule.extension.elastic.internal.error.exception.ElasticsearchException;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ public class InfoOperation {
      */
 
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Elasticsearch - Info")
     public MainResponse info(@Connection ElasticsearchConnection esConnection) {
         MainResponse response;
         try {

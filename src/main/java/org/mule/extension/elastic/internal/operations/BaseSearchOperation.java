@@ -13,6 +13,7 @@ import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.mule.extension.elastic.api.SearchRequestConfiguration;
 import org.mule.extension.elastic.api.SearchSourceConfiguration;
+import org.mule.runtime.extension.api.annotation.Ignore;
 
 public class BaseSearchOperation {
 
@@ -23,7 +24,8 @@ public class BaseSearchOperation {
      *            Search Request configuration parameters
      * @return SearchRequest
      */
-    public SearchRequest getSearchRequest(SearchRequestConfiguration searchRequestConfig) {
+    @Ignore
+    protected SearchRequest getSearchRequest(SearchRequestConfiguration searchRequestConfig) {
         SearchRequest searchRequest = new SearchRequest();
 
         if (searchRequestConfig.getIndex() != null) {
@@ -54,7 +56,8 @@ public class BaseSearchOperation {
      * 
      * @return SearchSourceBuilder
      */
-    public SearchSourceBuilder getSearchSourceBuilderOptions(SearchSourceConfiguration searchSourceConfig) {
+    @Ignore
+    protected SearchSourceBuilder getSearchSourceBuilderOptions(SearchSourceConfiguration searchSourceConfig) {
 
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 

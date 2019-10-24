@@ -76,7 +76,7 @@ public class DocumentOperations {
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh
+     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesnï¿½t force an immediate refresh, rather, it waits for a refresh
      *            to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
      * @param version
      *            Version number of the indexed document. It will control the version of the document the operation is intended to be executed against.
@@ -90,6 +90,7 @@ public class DocumentOperations {
      */
 
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Document - Index")
     public IndexResponse indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Type") String type, @Placement(order = 3) @DisplayName("Document Id") String documentId,
             @Placement(order = 4) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
@@ -174,6 +175,7 @@ public class DocumentOperations {
      */
 
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Document - Get")
     public String getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Type") String type, @Placement(order = 3) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Source retrieval") @Optional DocumentFetchSourceOptions fetchSourceContext,
@@ -252,7 +254,7 @@ public class DocumentOperations {
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh
+     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesnï¿½t force an immediate refresh, rather, it waits for a refresh
      *            to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
      * @param version
      *            Version number of the indexed document
@@ -261,6 +263,7 @@ public class DocumentOperations {
      * @return DeleteResponse
      */
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Document - Delete")
     public DeleteResponse deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Type") String type, @Placement(order = 3) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
@@ -319,7 +322,7 @@ public class DocumentOperations {
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn’t force an immediate refresh, rather, it waits for a refresh
+     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesnï¿½t force an immediate refresh, rather, it waits for a refresh
      *            to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
      * @param retryOnConflict
      *            How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update
@@ -337,6 +340,7 @@ public class DocumentOperations {
      * @return UpdateResponse
      */
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Document - Update")
     public UpdateResponse updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Type") String type, @Placement(order = 3) @DisplayName("Document Id") String documentId,
             @Placement(order = 4) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
@@ -412,6 +416,7 @@ public class DocumentOperations {
      */
 
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Document - Bluk")
     public Response bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
             @ParameterGroup(name = "Input data") JsonData jsonData) {
         String resource = type != null ? "/" + type + "/_bulk" : "/_bulk";

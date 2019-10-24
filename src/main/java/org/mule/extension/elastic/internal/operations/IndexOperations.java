@@ -76,6 +76,7 @@ public class IndexOperations {
      */
 
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Index - Create")
     public CreateIndexResponse createIndex(@Connection ElasticsearchConnection esConnection,
             @Placement(order = 1) @DisplayName("Index") @Summary("The index to create") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @DisplayName("Index Settings") Map<String, String> indexSettings,
@@ -153,6 +154,7 @@ public class IndexOperations {
      * 
      */
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Index - Delete")
     public DeleteIndexResponse deleteIndex(@Connection ElasticsearchConnection esConnection,
             @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
@@ -204,6 +206,7 @@ public class IndexOperations {
      * 
      */
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Index - Open")
     public OpenIndexResponse openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
             @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") String masterNodeTimeout,
@@ -260,6 +263,7 @@ public class IndexOperations {
      * 
      */
     @MediaType(value = ANY, strict = false)
+    @DisplayName("Index - Close")
     public CloseIndexResponse closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
             @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") String masterNodeTimeout,

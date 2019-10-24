@@ -64,6 +64,7 @@ public class SearchOperations extends BaseSearchOperation {
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @DisplayName("Search - Query")
     public SearchResponse search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
             @DisplayName("Query Type") @Placement(order = 1, tab = "Query") Query<? extends QueryBuilder> queryConfiguration,
             @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration) {
@@ -92,6 +93,7 @@ public class SearchOperations extends BaseSearchOperation {
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @DisplayName("Search - Scroll")
     public SearchResponse searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last request") String scrollId,
             @DisplayName("Keep alive time") @Summary("Keep the search context alive for the minutes time") long timeValue) {
 
@@ -120,6 +122,7 @@ public class SearchOperations extends BaseSearchOperation {
      */
 
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @DisplayName("Search - JSON Query")
     public Result<String, StatusLine> searchUsingJsonData(@Connection ElasticsearchConnection esConnection, @Optional String index,
             @ParameterGroup(name = "JSON Query") JsonData jsonData) {
 
@@ -168,6 +171,7 @@ public class SearchOperations extends BaseSearchOperation {
      * @return ClearScrollResponse
      */
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @DisplayName("Search - Clear Scroll")
     public ClearScrollResponse clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll ID") String scrollId) {
         ClearScrollRequest clearScrollrequest = new ClearScrollRequest();
         clearScrollrequest.addScrollId(scrollId);
