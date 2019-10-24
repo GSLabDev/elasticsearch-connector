@@ -6,12 +6,11 @@
  */
 package org.mule.extension.elastic.internal.utils;
 
-import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.http.message.BasicHeader;
+import org.mule.runtime.core.api.util.IOUtils;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
@@ -28,7 +27,7 @@ public class ElasticsearchUtils {
     }
 
     public static String readFileToString(String filePath) throws IOException {
-        return FileUtils.readFileToString(new File(filePath));
+        return IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath));
     }
 
 }
