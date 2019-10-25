@@ -1,0 +1,9 @@
+target/*
+bin/*
+.mule/*
+.project
+.classpath
+
+/bin/
+/target/
+mule-artifact.json

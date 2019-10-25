@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2003-2017, Great Software Laboratory Pvt. Ltd. The software in this package is published under the terms of the Commercial Free Software license V.1, a copy of which has been included with this distribution in the LICENSE.md file.
  */
-package org.mule.extension.elastic.internal.querytype;
+package org.mule.extension.elastic.api.querytype;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
 /**
  * @author Great Software Laboratory Pvt. Ltd.
  */
-public class MultiMatchQuery extends BaseMatchQuery implements Query<MultiMatchQueryBuilder> {
+public class MultiMatchQuery extends BaseMatchQuery implements Query {
 
     // Declared here because Mule SDK throwing error: Can not set **Type field to java.lang.String
     public enum MultiMatchQueryType {

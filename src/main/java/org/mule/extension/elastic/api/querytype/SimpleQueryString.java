@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2003-2017, Great Software Laboratory Pvt. Ltd. The software in this package is published under the terms of the Commercial Free Software license V.1, a copy of which has been included with this distribution in the LICENSE.md file.
  */
-package org.mule.extension.elastic.internal.querytype;
+package org.mule.extension.elastic.api.querytype;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
@@ -13,7 +13,7 @@ import org.elasticsearch.index.query.SimpleQueryStringFlag;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
-public class SimpleQueryString extends BaseQueryString implements Query<SimpleQueryStringBuilder> {
+public class SimpleQueryString extends BaseQueryString implements Query {
 
     /**
      * use type org.elasticsearch.index.query.SimpleQueryStringFlag instead of SimpleQueryFlag

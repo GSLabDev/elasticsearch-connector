@@ -25,10 +25,10 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.mule.extension.elastic.api.JsonData;
 import org.mule.extension.elastic.api.SearchRequestConfiguration;
 import org.mule.extension.elastic.api.SearchSourceConfiguration;
+import org.mule.extension.elastic.api.querytype.Query;
 import org.mule.extension.elastic.internal.connection.ElasticsearchConnection;
 import org.mule.extension.elastic.internal.error.ElasticsearchError;
 import org.mule.extension.elastic.internal.error.exception.ElasticsearchException;
-import org.mule.extension.elastic.internal.querytype.Query;
 import org.mule.extension.elastic.internal.utils.ElasticsearchUtils;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -66,7 +66,7 @@ public class SearchOperations extends BaseSearchOperation {
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     @DisplayName("Search - Query")
     public SearchResponse search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
-            @DisplayName("Query Type") @Placement(order = 1, tab = "Query") Query<? extends QueryBuilder> queryConfiguration,
+            @DisplayName("Query Type") @Placement(order = 1, tab = "Query") Query queryConfiguration,
             @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration) {
 
         SearchSourceBuilder searchSourceBuilder = searchSourceConfiguration != null ? getSearchSourceBuilderOptions(searchSourceConfiguration) : new SearchSourceBuilder();
