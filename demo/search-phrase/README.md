@@ -1,4 +1,4 @@
-# Search for the text from particular dataset
+﻿# Search for the text from particular dataset
 
 ### Introduction
 Elasticsearch is preferred when there is a need of doing a lot of text search, where traditional RDBMS databases are not performing really well (poor configuration, acts as a black-box, poor performance). Elasticsearch is highly customizable, extendable through plugins. 
@@ -9,22 +9,20 @@ Different search type options like 'Query and Fetch', 'DFS query then Fetch' and
 Use the Choice connector to switch between the different query types depending on the condition variable value in the set variable component.
 The query type is sent through query parameter in URL which is captured in set variable component in the flow.
 
-
 ### Pre-requisites
 1. Elasticsearch running on HTTP
-2. Mule Runtime 4.1.1 
+2. Mule Runtime 4.2.1 
 3. Anypoint studio 7
 
 ### Preparation
-1. To import this demo project in Anypoint Studio, go to ***File → Import…​ → Anypoint Studio Project from File System***, select the demo project root and choose as server runtime ***Mule Server 4.1.1 EE*** 
+1. To import this demo project in Anypoint Studio, go to ***File → Import…​ → Anypoint Studio Project from File System***, select the demo project root and choose as server runtime ***Mule Server 4.2.1 EE*** 
 2. Once imported, in ***src/main/resources/*** you will find ***mule-application.properties*** file, this contains all required properties to make the demo work. It will look like:
 
 ```
 #ElasticSearch Host configuration
-elastic.host=
-elastic.port=
+elastic.host=<PROVIDE ELASTIC SEARCH SERVER HOST>
+elastic.port=9200
 
-#Index parameter for use case 2
 search.index=shakespeare
 searchSource.from=0
 searchSource.size=100

@@ -1,4 +1,4 @@
-# Different Elasticsearch operations that can be performed on Documents and Indices
+﻿# Different Elasticsearch operations that can be performed on Documents and Indices
 
 ### Introduction
 This usecase demonstrates the use of different document and index operations of Elasticsearch connector as mentioned below and if successful returns the ***true*** message.
@@ -11,24 +11,26 @@ This usecase demonstrates the use of different document and index operations of 
 
 ### Pre-requisites
 1. Elasticsearch running on HTTP
-2. Mule Runtime 4.1.1 
+2. Mule Runtime 4.2.1 
 3. Anypoint studio 7
 
 ### Preparation
-1. To import this demo project in Anypoint Studio, go to ***File → Import…​ → Anypoint Studio Project from File System***, select the demo project root and choose as server runtime ***Mule Server 4.1.1 EE*** 
+1. To import this demo project in Anypoint Studio, go to ***File → Import…​ → Anypoint Studio Project from File System***, select the demo project root and choose as server runtime ***Mule Server 4.2.1 EE*** 
 2. Once imported, in ***src/main/resources/*** you will find ***mule-application.properties*** file, this contains all required properties to make the demo work. It will look like:
 
 ```
 #ElasticSearch Host configuration
-elastic.host=
-elastic.port=
+elastic.host=<PROVIDE ELASTIC SEARCH SERVER HOST>
+elastic.port=9200
+
+#Index Parameter for use case 1
+index=applicationd1
 
 #Document Parameters
-index=demoapplication
-document.type=doc
+document.type=_doc
 document.id=1
-document.path= 
-document.updatepath= 
+document.path= indexDocument.json
+document.updatepath= UpdateIndexDocument.json
 ```
 
 3. Fill empty property with the required value:
@@ -36,9 +38,7 @@ document.updatepath=
 Field Name        | Value
 -------------     | -------------
 elastic.host 	  | Host name or IP of Elasticsearch
-elastic.port      | Port on which Elasticsearch is running
-document.path	  | Absolute path to indexDocument.json available in src/main/resources/ directory
-document.updatepath | Absolute path to UpdateIndexDocument.json available in src/main/resources/ directory
+elastic.port      | Port on which Elasticsearch server is running
 
 4. In ***Anypoint Studio***, Right click in the ***project folder → Run As → Mule Application***
 

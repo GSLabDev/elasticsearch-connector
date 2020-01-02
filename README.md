@@ -1,10 +1,10 @@
-# README.md
+﻿# README.md
 
 ## Elasticsearch Anypoint™ Connector
 The Elasticsearch connector allows you to access the Elasticsearch REST API through Anypoint Platform. Elasticsearch is a distributed, open source search and analytics engine, designed for horizontal scalability, reliability, and easy management. The connector exposes Elasticsearch operations by executing their API calls as per configuration. It supports HTTP and HTTPS connections to Elasticsearch instance.
 
 ## Supported Mule runtime versions
-Mule 4.1.1
+Mule 4.2.1
 
 ## Supported Elasticsearch versions
 Elasticsearch version 6.2.2 or above
