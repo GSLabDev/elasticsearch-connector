@@ -9,9 +9,9 @@
         see them in the mule_ee.log file. -->
 
     <Appenders>
-        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}documentindexoperations.log" 
-                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}documentindexoperations-%i.log">
-            <PatternLayout pattern="%-5p %d [%t] %X{correlationId}%c: %m%n" />
+        <RollingFile name="file" fileName="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}document-index-operations.log" 
+                 filePattern="${sys:mule.home}${sys:file.separator}logs${sys:file.separator}document-index-operations-%i.log">
+            <PatternLayout pattern="%-5p %d [%t] [event: %X{correlationId}] %c: %m%n" />
             <SizeBasedTriggeringPolicy size="10 MB" />
             <DefaultRolloverStrategy max="10"/>
         </RollingFile>
@@ -23,9 +23,8 @@
         <AsyncLogger name="org.mule.service.http" level="WARN"/>
         <AsyncLogger name="org.mule.extension.http" level="WARN"/>
     
-        <!-- Mule classes -->        
-        <AsyncLogger name="org.mule" level="INFO"/>
-        <AsyncLogger name="com.mulesoft" level="INFO"/>
+		<!-- Mule logger -->        
+        <AsyncLogger name="org.mule.runtime.core.internal.processor.LoggerMessageProcessor" level="INFO"/>
  
         <AsyncRoot level="INFO">
             <AppenderRef ref="file" />
