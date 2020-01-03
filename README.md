@@ -7,7 +7,7 @@ The Elasticsearch connector allows you to access the Elasticsearch REST API thro
 Mule 4.2.1
 
 ## Supported Elasticsearch versions
-Elasticsearch version 6.2.2 or above
+Elasticsearch version 6. Tested on Elasticsearch version 6.2.2
 
 ## Installation 
 
