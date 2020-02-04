@@ -16,7 +16,7 @@
 	</parent>
 
 	<properties>
-		<elasticsearchVersion>6.2.3</elasticsearchVersion>
+		<elasticsearchVersion>7.5.2</elasticsearchVersion>
 		<jsonSimpleVersion>1.1.1</jsonSimpleVersion>
 		<commonsioVersion>2.4</commonsioVersion>
 		<muleServiceVersion>1.1.0</muleServiceVersion>
