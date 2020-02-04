@@ -13,7 +13,7 @@ import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
 import org.elasticsearch.action.admin.indices.create.CreateIndexRequest;
 import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
 import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.elasticsearch.action.support.IndicesOptions;
@@ -156,7 +156,7 @@ public class IndexOperations {
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Index - Delete")
-    public DeleteIndexResponse deleteIndex(@Connection ElasticsearchConnection esConnection,
+    public AcknowledgedResponse deleteIndex(@Connection ElasticsearchConnection esConnection,
             @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") String timeout,
             @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") String masterNodeTimeout,
@@ -178,14 +178,14 @@ public class IndexOperations {
             deleteIndexRequest.indicesOptions(indOptions);
         }
 
-        DeleteIndexResponse deleteIndexResp;
+        AcknowledgedResponse response;
         try {
-            deleteIndexResp = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+            response = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
-        logger.info("Delete Index Response : " + deleteIndexResp);
-        return deleteIndexResp;
+        logger.info("Delete Index Response : " + response);
+        return response;
     }
 
     /**

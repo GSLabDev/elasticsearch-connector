@@ -8,8 +8,10 @@ package com.mulesoft.connectors.elasticsearch.internal.utils;
 
 import java.io.IOException;
 
+import java.util.function.Consumer;
 import org.apache.http.HttpHeaders;
 import org.apache.http.message.BasicHeader;
+import org.elasticsearch.client.RequestOptions;
 import org.mule.runtime.core.api.util.IOUtils;
 
 /**
@@ -24,6 +26,17 @@ public class ElasticsearchUtils {
 
     public static BasicHeader getContentTypeJsonHeader() {
         return new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json");
+    }
+
+    public static RequestOptions getContentTypeJsonRequestOption() {
+        RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder().addHeader("Content-Type", "application/json");
+        return builder.build();
+    }
+
+    public static <T> void ifPresent(T value, Consumer<T> consumer) {
+        if (value != null) {
+            consumer.accept(value);
+        }
     }
 
     public static String readFileToString(String filePath) throws IOException {
