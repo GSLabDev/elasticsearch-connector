@@ -5,7 +5,7 @@ package com.mulesoft.connectors.elasticsearch.internal.operations;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 
-import org.elasticsearch.action.main.MainResponse;
+import org.elasticsearch.client.core.MainResponse;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchError;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
+import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 public class InfoOperation {
 
@@ -31,13 +32,12 @@ public class InfoOperation {
      * @return MainResponse Cluster information
      * 
      */
-
     @MediaType(value = ANY, strict = false)
     @DisplayName("Elasticsearch - Info")
     public MainResponse info(@Connection ElasticsearchConnection esConnection) {
         MainResponse response;
         try {
-            response = esConnection.getElasticsearchConnection().info();
+            response = esConnection.getElasticsearchConnection().info(ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
