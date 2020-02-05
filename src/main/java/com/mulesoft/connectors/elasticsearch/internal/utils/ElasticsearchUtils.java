@@ -32,6 +32,11 @@ public class ElasticsearchUtils {
         RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder().addHeader("Content-Type", "application/json");
         return builder.build();
     }
+    
+    public static RequestOptions getAcceptJsonRequestOption() {
+        RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder().addHeader("Accept", "application/json");
+        return builder.build();
+    }
 
     public static <T> void ifPresent(T value, Consumer<T> consumer) {
         if (value != null) {

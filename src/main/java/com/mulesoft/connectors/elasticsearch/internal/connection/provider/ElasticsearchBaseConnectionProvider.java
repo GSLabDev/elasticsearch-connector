@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
+import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
@@ -59,7 +60,7 @@ public abstract class ElasticsearchBaseConnectionProvider implements CachedConne
     @Override
     public ConnectionValidationResult validate(ElasticsearchConnection connection) {
         try {
-            if (connection.getElasticsearchConnection().ping(new BasicHeader(HttpHeaders.ACCEPT, "application/json"))) {
+            if (connection.getElasticsearchConnection().ping(ElasticsearchUtils.getAcceptJsonRequestOption())) {
                 return ConnectionValidationResult.success();
             }
             return ConnectionValidationResult.failure("Ping to ElasticSearch instance is unsuccessful", new IOException("Unable to connect to " + getHost() + ":" + getPort()));
