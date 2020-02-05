@@ -25,6 +25,7 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.Strings;
+import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.VersionType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
@@ -70,8 +71,8 @@ public class DocumentOperations {
      *            Get the JSON input file path or index mapping.
      * @param routing
      *            Routing is used to determine in which shard the document will reside in
-     * @param timeout
-     *            Timeout to wait for primary shard to become available
+     * @param timeoutInSec
+     *            Timeout in seconds to wait for primary shard to become available
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
@@ -94,7 +95,7 @@ public class DocumentOperations {
     public IndexResponse indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout") @Optional @Summary("Timeout to wait for primary shard") String timeout,
+            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
@@ -108,9 +109,12 @@ public class DocumentOperations {
             } else {
                 indexRequest = new IndexRequest(index).id(documentId).source(inputSource.getDocumentSource());
             }
+            
+            if (timeoutInSec != 0) {
+                indexRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
+            }
 
             ifPresent(routing, routingValue -> indexRequest.routing(routingValue));
-            ifPresent(timeout, timeoutValue -> indexRequest.timeout(timeoutValue));
             ifPresent(refreshPolicy, refreshPolicyValue -> indexRequest.setRefreshPolicy(refreshPolicyValue));
             ifPresent(version, versionValue -> indexRequest.version(versionValue));
             ifPresent(versionType, versionTypeValue -> indexRequest.versionType(versionTypeValue));
@@ -211,8 +215,8 @@ public class DocumentOperations {
      *            ID of the document
      * @param routing
      *            Routing is used to determine in which shard the document will reside in
-     * @param timeout
-     *            Time to wait for primary shard to become available
+     * @param timeoutInSec
+     *            Time in seconds to wait for primary shard to become available
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
@@ -230,15 +234,18 @@ public class DocumentOperations {
     public DeleteResponse deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout") @Optional @Summary("Timeout to wait for primary shard") String timeout,
+            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType) {
 
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
+        if (timeoutInSec != 0) {
+            deleteRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
+        }
+        
         ifPresent(routing, routingValue -> deleteRequest.routing(routingValue));
-        ifPresent(timeout, timeoutValue -> deleteRequest.timeout(timeoutValue));
         ifPresent(refreshPolicy, refreshPolicyValue -> deleteRequest.setRefreshPolicy(refreshPolicyValue));
         ifPresent(version, versionValue -> deleteRequest.version(versionValue));
         ifPresent(versionType, versionTypeValue -> deleteRequest.versionType(versionTypeValue));
@@ -266,8 +273,8 @@ public class DocumentOperations {
      *            Routing is used to determine in which shard the document will reside in
      * @param inputSource
      *            Input document source
-     * @param timeout
-     *            Time to wait for primary shard to become available
+     * @param timeoutInSec
+     *            Time in seconds to wait for primary shard to become available
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
@@ -294,7 +301,7 @@ public class DocumentOperations {
     public UpdateResponse updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout") @Optional @Summary("Timeout to wait for primary shard") String timeout,
+            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Retry on Conflict") @Optional(defaultValue = "0") @Summary("How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update operation") int retryOnConflict,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Fetch Source") @Optional(defaultValue = "false") boolean fetchSource,
@@ -314,8 +321,11 @@ public class DocumentOperations {
             updateRequest.doc(inputSource.getDocumentSource());
         }
 
+        if (timeoutInSec != 0) {
+            updateRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
+        }
+        
         ifPresent(routing, routingValue -> updateRequest.routing(routingValue));
-        ifPresent(timeout, timeoutValue -> updateRequest.timeout(timeoutValue));
         ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue));
         ifPresent(retryOnConflict, retryOnConflictValue -> updateRequest.retryOnConflict(retryOnConflictValue));
 

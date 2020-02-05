@@ -67,10 +67,10 @@ public class IndexOperations {
      *            The alias of the index
      * @param jsonInputPath
      *            Path of the JSON file. The whole source including all of its sections (mappings, settings and aliases) can be provided in this json file.
-     * @param timeout
-     *            Timeout to wait for the all the nodes to acknowledge the index creation
-     * @param masterNodeTimeout
-     *            Timeout to connect to the master node
+     * @param timeoutInSec
+     *            Timeout in seconds to wait for the all the nodes to acknowledge the index creation
+     * @param masterNodeTimeoutInSec
+     *            Timeout in seconds to connect to the master node
      * @param waitForActiveShards
      *            The number of active shard copies to wait for before the create index
      * @return CreateIndexResponse
@@ -85,8 +85,8 @@ public class IndexOperations {
             @Placement(tab = "Optional Arguments", order = 4) @Optional @DisplayName("Index Mapping") Map<String, Object> indexMapping,
             @Placement(tab = "Optional Arguments", order = 5) @Optional @DisplayName("JSON Input file path for mapping") @Summary("The whole source including all of its sections (mappings, settings and aliases) can be provided in this file") String jsonInputPath,
             @Placement(tab = "Optional Arguments", order = 6) @Optional @DisplayName("Index Alias") String indexAlias,
-            @Placement(tab = "Optional Arguments", order = 7) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") Long timeout,
-            @Placement(tab = "Optional Arguments", order = 8) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Master Node Timeout") Long masterNodeTimeout,
+            @Placement(tab = "Optional Arguments", order = 7) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 8) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Master Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards) {
 
         CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
@@ -111,9 +111,13 @@ public class IndexOperations {
         }
 
         ifPresent(indexAlias, indexAliasValue -> createIndexReq.alias(new Alias(indexAliasValue)));
-        ifPresent(timeout, timeoutValue -> createIndexReq.setTimeout(TimeValue.timeValueMinutes(timeoutValue)));
-        ifPresent(masterNodeTimeout, masterNodeTimeoutValue -> createIndexReq.setMasterTimeout(TimeValue.timeValueMinutes(masterNodeTimeoutValue)));
-
+        if (timeoutInSec != 0) {
+            createIndexReq.setTimeout(TimeValue.timeValueSeconds(timeoutInSec));
+        }
+        if (masterNodeTimeoutInSec != 0) {
+            createIndexReq.setMasterTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
+        }
+        
         if (waitForActiveShards != 0) {
             createIndexReq.waitForActiveShards(ActiveShardCount.from(waitForActiveShards));
         }
@@ -135,10 +139,10 @@ public class IndexOperations {
      *            The Elasticsearch connection
      * @param index
      *            The index to delete
-     * @param timeout
-     *            Timeout to wait for the all the nodes to acknowledge the index deletion
-     * @param masterNodeTimeout
-     *            Timeout to connect to the master node
+     * @param timeoutInSec
+     *            Timeout in seconds to wait for the all the nodes to acknowledge the index deletion
+     * @param masterNodeTimeoutInSec
+     *            Timeout in seconds to connect to the master node
      * @param indicesOpts
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
      * @return DeleteIndexResponse
@@ -148,15 +152,19 @@ public class IndexOperations {
     @DisplayName("Index - Delete")
     public AcknowledgedResponse deleteIndex(@Connection ElasticsearchConnection esConnection,
             @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
-            @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") Long timeout,
-            @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") Long masterNodeTimeout,
+            @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpts) {
 
         DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(index);
 
-        ifPresent(timeout, timeoutValue -> deleteIndexRequest.timeout(TimeValue.timeValueMinutes(timeoutValue)));
-        ifPresent(masterNodeTimeout, masterNodeTimeoutValue -> deleteIndexRequest.masterNodeTimeout(TimeValue.timeValueMinutes(masterNodeTimeoutValue)));
-
+        if (timeoutInSec != 0) {
+            deleteIndexRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
+        }
+        if (masterNodeTimeoutInSec != 0) {
+            deleteIndexRequest.masterNodeTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
+        }
+        
         if (indicesOpts != null) {
             IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpts.isIgnoreUnavailable(), indicesOpts.isAllowNoIndices(), indicesOpts.isExpandToOpenIndices(),
                     indicesOpts.isExpandToClosedIndices(), indicesOpts.isAllowAliasesToMultipleIndices(), indicesOpts.isForbidClosedIndices(), indicesOpts.isIgnoreAliases(),
@@ -181,10 +189,10 @@ public class IndexOperations {
      *            The Elasticsearch connection
      * @param index
      *            The index to open
-     * @param timeout
-     *            Timeout to wait for the all the nodes to acknowledge the index is opened. It is the time to wait for an open index to become available to elasticsearch.
-     * @param masterNodeTimeout
-     *            Timeout to connect to the master node
+     * @param timeoutInSec
+     *            Timeout in seconds to wait for the all the nodes to acknowledge the index is opened. It is the time to wait for an open index to become available to elasticsearch.
+     * @param masterNodeTimeoutInSec
+     *            Timeout in seconds to connect to the master node
      * @param waitForActiveShards
      *            The number of active shard copies to wait for
      * @param indicesOpts
@@ -195,16 +203,20 @@ public class IndexOperations {
     @MediaType(value = ANY, strict = false)
     @DisplayName("Index - Open")
     public OpenIndexResponse openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
-            @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") Long timeout,
-            @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") Long masterNodeTimeout,
+            @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
             @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts) {
 
         OpenIndexRequest openIndexRequest = new OpenIndexRequest(index);
 
-        ifPresent(timeout, timeoutValue -> openIndexRequest.timeout(TimeValue.timeValueMinutes(timeoutValue)));
-        ifPresent(masterNodeTimeout, masterNodeTimeoutValue -> openIndexRequest.masterNodeTimeout(TimeValue.timeValueMinutes(masterNodeTimeoutValue)));
-
+        if (timeoutInSec != 0) {
+            openIndexRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
+        }
+        if (masterNodeTimeoutInSec != 0) {
+            openIndexRequest.masterNodeTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
+        }
+        
         if (waitForActiveShards != 0) {
             openIndexRequest.waitForActiveShards(waitForActiveShards);
         }
@@ -235,10 +247,10 @@ public class IndexOperations {
      *            The Elasticsearch connection
      * @param index
      *            The index to close
-     * @param timeout
-     *            Time to wait for the all the nodes to acknowledge if the index is closed
-     * @param masterNodeTimeout
-     *            Timeout to connect to the master node
+     * @param timeoutInSec
+     *            Timeout in seconds to wait for the all the nodes to acknowledge if the index is closed
+     * @param masterNodeTimeoutInSec
+     *            Timeout in seconds to connect to the master node
      * @param indicesOpt
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
      * @return CloseIndexResponse
@@ -247,14 +259,18 @@ public class IndexOperations {
     @MediaType(value = ANY, strict = false)
     @DisplayName("Index - Close")
     public CloseIndexResponse closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
-            @Placement(tab = "Optional Arguments", order = 1) @Optional @Summary("Timeout to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout") Long timeout,
-            @Placement(tab = "Optional Arguments", order = 2) @Optional @Summary("Timeout to connect to the master node") @DisplayName("Mater Node Timeout") Long masterNodeTimeout,
+            @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt) {
 
         CloseIndexRequest closeIndexRequest = new CloseIndexRequest(index);
 
-        ifPresent(timeout, timeoutValue -> closeIndexRequest.setTimeout(TimeValue.timeValueMinutes(timeoutValue)));
-        ifPresent(masterNodeTimeout, masterNodeTimeoutValue -> closeIndexRequest.setMasterTimeout(TimeValue.timeValueMinutes(masterNodeTimeoutValue)));
+        if (timeoutInSec != 0) {
+            closeIndexRequest.setTimeout(TimeValue.timeValueSeconds(timeoutInSec));
+        }
+        if (masterNodeTimeoutInSec != 0) {
+            closeIndexRequest.setMasterTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
+        }
         
         if (indicesOpt != null) {
             IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpt.isIgnoreUnavailable(), indicesOpt.isAllowNoIndices(), indicesOpt.isExpandToOpenIndices(),
