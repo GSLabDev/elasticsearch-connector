@@ -31,6 +31,9 @@ public class IndexOptions {
 
     @Parameter
     private boolean ignoreAliases;
+    
+    @Parameter
+    private boolean ignoreThrottled;
 
     public boolean isIgnoreUnavailable() {
         return ignoreUnavailable;
@@ -60,4 +63,7 @@ public class IndexOptions {
         return ignoreAliases;
     }
 
+    public boolean isIgnoreThrottled() {
+        return ignoreThrottled;
+    }
 }

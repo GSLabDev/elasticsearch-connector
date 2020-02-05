@@ -75,8 +75,9 @@ public class DocumentOperations {
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a refresh
-     *            to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a
+     *            refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request
+     *            returns.
      * @param version
      *            Version number of the indexed document. It will control the version of the document the operation is intended to be executed against.
      * @param versionType
@@ -91,8 +92,7 @@ public class DocumentOperations {
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Index")
     public IndexResponse indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Document Id") String documentId,
-            @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
+            @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout") @Optional @Summary("Timeout to wait for primary shard") String timeout,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
@@ -216,8 +216,9 @@ public class DocumentOperations {
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a refresh
-     *            to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a
+     *            refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request
+     *            returns.
      * @param version
      *            Version number of the indexed document
      * @param versionType
@@ -235,7 +236,7 @@ public class DocumentOperations {
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType) {
 
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
-        
+
         ifPresent(routing, routingValue -> deleteRequest.routing(routingValue));
         ifPresent(timeout, timeoutValue -> deleteRequest.timeout(timeoutValue));
         ifPresent(refreshPolicy, refreshPolicyValue -> deleteRequest.setRefreshPolicy(refreshPolicyValue));
@@ -270,8 +271,9 @@ public class DocumentOperations {
      * @param refreshPolicy
      *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
      *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a refresh
-     *            to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request returns.
+     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a
+     *            refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request
+     *            returns.
      * @param retryOnConflict
      *            How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update
      *            operation
@@ -290,8 +292,7 @@ public class DocumentOperations {
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Update")
     public UpdateResponse updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Document Id") String documentId,
-            @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
+            @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout") @Optional @Summary("Timeout to wait for primary shard") String timeout,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
@@ -317,7 +318,7 @@ public class DocumentOperations {
         ifPresent(timeout, timeoutValue -> updateRequest.timeout(timeoutValue));
         ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue));
         ifPresent(retryOnConflict, retryOnConflictValue -> updateRequest.retryOnConflict(retryOnConflictValue));
-        
+
         if (version != 0L) {
             updateRequest.version(version);
         }
