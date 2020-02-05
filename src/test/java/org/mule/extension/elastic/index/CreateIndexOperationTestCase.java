@@ -5,7 +5,7 @@ package org.mule.extension.elastic.index;
 
 import static org.junit.Assert.assertTrue;
 
-import org.elasticsearch.action.admin.indices.create.CreateIndexResponse;
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.junit.After;
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;

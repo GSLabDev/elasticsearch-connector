@@ -5,7 +5,7 @@ package org.mule.extension.elastic.index;
 
 import static org.junit.Assert.assertTrue;
 
-import org.elasticsearch.action.admin.indices.close.CloseIndexResponse;
+import org.elasticsearch.client.indices.CloseIndexResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

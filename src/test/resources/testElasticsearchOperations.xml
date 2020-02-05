@@ -29,7 +29,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/createIndex" />
 		<elasticsearch:create-index doc:name="Create index"
 			doc:id="6c3c411e-1113-4d1b-8df8-e74b37022c40" config-ref="${elastic.config}"
-			index="${elasticsearch.index}" type="doc" indexAlias="bankIndex" timeout="15s" masterNodeTimeout="10s" waitForActiveShards="1">
+			index="${elasticsearch.index}" indexAlias="bankIndex" timeoutInSec="15" masterNodeTimeoutInSec="10" waitForActiveShards="1">
 			<elasticsearch:index-settings >
 				<elasticsearch:index-setting key="index.number_of_shards" value="3" />
 				<elasticsearch:index-setting key="index.number_of_replicas" value="2" />
@@ -45,7 +45,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/deleteIndex" />
 		<elasticsearch:delete-index doc:name="Delete index"
 			doc:id="3b1ba37c-a425-45aa-8d1d-e2546205a87f" config-ref="${elastic.config}"
-			index="${elasticsearch.index}" timeout="15s" masterNodeTimeout="10s">
+			index="${elasticsearch.index}" timeoutInSec="15" masterNodeTimeoutInSec="10">
 			<elasticsearch:indices-opts ignoreUnavailable="true" allowNoIndices="true" expandToOpenIndices="true" expandToClosedIndices="true" allowAliasesToMultipleIndices="true" forbidClosedIndices="true" ignoreAliases="true" />
 			</elasticsearch:delete-index>
 		<logger level="INFO" doc:name="Logger"
@@ -58,7 +58,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/closeIndex" />
 		<elasticsearch:close-index doc:name="Close index"
 			doc:id="1950d567-6153-48ec-b090-53d12011c953" config-ref="${elastic.config}"
-			index="${elasticsearch.index}" timeout="15s" masterNodeTimeout="15s" >
+			index="${elasticsearch.index}" timeoutInSec="15" masterNodeTimeoutInSec="15" >
 			<elasticsearch:indices-opt ignoreUnavailable="true" allowNoIndices="true" expandToOpenIndices="true" expandToClosedIndices="true" allowAliasesToMultipleIndices="true" forbidClosedIndices="true" ignoreAliases="true" />
 			</elasticsearch:close-index>
 		<logger level="INFO" doc:name="Logger"
@@ -70,7 +70,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/deleteDocuemntIndex" />
 		<elasticsearch:delete-document doc:name="Delete document"
 			doc:id="eeaae69c-675d-4427-9238-95f5835d10c7" config-ref="${elastic.config}"
-			index="${elasticsearch.index}" type="doc" documentId="1" routing="routing" timeout="10s" refreshPolicy="WAIT_UNTIL" version="4" versionType="EXTERNAL"/>
+			index="${elasticsearch.index}" documentId="1" routing="routing" timeoutInSec="10" refreshPolicy="WAIT_UNTIL" version="4" versionType="EXTERNAL"/>
 		<logger level="INFO" doc:name="Logger" message="#[payload]" />
 	</flow>
 
@@ -78,7 +78,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<http:listener doc:name="Listener" config-ref="HTTP_Listener_config"
 			path="/indexDoc" />
 		<elasticsearch:index-document doc:name="Index document"
-			config-ref="${elastic.config}" index="${elasticsearch.index}" type="doc" documentId="1" routing="routing" timeout="10s" refreshPolicy="NONE" version="4" versionType="EXTERNAL" operationType="INDEX">
+			config-ref="${elastic.config}" index="${elasticsearch.index}" documentId="1" routing="routing" timeoutInSec="10" refreshPolicy="NONE" version="4" versionType="EXTERNAL" operationType="INDEX">
 			<elasticsearch:document-sources>
 				<elasticsearch:document-source key="name"
 					value="testUser" />
@@ -100,7 +100,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	<flow name="indexDocumentFlowForJSONinput">
 		<http:listener doc:name="Listener" config-ref="HTTP_Listener_config"
 			path="/indexDocjson" />
-		<elasticsearch:index-document doc:name="Index document" doc:id="6f1fcbfd-eeed-4d4f-af05-b5204c57046d" config-ref="${elastic.config}" index="${elasticsearch.index}" type="doc" documentId="1" jsonInputPath="${index.jsoninputpath}">
+		<elasticsearch:index-document doc:name="Index document" doc:id="6f1fcbfd-eeed-4d4f-af05-b5204c57046d" config-ref="${elastic.config}" index="${elasticsearch.index}" documentId="1" jsonInputPath="${index.jsoninputpath}">
 		</elasticsearch:index-document>
 		<logger level="INFO" doc:name="Logger" message="RESPONSE:#[payload]" />
 	</flow>
@@ -111,8 +111,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/openIndex" />
 		<elasticsearch:open-index doc:name="Open index"
 			doc:id="28b63e78-4790-43fd-8acb-22d1efae813c" config-ref="${elastic.config}"
-			index="${elasticsearch.index}" timeout="15s" masterNodeTimeout="10s" waitForActiveShards="1">
-			<elasticsearch:indices-opts ignoreUnavailable="true" allowNoIndices="true" expandToOpenIndices="true" expandToClosedIndices="true" allowAliasesToMultipleIndices="true" forbidClosedIndices="true" ignoreAliases="true" />
+			index="${elasticsearch.index}" timeoutInSec="15" masterNodeTimeoutInSec="10" waitForActiveShards="1">
+			<elasticsearch:indices-opts ignoreUnavailable="true" allowNoIndices="true" expandToOpenIndices="true" expandToClosedIndices="true" allowAliasesToMultipleIndices="true" forbidClosedIndices="true" ignoreAliases="true" ignoreThrottled="true"/>
 			</elasticsearch:open-index>
 		<logger level="INFO" doc:name="Logger"
 			doc:id="72dac3a8-831e-428e-b380-af9711bac5c8" message="#[payload]" />
@@ -122,8 +122,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<http:listener doc:name="Listener" config-ref="HTTP_Listener_config"
 			path="/updateDocumentIndex" />
 		<elasticsearch:update-document doc:name="Update document"
-			config-ref="${elastic.config}" index="${elasticsearch.index}" type="doc"
-			documentId="1" routing="routing" timeout="10s" refreshPolicy="WAIT_UNTIL" retryOnConflict="1" docAsUpsert="true">
+			config-ref="${elastic.config}" index="${elasticsearch.index}"
+			documentId="1" routing="routing" timeoutInSec="10" refreshPolicy="WAIT_UNTIL" retryOnConflict="1" docAsUpsert="true">
 			<elasticsearch:document-sources>
 				<elasticsearch:document-source key="name"
 					value="TestcaseFlowUpdate" />
@@ -136,7 +136,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<http:listener doc:name="Listener" config-ref="HTTP_Listener_config"
 			path="/updateDocumentIndexWithJSON" />
 		<elasticsearch:update-document doc:name="Update document"
-			config-ref="${elastic.config}" index="${elasticsearch.index}" type="doc"
+			config-ref="${elastic.config}" index="${elasticsearch.index}"
 			documentId="1" jsonInputPath="${index.jsoninputpath}" docAsUpsert="true">
 		</elasticsearch:update-document>
 		<logger level="INFO" doc:name="Logger" message="#[payload]" />
@@ -150,7 +150,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	
 	<flow name="testGetDocumentFlow" doc:id="88b1f314-3c8e-4d22-b000-ea4acd0ab149" >
 		<http:listener doc:name="Listener" doc:id="005f789f-35c5-4c2c-9b51-da0a367a5b0f" config-ref="HTTP_Listener_config" path="/getOperation"/>
-		<elasticsearch:get-document doc:name="Get document" doc:id="a3099447-8c03-4321-95f0-b0f2bd9c0e01" index="${elasticsearch.index}" type="doc" documentId="1" config-ref="${elastic.config}" routing="routing" preference="preference" version="4" versionType="EXTERNAL" realtime="false" refresh="true">
+		<elasticsearch:get-document doc:name="Get document" doc:id="a3099447-8c03-4321-95f0-b0f2bd9c0e01" index="${elasticsearch.index}" documentId="1" config-ref="${elastic.config}" routing="routing" preference="preference" version="4" versionType="EXTERNAL" realtime="false" refresh="true">
 		<elasticsearch:fetch-source-context >
 				<elasticsearch:include-fields >
 					<elasticsearch:include-field value="message" />
