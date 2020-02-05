@@ -4,6 +4,7 @@
 package com.mulesoft.connectors.elasticsearch.internal.operations;
 
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
+import static com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils.ifPresent;
 
 import java.util.Collections;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
+import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -62,16 +64,12 @@ public class DocumentOperations {
      *            The Elasticsearch connection
      * @param index
      *            Name of the index
-     * @param type
-     *            Type of the index
      * @param documentId
      *            ID of the document
-     * @param routing
-     *            Routing is used to determine in which shard the document will reside in
      * @param inputSource
      *            Get the JSON input file path or index mapping.
-     * @param parent
-     *            A parent-child relationship can be established between documents in the same index by making one mapping type the parent of another
+     * @param routing
+     *            Routing is used to determine in which shard the document will reside in
      * @param timeout
      *            Timeout to wait for primary shard to become available
      * @param refreshPolicy
@@ -93,10 +91,9 @@ public class DocumentOperations {
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Index")
     public IndexResponse indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Type") String type, @Placement(order = 3) @DisplayName("Document Id") String documentId,
-            @Placement(order = 4) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
+            @Placement(order = 2) @DisplayName("Document Id") String documentId,
+            @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 2) @DisplayName("Parent") @Optional String parent,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout") @Optional @Summary("Timeout to wait for primary shard") String timeout,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
@@ -107,36 +104,20 @@ public class DocumentOperations {
         IndexRequest indexRequest;
         try {
             if (inputSource.getJsonInputPath() != null) {
-                indexRequest = new IndexRequest(index, type, documentId).source(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
+                indexRequest = new IndexRequest(index).id(documentId).source(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
             } else {
-                indexRequest = new IndexRequest(index, type, documentId).source(inputSource.getDocumentSource());
-            }
-            if (routing != null) {
-                indexRequest.routing(routing);
-            }
-            if (parent != null) {
-                indexRequest.parent(parent);
-            }
-            if (timeout != null) {
-                indexRequest.timeout(timeout);
-            }
-            if (refreshPolicy != null) {
-                indexRequest.setRefreshPolicy(refreshPolicy);
-            }
-            if (version != 0) {
-                indexRequest.version(version);
-            }
-            if (versionType != null) {
-                indexRequest.versionType(versionType);
-            }
-            if (operationType != null) {
-                indexRequest.opType(operationType);
-            }
-            if (pipeline != null) {
-                indexRequest.setPipeline(pipeline);
+                indexRequest = new IndexRequest(index).id(documentId).source(inputSource.getDocumentSource());
             }
 
-            IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+            ifPresent(routing, routingValue -> indexRequest.routing(routingValue));
+            ifPresent(timeout, timeoutValue -> indexRequest.timeout(timeoutValue));
+            ifPresent(refreshPolicy, refreshPolicyValue -> indexRequest.setRefreshPolicy(refreshPolicyValue));
+            ifPresent(version, versionValue -> indexRequest.version(versionValue));
+            ifPresent(versionType, versionTypeValue -> indexRequest.versionType(versionTypeValue));
+            ifPresent(operationType, operationTypeValue -> indexRequest.opType(operationTypeValue));
+            ifPresent(pipeline, pipelineValue -> indexRequest.setPipeline(pipelineValue));
+
+            IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
 
             logger.info("Index Response : " + indexResp);
             return indexResp;
@@ -152,8 +133,6 @@ public class DocumentOperations {
      *            The Elasticsearch connection
      * @param index
      *            Name of the index
-     * @param type
-     *            Type of the index
      * @param documentId
      *            ID of the document
      * @param fetchSourceContext
@@ -162,8 +141,6 @@ public class DocumentOperations {
      *            Set realtime flag
      * @param routing
      *            Routing is used to determine in which shard the document will reside in
-     * @param parent
-     *            Parent value of the index request
      * @param preference
      *            Preference value
      * @param refresh
@@ -178,19 +155,18 @@ public class DocumentOperations {
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Get")
     public String getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Type") String type, @Placement(order = 3) @DisplayName("Document Id") String documentId,
+            @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Source retrieval") @Optional DocumentFetchSourceOptions fetchSourceContext,
             @Placement(tab = "Optional Arguments", order = 2) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Parent") @Optional String parent,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Preference value") @Optional String preference,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Set realtime flag") @Optional(defaultValue = "true") boolean realtime,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Refresh") @Summary("Perform a refresh before retrieving the document") @Optional(defaultValue = "false") boolean refresh,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType) {
 
-        GetRequest getRequest = new GetRequest(index, type, documentId);
-        if (fetchSourceContext != null && fetchSourceContext.isFetchSource()) {
+        GetRequest getRequest = new GetRequest(index, documentId);
 
+        if (fetchSourceContext != null && fetchSourceContext.isFetchSource()) {
             String[] includes = Strings.EMPTY_ARRAY, excludes = Strings.EMPTY_ARRAY;
 
             if (fetchSourceContext.getIncludeFields() != null) {
@@ -203,31 +179,20 @@ public class DocumentOperations {
 
             FetchSourceContext fetchSource = new FetchSourceContext(true, includes, excludes);
             getRequest.fetchSourceContext(fetchSource);
-
+        } else {
+            getRequest.fetchSourceContext(FetchSourceContext.DO_NOT_FETCH_SOURCE);
         }
 
-        if (routing != null) {
-            getRequest.routing(routing);
-        }
-        if (parent != null) {
-            getRequest.parent(parent);
-        }
-        if (preference != null) {
-            getRequest.preference(preference);
-        }
-        if (version != 0) {
-            logger.info("Version in get Index document : " + version);
-            getRequest.version(version);
-        }
-        if (versionType != null) {
-            getRequest.versionType(versionType);
-        }
+        ifPresent(routing, routingValue -> getRequest.routing(routingValue));
+        ifPresent(preference, preferenceValue -> getRequest.preference(preferenceValue));
+        ifPresent(version, versionValue -> getRequest.version(versionValue));
+        ifPresent(versionType, versionTypeValue -> getRequest.versionType(versionTypeValue));
 
         getRequest.realtime(realtime);
         getRequest.refresh(refresh);
         GetResponse getResp;
         try {
-            getResp = esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+            getResp = esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
@@ -242,14 +207,10 @@ public class DocumentOperations {
      *            The Elasticsearch connection
      * @param index
      *            Name of the index
-     * @param type
-     *            Type of the index
      * @param documentId
      *            ID of the document
      * @param routing
      *            Routing is used to determine in which shard the document will reside in
-     * @param parent
-     *            Parent value of the index request
      * @param timeout
      *            Time to wait for primary shard to become available
      * @param refreshPolicy
@@ -266,34 +227,24 @@ public class DocumentOperations {
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Delete")
     public DeleteResponse deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Type") String type, @Placement(order = 3) @DisplayName("Document Id") String documentId,
+            @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 2) @DisplayName("Parent value") @Optional String parent,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout") @Optional @Summary("Timeout to wait for primary shard") String timeout,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType) {
 
-        DeleteRequest deleteRequest = new DeleteRequest(index, type, documentId);
-        if (routing != null) {
-            deleteRequest.routing(routing);
-        }
-        if (parent != null) {
-            deleteRequest.parent(parent);
-        }
-        if (timeout != null) {
-            deleteRequest.timeout(timeout);
-        }
-        if (refreshPolicy != null) {
-            deleteRequest.setRefreshPolicy(refreshPolicy);
-        }
-        if (version != 0) {
-            deleteRequest.version(version);
-        }
+        DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
+        
+        ifPresent(routing, routingValue -> deleteRequest.routing(routingValue));
+        ifPresent(timeout, timeoutValue -> deleteRequest.timeout(timeoutValue));
+        ifPresent(refreshPolicy, refreshPolicyValue -> deleteRequest.setRefreshPolicy(refreshPolicyValue));
+        ifPresent(version, versionValue -> deleteRequest.version(versionValue));
+        ifPresent(versionType, versionTypeValue -> deleteRequest.versionType(versionTypeValue));
 
         DeleteResponse deleteResp;
         try {
-            deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+            deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
@@ -308,16 +259,12 @@ public class DocumentOperations {
      *            The Elasticsearch connection
      * @param index
      *            Name of the index
-     * @param type
-     *            Type of the index
      * @param documentId
      *            ID of the document
      * @param routing
      *            Routing is used to determine in which shard the document will reside in
      * @param inputSource
      *            Input document source
-     * @param parent
-     *            Parent value of the index request
      * @param timeout
      *            Time to wait for primary shard to become available
      * @param refreshPolicy
@@ -343,10 +290,9 @@ public class DocumentOperations {
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Update")
     public UpdateResponse updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Type") String type, @Placement(order = 3) @DisplayName("Document Id") String documentId,
-            @Placement(order = 4) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
+            @Placement(order = 2) @DisplayName("Document Id") String documentId,
+            @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 2) @DisplayName("Parent") @Optional String parent,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout") @Optional @Summary("Timeout to wait for primary shard") String timeout,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Retry on Conflict") @Optional(defaultValue = "0") @Summary("How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update operation") int retryOnConflict,
@@ -356,7 +302,7 @@ public class DocumentOperations {
             @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Scripted Upsert") @Optional(defaultValue = "false") boolean scriptedUpsert,
             @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert) {
 
-        UpdateRequest updateRequest = new UpdateRequest(index, type, documentId);
+        UpdateRequest updateRequest = new UpdateRequest(index, documentId);
         if (inputSource.getJsonInputPath() != null) {
             try {
                 updateRequest.doc(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
@@ -365,24 +311,13 @@ public class DocumentOperations {
             }
         } else {
             updateRequest.doc(inputSource.getDocumentSource());
-
         }
 
-        if (routing != null) {
-            updateRequest.routing(routing);
-        }
-        if (parent != null) {
-            updateRequest.parent(parent);
-        }
-        if (timeout != null) {
-            updateRequest.timeout(timeout);
-        }
-        if (refreshPolicy != null) {
-            updateRequest.setRefreshPolicy(refreshPolicy);
-        }
-        if (retryOnConflict != 0) {
-            updateRequest.retryOnConflict(retryOnConflict);
-        }
+        ifPresent(routing, routingValue -> updateRequest.routing(routingValue));
+        ifPresent(timeout, timeoutValue -> updateRequest.timeout(timeoutValue));
+        ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue));
+        ifPresent(retryOnConflict, retryOnConflictValue -> updateRequest.retryOnConflict(retryOnConflictValue));
+        
         if (version != 0L) {
             updateRequest.version(version);
         }
@@ -392,7 +327,7 @@ public class DocumentOperations {
         updateRequest.docAsUpsert(docAsUpsert);
         UpdateResponse updateResp;
         try {
-            updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+            updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
@@ -417,7 +352,7 @@ public class DocumentOperations {
      */
 
     @MediaType(value = ANY, strict = false)
-    @DisplayName("Document - Bluk")
+    @DisplayName("Document - Bulk")
     public Response bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
             @ParameterGroup(name = "Input data") JsonData jsonData) {
         String resource = type != null ? "/" + type + "/_bulk" : "/_bulk";
@@ -433,7 +368,10 @@ public class DocumentOperations {
                 entity = new NStringEntity(jsonData.getJsonText(), ContentType.APPLICATION_JSON);
             }
 
-            return esConnection.getElasticsearchConnection().getLowLevelClient().performRequest("POST", resource, params, entity);
+            Request request = new Request("POST", resource);
+            request.addParameters(params);
+            request.setEntity(entity);
+            return esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
