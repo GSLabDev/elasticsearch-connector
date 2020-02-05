@@ -5,7 +5,7 @@ package org.mule.extension.elastic.index;
 
 import static org.junit.Assert.assertTrue;
 
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -39,9 +39,9 @@ public class DeleteIndexOperationTestCase extends MuleArtifactFunctionalTestCase
      */
     @Test
     public void executeIndexDocumentOperation() {
-        DeleteIndexResponse payloadValue;
+        AcknowledgedResponse payloadValue;
         try {
-            payloadValue = ((DeleteIndexResponse) flowRunner("testDeleteIndexFlow").run().getMessage().getPayload().getValue());
+            payloadValue = ((AcknowledgedResponse) flowRunner("testDeleteIndexFlow").run().getMessage().getPayload().getValue());
             assertTrue(payloadValue.isAcknowledged() == true);
         } catch (Exception e) {
             e.printStackTrace();

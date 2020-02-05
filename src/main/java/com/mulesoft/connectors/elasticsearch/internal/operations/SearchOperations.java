@@ -17,6 +17,8 @@ import org.elasticsearch.action.search.ClearScrollResponse;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -63,7 +65,6 @@ public class SearchOperations extends BaseSearchOperation {
      *            Search source configuration to control the search behavior.
      * @return SearchResponse
      */
-
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     @DisplayName("Search - Query")
     public SearchResponse search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
@@ -76,7 +77,7 @@ public class SearchOperations extends BaseSearchOperation {
         searchRequest.source(searchSourceBuilder);
 
         try {
-            return esConnection.getElasticsearchConnection().search(searchRequest, ElasticsearchUtils.getContentTypeJsonHeader());
+            return esConnection.getElasticsearchConnection().search(searchRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
@@ -103,7 +104,7 @@ public class SearchOperations extends BaseSearchOperation {
 
         SearchResponse searchResponse;
         try {
-            searchResponse = esConnection.getElasticsearchConnection().searchScroll(scrollRequest);
+            searchResponse = esConnection.getElasticsearchConnection().scroll(scrollRequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
@@ -144,7 +145,10 @@ public class SearchOperations extends BaseSearchOperation {
         Map<String, String> params = Collections.singletonMap("pretty", "true");
         Response response;
         try {
-            response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(HttpGet.METHOD_NAME, "/" + resource, params, entity);
+            Request request = new Request(HttpGet.METHOD_NAME, "/" + resource);
+            request.addParameters(params);
+            request.setEntity(entity);
+            response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request);
 
             logger.debug("RequestLine:" + response.getRequestLine());
             String responseBody = EntityUtils.toString(response.getEntity());
@@ -177,7 +181,7 @@ public class SearchOperations extends BaseSearchOperation {
         ClearScrollRequest clearScrollrequest = new ClearScrollRequest();
         clearScrollrequest.addScrollId(scrollId);
         try {
-            return esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest);
+            return esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
         }
