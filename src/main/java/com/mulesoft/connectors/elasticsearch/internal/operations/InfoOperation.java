@@ -10,8 +10,7 @@ import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
@@ -23,7 +22,7 @@ public class InfoOperation extends ElasticsearchOperations {
     /**
      * Logging object
      */
-    private static final Logger logger = LoggerFactory.getLogger(InfoOperation.class);
+    private static final Logger logger = Logger.getLogger(InfoOperation.class.getName());
 
     /**
      * To retrieve the cluster information.
@@ -40,9 +39,9 @@ public class InfoOperation extends ElasticsearchOperations {
         MainResponse response;
         try {
             response = esConnection.getElasticsearchConnection().info(ElasticsearchUtils.getContentTypeJsonRequestOption());
-            logger.debug("Info response : ", response); 
             responseConsumer(response, callback);
         } catch (Exception e) {
+            logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
     }
