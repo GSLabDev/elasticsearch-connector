@@ -40,7 +40,7 @@ import com.mulesoft.connectors.elasticsearch.api.SearchRequestConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchSourceConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.querytype.Query;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
-import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchError;
+import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
@@ -79,7 +79,7 @@ public class SearchOperations extends BaseSearchOperation {
         try {
             return esConnection.getElasticsearchConnection().search(searchRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
     }
 
@@ -106,7 +106,7 @@ public class SearchOperations extends BaseSearchOperation {
         try {
             searchResponse = esConnection.getElasticsearchConnection().scroll(scrollRequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         logger.debug("search response" + searchResponse);
         return searchResponse;
@@ -135,7 +135,7 @@ public class SearchOperations extends BaseSearchOperation {
             try {
                 jsonContent = ElasticsearchUtils.readFileToString(jsonData.getJsonfile());
             } catch (Exception e) {
-                throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+                throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
             }
         } else {
             jsonContent = jsonData.getJsonText();
@@ -160,7 +160,7 @@ public class SearchOperations extends BaseSearchOperation {
                     .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
                     .build();
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
 
         }
     }
@@ -183,7 +183,7 @@ public class SearchOperations extends BaseSearchOperation {
         try {
             return esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest, RequestOptions.DEFAULT);
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
     }
 }

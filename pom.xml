@@ -23,6 +23,7 @@
 		<junitVersion>4.12</junitVersion>
 		<httpConnectorVersion>1.2.0</httpConnectorVersion>
 		<socketsConnectorVersion>1.1.1</socketsConnectorVersion>
+		<jackson.databind.version>2.10.2</jackson.databind.version>
 	</properties>
 
 	<dependencies>
@@ -96,7 +97,12 @@
 			<classifier>mule-plugin</classifier>
 			<scope>test</scope>
 		</dependency>
-
+		
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.databind.version}</version>
+		</dependency>
 	</dependencies>
 	
 	<build>

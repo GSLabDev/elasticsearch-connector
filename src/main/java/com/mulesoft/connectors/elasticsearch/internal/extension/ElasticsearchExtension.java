@@ -24,7 +24,7 @@ import com.mulesoft.connectors.elasticsearch.api.querytype.QueryStringQuery;
 import com.mulesoft.connectors.elasticsearch.api.querytype.SimpleQueryString;
 import com.mulesoft.connectors.elasticsearch.internal.connection.provider.HttpConnectionProvider;
 import com.mulesoft.connectors.elasticsearch.internal.connection.provider.HttpsConnectionProvider;
-import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchError;
+import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.ExecuteErrorsProvider;
 import com.mulesoft.connectors.elasticsearch.internal.operations.DocumentOperations;
 import com.mulesoft.connectors.elasticsearch.internal.operations.IndexOperations;
@@ -37,7 +37,7 @@ import com.mulesoft.connectors.elasticsearch.internal.operations.SearchOperation
  *         ElasticSearch Connector provides integration with the ElasticSearch server from a mule flow. It supports HTTP, HTTP with basic authentication and HTTPS connection.
  */
 @Xml(prefix = "elasticsearch")
-@ErrorTypes(ElasticsearchError.class)
+@ErrorTypes(ElasticsearchErrorTypes.class)
 @Extension(name = "Elasticsearch", category = Category.CERTIFIED, vendor = "Great Software Laboratory Pvt. Ltd.")
 @RequiresEnterpriseLicense(allowEvaluationLicense = true)
 

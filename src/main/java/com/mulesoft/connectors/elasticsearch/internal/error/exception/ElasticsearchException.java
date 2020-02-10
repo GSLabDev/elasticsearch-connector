@@ -5,7 +5,7 @@ package com.mulesoft.connectors.elasticsearch.internal.error.exception;
 
 import org.mule.runtime.extension.api.exception.ModuleException;
 
-import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchError;
+import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 
 public class ElasticsearchException extends ModuleException {
 
@@ -17,7 +17,7 @@ public class ElasticsearchException extends ModuleException {
      * @param cause
      *            Original exception trace
      */
-    public ElasticsearchException(ElasticsearchError error, Exception cause) {
+    public ElasticsearchException(ElasticsearchErrorTypes error, Exception cause) {
         super(error, cause);
     }
 

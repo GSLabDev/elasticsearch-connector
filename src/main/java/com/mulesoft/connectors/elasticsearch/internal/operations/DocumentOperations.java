@@ -43,7 +43,7 @@ import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
 import com.mulesoft.connectors.elasticsearch.api.IndexDocumentOptions;
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
-import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchError;
+import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
@@ -126,7 +126,7 @@ public class DocumentOperations {
             logger.info("Index Response : " + indexResp);
             return indexResp;
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
     }
 
@@ -198,7 +198,7 @@ public class DocumentOperations {
         try {
             getResp = esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         logger.info("Get Response : " + getResp);
         return getResp.getSourceAsString();
@@ -254,7 +254,7 @@ public class DocumentOperations {
         try {
             deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         logger.info("Delete document response : " + deleteResp);
         return deleteResp;
@@ -315,7 +315,7 @@ public class DocumentOperations {
             try {
                 updateRequest.doc(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
             } catch (Exception e) {
-                throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+                throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
             }
         } else {
             updateRequest.doc(inputSource.getDocumentSource());
@@ -340,7 +340,7 @@ public class DocumentOperations {
         try {
             updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         logger.info("Update Response : " + updateResp);
         return updateResp;
@@ -384,7 +384,7 @@ public class DocumentOperations {
             request.setEntity(entity);
             return esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request);
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
     }
 }

@@ -24,7 +24,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchError;
+import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 
 /**
@@ -83,7 +83,7 @@ public final class ElasticsearchConnection {
 
             this.client = new RestHighLevelClient(builder);
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.INVALID_AUTH, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.INVALID_AUTH, e);
         }
     }
 

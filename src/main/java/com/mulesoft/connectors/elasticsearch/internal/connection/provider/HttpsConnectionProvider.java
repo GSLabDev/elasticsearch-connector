@@ -11,7 +11,7 @@ import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.connection.provider.configuration.TrustStoreConfiguration;
 import com.mulesoft.connectors.elasticsearch.internal.connection.provider.configuration.UserConfiguration;
-import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchError;
+import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 
 /**
@@ -37,7 +37,7 @@ public class HttpsConnectionProvider extends ElasticsearchBaseConnectionProvider
             return new ElasticsearchConnection(getHost(), getPort(), userConfiguration.getUserName(), userConfiguration.getPassword(), trustStoreconfiguration.getTrustStoreType(),
                     trustStoreconfiguration.getTrustStorePath(), trustStoreconfiguration.getTrustStorePassword());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.INVALID_CONNECTION, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.INVALID_CONNECTION, e);
         }
     }
 }

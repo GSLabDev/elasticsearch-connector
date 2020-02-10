@@ -17,9 +17,10 @@ public class ExecuteErrorsProvider implements ErrorTypeProvider {
     @Override
     public Set<ErrorTypeDefinition> getErrorTypes() {
         HashSet<ErrorTypeDefinition> errors = new HashSet<>();
-        errors.add(ElasticsearchError.OPERATION_FAILED);
-        errors.add(ElasticsearchError.INVALID_AUTH);
-        errors.add(ElasticsearchError.INVALID_CONNECTION);
+        errors.add(ElasticsearchErrorTypes.EXECUTION);
+        errors.add(ElasticsearchErrorTypes.OPERATION_FAILED);
+        errors.add(ElasticsearchErrorTypes.INVALID_AUTH);
+        errors.add(ElasticsearchErrorTypes.INVALID_CONNECTION);
         return errors;
     }
 }

@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mulesoft.connectors.elasticsearch.api.IndexOptions;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
-import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchError;
+import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
@@ -103,7 +103,7 @@ public class IndexOperations {
             try {
                 createIndexReq.mapping(ElasticsearchUtils.readFileToString(jsonInputPath), XContentType.JSON);
             } catch (Exception e) {
-                throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+                throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
             }
         } else if (indexMapping != null) {
             createIndexReq.mapping(indexMapping);
@@ -126,7 +126,7 @@ public class IndexOperations {
         try {
             createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         logger.info("Create Index Response : ", createIndexResp);
         return createIndexResp;
@@ -176,7 +176,7 @@ public class IndexOperations {
         try {
             response = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         logger.info("Delete Index Response : " + response);
         return response;
@@ -232,7 +232,7 @@ public class IndexOperations {
         try {
             openIndexResp = esConnection.getElasticsearchConnection().indices().open(openIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         logger.info("Open Index Response : " + openIndexResp);
         return openIndexResp;
@@ -283,7 +283,7 @@ public class IndexOperations {
         try {
             closeIndexResp = esConnection.getElasticsearchConnection().indices().close(closeIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchError.OPERATION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         logger.info("Close Index Response : " + closeIndexResp);
         return closeIndexResp;

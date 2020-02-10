@@ -12,18 +12,20 @@ import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 /**
  * Custom Errors
  */
-public enum ElasticsearchError implements ErrorTypeDefinition<ElasticsearchError> {
+public enum ElasticsearchErrorTypes implements ErrorTypeDefinition<ElasticsearchErrorTypes> {
+    
+    EXECUTION,
     OPERATION_FAILED,
     INVALID_CONNECTION(CONNECTIVITY),
     INVALID_AUTH(CONNECTIVITY);
 
     private ErrorTypeDefinition<? extends Enum<?>> parent;
 
-    ElasticsearchError(ErrorTypeDefinition<? extends Enum<?>> parent) {
+    ElasticsearchErrorTypes(ErrorTypeDefinition<? extends Enum<?>> parent) {
         this.parent = parent;
     }
 
-    ElasticsearchError() {
+    ElasticsearchErrorTypes() {
     }
 
     @Override
