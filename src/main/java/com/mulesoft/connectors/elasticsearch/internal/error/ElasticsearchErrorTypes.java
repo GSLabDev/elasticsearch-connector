@@ -15,10 +15,9 @@ import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 public enum ElasticsearchErrorTypes implements ErrorTypeDefinition<ElasticsearchErrorTypes> {
     
     EXECUTION,
-    OPERATION_FAILED,
-    INVALID_CONNECTION(CONNECTIVITY),
-    INVALID_AUTH(CONNECTIVITY);
-
+    OPERATION_FAILED(EXECUTION),
+    CONNECTION_FAILED(CONNECTIVITY);
+    
     private ErrorTypeDefinition<? extends Enum<?>> parent;
 
     ElasticsearchErrorTypes(ErrorTypeDefinition<? extends Enum<?>> parent) {

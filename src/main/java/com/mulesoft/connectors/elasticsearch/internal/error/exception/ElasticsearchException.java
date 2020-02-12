@@ -9,6 +9,8 @@ import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTy
 
 public class ElasticsearchException extends ModuleException {
 
+    private static final long serialVersionUID = 7693494311617697239L;
+
     /**
      * Custom Exception handler
      * 

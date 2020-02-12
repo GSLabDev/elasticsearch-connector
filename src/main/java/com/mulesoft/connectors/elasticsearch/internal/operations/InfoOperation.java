@@ -25,17 +25,16 @@ public class InfoOperation extends ElasticsearchOperations {
     private static final Logger logger = Logger.getLogger(InfoOperation.class.getName());
 
     /**
-     * To retrieve the cluster information.
+     * Retrieves the cluster information.
      * 
      * @param esConnection
      *            The Elasticsearch connection
-     * @return MainResponse Cluster information
+     * @param callback
      * 
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Elasticsearch - Info")
-    public void info(@Connection ElasticsearchConnection esConnection,
-            CompletionCallback<MainResponse, Void> callback) {
+    public void info(@Connection ElasticsearchConnection esConnection, CompletionCallback<MainResponse, Void> callback) {
         MainResponse response;
         try {
             response = esConnection.getElasticsearchConnection().info(ElasticsearchUtils.getContentTypeJsonRequestOption());
