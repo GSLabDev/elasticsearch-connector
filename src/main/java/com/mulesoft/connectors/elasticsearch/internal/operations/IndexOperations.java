@@ -6,8 +6,10 @@ package com.mulesoft.connectors.elasticsearch.internal.operations;
 import static com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils.ifPresent;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 
+import java.io.IOException;
 import java.util.Map;
 
+import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.client.indices.CloseIndexRequest;
 import org.elasticsearch.client.indices.CloseIndexResponse;
@@ -23,19 +25,21 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
+import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.api.IndexOptions;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
+import com.mulesoft.connectors.elasticsearch.internal.error.exception.IndexNotFoundException;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
@@ -43,12 +47,12 @@ import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
  *
  */
 
-public class IndexOperations {
+public class IndexOperations extends ElasticsearchOperations {
 
     /**
      * Logging object
      */
-    private static final Logger logger = LoggerFactory.getLogger(IndexOperations.class);
+    private static final Logger logger = Logger.getLogger(IndexOperations.class.getName());
 
     /**
      * The createIndex Operation allows to instantiate an index.
@@ -58,78 +62,82 @@ public class IndexOperations {
      * @param index
      *            The index to create
      * @param indexSettings
-     *            Settings for this index
-     * @param indexSettingFile
-     *            Index Settings JSON
-     * @param indexMapping
-     *            The mapping for index type, provided as a JSON string
+     *            Settings for the index
+     * @param indexSettingJSONFile
+     *            Path of the JSON file which specifies Index Settings.
+     * @param indexMappings
+     *            Mapping for the index
+     * @param indexMappingJSONFile
+     *            Path of the JSON file which specifies Index Mapping.
      * @param indexAlias
      *            The alias of the index
-     * @param jsonInputPath
+     * @param sourceJSONFile
      *            Path of the JSON file. The whole source including all of its sections (mappings, settings and aliases) can be provided in this json file.
      * @param timeoutInSec
-     *            Timeout in seconds to wait for the all the nodes to acknowledge the index creation
+     *            Timeout in seconds to wait for the all the nodes to acknowledge the index creation.
      * @param masterNodeTimeoutInSec
-     *            Timeout in seconds to connect to the master node
+     *            Timeout in seconds to connect to the master node.
      * @param waitForActiveShards
-     *            The number of active shard copies to wait for before the create index
-     * @return CreateIndexResponse
-     * 
+     *            The number of active shard copies to wait for before the create index.
+     * @param callback
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Index - Create")
-    public CreateIndexResponse createIndex(@Connection ElasticsearchConnection esConnection,
-            @Placement(order = 1) @DisplayName("Index") @Summary("The index to create") String index,
+    public void createIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to create") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @DisplayName("Index Settings") Map<String, String> indexSettings,
-            @Placement(tab = "Optional Arguments", order = 2) @Optional @DisplayName("Index Settings JSON") String indexSettingFile,
-            @Placement(tab = "Optional Arguments", order = 4) @Optional @DisplayName("Index Mapping") Map<String, Object> indexMapping,
-            @Placement(tab = "Optional Arguments", order = 5) @Optional @DisplayName("JSON Input file path for mapping") @Summary("The whole source including all of its sections (mappings, settings and aliases) can be provided in this file") String jsonInputPath,
+            @Placement(tab = "Optional Arguments", order = 2) @Optional @DisplayName("Index Settings (JSON file Path)") String indexSettingJSONFile,
+            @Placement(tab = "Optional Arguments", order = 4) @Optional @DisplayName("Index Mapping") Map<String, Object> indexMappings,
+            @Placement(tab = "Optional Arguments", order = 2) @Optional @DisplayName("Index Mapping (JSON file Path)") String indexMappingJSONFile,
             @Placement(tab = "Optional Arguments", order = 6) @Optional @DisplayName("Index Alias") String indexAlias,
-            @Placement(tab = "Optional Arguments", order = 7) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 8) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Master Node Timeout (Seconds)") long masterNodeTimeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards) {
-
-        CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
-
-        if (indexSettings != null) {
-            final Builder settingsBuilder = Settings.builder();
-            for (Map.Entry<String, String> entry : indexSettings.entrySet()) {
-                settingsBuilder.put(entry.getKey(), entry.getValue());
-            }
-            createIndexReq.settings(settingsBuilder);
-        }
-
-        if (jsonInputPath != null) {
-            try {
-                createIndexReq.mapping(ElasticsearchUtils.readFileToString(jsonInputPath), XContentType.JSON);
-            } catch (Exception e) {
-                throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-            }
-        } else if (indexMapping != null) {
-            createIndexReq.mapping(indexMapping);
-
-        }
-
-        ifPresent(indexAlias, indexAliasValue -> createIndexReq.alias(new Alias(indexAliasValue)));
-        if (timeoutInSec != 0) {
-            createIndexReq.setTimeout(TimeValue.timeValueSeconds(timeoutInSec));
-        }
-        if (masterNodeTimeoutInSec != 0) {
-            createIndexReq.setMasterTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
-        }
-        
-        if (waitForActiveShards != 0) {
-            createIndexReq.waitForActiveShards(ActiveShardCount.from(waitForActiveShards));
-        }
-
-        CreateIndexResponse createIndexResp;
+            @Placement(tab = "Optional Arguments", order = 5) @Optional @DisplayName("Source (mappings, settings and aliases)") @Summary("The whole source including all of its sections (mappings, settings and aliases) can be provided in this file.") String sourceJSONFile,
+            @Placement(tab = "Optional Arguments", order = 7) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation.") @DisplayName("Timeout (Seconds)") long timeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 8) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node.") @DisplayName("Master Node Timeout (Seconds)") long masterNodeTimeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
+            CompletionCallback<CreateIndexResponse, Void> callback) {
         try {
-            createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonRequestOption());
-        } catch (Exception e) {
+            CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
+
+            if (indexSettings != null) {
+                final Builder settingsBuilder = Settings.builder();
+                for (Map.Entry<String, String> entry : indexSettings.entrySet()) {
+                    settingsBuilder.put(entry.getKey(), entry.getValue());
+                }
+                createIndexReq.settings(settingsBuilder);
+            } else if (indexSettingJSONFile != null) {
+                createIndexReq.settings(ElasticsearchUtils.readFileToString(indexSettingJSONFile), XContentType.JSON);
+            }
+
+            if (indexMappings != null) {
+                createIndexReq.mapping(indexMappings);
+            } else if (indexMappingJSONFile != null) {
+                createIndexReq.mapping(ElasticsearchUtils.readFileToString(indexMappingJSONFile), XContentType.JSON);
+            }
+
+            if (sourceJSONFile != null) {
+                createIndexReq.source(ElasticsearchUtils.readFileToString(sourceJSONFile), XContentType.JSON);
+            }
+
+            ifPresent(indexAlias, indexAliasValue -> createIndexReq.alias(new Alias(indexAliasValue)));
+            if (timeoutInSec != 0) {
+                createIndexReq.setTimeout(TimeValue.timeValueSeconds(timeoutInSec));
+            }
+            if (masterNodeTimeoutInSec != 0) {
+                createIndexReq.setMasterTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
+            }
+            if (waitForActiveShards != 0) {
+                createIndexReq.waitForActiveShards(ActiveShardCount.from(waitForActiveShards));
+            }
+
+            CreateIndexResponse createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonRequestOption());
+            logger.info("Create index acknowledged : " + createIndexResp.isAcknowledged());
+            responseConsumer(createIndexResp, callback);
+        } catch (IOException e) {
+            logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        logger.info("Create Index Response : ", createIndexResp);
-        return createIndexResp;
     }
 
     /**
@@ -140,21 +148,20 @@ public class IndexOperations {
      * @param index
      *            The index to delete
      * @param timeoutInSec
-     *            Timeout in seconds to wait for the all the nodes to acknowledge the index deletion
+     *            Timeout in seconds to wait for the all the nodes to acknowledge the index deletion.
      * @param masterNodeTimeoutInSec
-     *            Timeout in seconds to connect to the master node
+     *            Timeout in seconds to connect to the master node.
      * @param indicesOpts
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
-     * @return DeleteIndexResponse
-     * 
+     * @param callback 
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Index - Delete")
-    public AcknowledgedResponse deleteIndex(@Connection ElasticsearchConnection esConnection,
+    public void deleteIndex(@Connection ElasticsearchConnection esConnection,
             @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpts) {
+            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpts, CompletionCallback<AcknowledgedResponse, Void> callback) {
 
         DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(index);
 
@@ -164,7 +171,6 @@ public class IndexOperations {
         if (masterNodeTimeoutInSec != 0) {
             deleteIndexRequest.masterNodeTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
         }
-        
         if (indicesOpts != null) {
             IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpts.isIgnoreUnavailable(), indicesOpts.isAllowNoIndices(), indicesOpts.isExpandToOpenIndices(),
                     indicesOpts.isExpandToClosedIndices(), indicesOpts.isAllowAliasesToMultipleIndices(), indicesOpts.isForbidClosedIndices(), indicesOpts.isIgnoreAliases(),
@@ -175,11 +181,19 @@ public class IndexOperations {
         AcknowledgedResponse response;
         try {
             response = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
-        } catch (Exception e) {
+            logger.info("Delete Index acknowledged : " + response.isAcknowledged());
+            responseConsumer(response, callback);
+        } catch (IOException e) {
+            logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        } catch (Exception e) {
+    	    if (e instanceof ElasticsearchException && ((ElasticsearchStatusException) e).status() == RestStatus.NOT_FOUND) {
+    	    	throw new IndexNotFoundException(e);
+    	    } else {
+    	    	logger.error(e);
+        		throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
+    	    }
         }
-        logger.info("Delete Index Response : " + response);
-        return response;
     }
 
     /**
@@ -190,23 +204,24 @@ public class IndexOperations {
      * @param index
      *            The index to open
      * @param timeoutInSec
-     *            Timeout in seconds to wait for the all the nodes to acknowledge the index is opened. It is the time to wait for an open index to become available to elasticsearch.
+     *            Timeout in seconds to wait for the all the nodes to acknowledge the index is opened. It is the time to wait for an open index to become available to
+     *            elasticsearch.
      * @param masterNodeTimeoutInSec
      *            Timeout in seconds to connect to the master node
      * @param waitForActiveShards
      *            The number of active shard copies to wait for
      * @param indicesOpts
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
-     * @return OpenIndexResponse
-     * 
+     * @param callback
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Index - Open")
-    public OpenIndexResponse openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
+    public void openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
-            @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts) {
+            @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts,
+            CompletionCallback<OpenIndexResponse, Void> callback) {
 
         OpenIndexRequest openIndexRequest = new OpenIndexRequest(index);
 
@@ -216,7 +231,7 @@ public class IndexOperations {
         if (masterNodeTimeoutInSec != 0) {
             openIndexRequest.masterNodeTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
         }
-        
+
         if (waitForActiveShards != 0) {
             openIndexRequest.waitForActiveShards(waitForActiveShards);
         }
@@ -231,12 +246,15 @@ public class IndexOperations {
         OpenIndexResponse openIndexResp;
         try {
             openIndexResp = esConnection.getElasticsearchConnection().indices().open(openIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
-        } catch (Exception e) {
+            logger.info("Open Index acknowledged : " + openIndexResp.isAcknowledged());
+            responseConsumer(openIndexResp, callback);
+        } catch (IOException e) {
+            logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        logger.info("Open Index Response : " + openIndexResp);
-        return openIndexResp;
-
     }
 
     /**
@@ -253,15 +271,15 @@ public class IndexOperations {
      *            Timeout in seconds to connect to the master node
      * @param indicesOpt
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
-     * @return CloseIndexResponse
-     * 
+     * @param callback
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Index - Close")
-    public CloseIndexResponse closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
+    public void closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt) {
+            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt,
+            CompletionCallback<CloseIndexResponse, Void> callback) {
 
         CloseIndexRequest closeIndexRequest = new CloseIndexRequest(index);
 
@@ -271,7 +289,7 @@ public class IndexOperations {
         if (masterNodeTimeoutInSec != 0) {
             closeIndexRequest.setMasterTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
         }
-        
+
         if (indicesOpt != null) {
             IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpt.isIgnoreUnavailable(), indicesOpt.isAllowNoIndices(), indicesOpt.isExpandToOpenIndices(),
                     indicesOpt.isExpandToClosedIndices(), indicesOpt.isAllowAliasesToMultipleIndices(), indicesOpt.isForbidClosedIndices(), indicesOpt.isIgnoreAliases(),
@@ -282,11 +300,15 @@ public class IndexOperations {
         CloseIndexResponse closeIndexResp;
         try {
             closeIndexResp = esConnection.getElasticsearchConnection().indices().close(closeIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
-        } catch (Exception e) {
+            logger.info("Close Index acknowledged : " + closeIndexResp.isAcknowledged());
+            responseConsumer(closeIndexResp, callback);
+        } catch (IOException e) {
+            logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        logger.info("Close Index Response : " + closeIndexResp);
-        return closeIndexResp;
     }
 
 }

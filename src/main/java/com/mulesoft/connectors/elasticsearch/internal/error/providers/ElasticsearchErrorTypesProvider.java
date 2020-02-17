@@ -11,8 +11,10 @@ import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
 
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 
-public class ElasticsearchErrorTypesProvider implements ErrorTypeProvider {
+public abstract class ElasticsearchErrorTypesProvider implements ErrorTypeProvider {
 
+	public abstract void addErrors(Set<ErrorTypeDefinition> errors);
+	
     /**
      * Custom Error providers
      */

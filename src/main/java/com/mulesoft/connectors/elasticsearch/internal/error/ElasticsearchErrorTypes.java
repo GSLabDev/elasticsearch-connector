@@ -16,7 +16,8 @@ public enum ElasticsearchErrorTypes implements ErrorTypeDefinition<Elasticsearch
     
     EXECUTION,
     OPERATION_FAILED(EXECUTION),
-    CONNECTION_FAILED(CONNECTIVITY);
+    CONNECTION_FAILED(CONNECTIVITY),
+    INDEX_NOT_FOUND(EXECUTION);
     
     private ErrorTypeDefinition<? extends Enum<?>> parent;
 
