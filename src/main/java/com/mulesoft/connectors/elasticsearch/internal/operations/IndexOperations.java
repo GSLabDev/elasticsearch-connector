@@ -46,7 +46,6 @@ import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
  * @author Great Software Laboratory Pvt. Ltd.
  *
  */
-
 public class IndexOperations extends ElasticsearchOperations {
 
     /**
@@ -55,7 +54,7 @@ public class IndexOperations extends ElasticsearchOperations {
     private static final Logger logger = Logger.getLogger(IndexOperations.class.getName());
 
     /**
-     * The createIndex Operation allows to instantiate an index.
+     * The createIndex operation allows to instantiate an index.
      *
      * @param esConnection
      *            The Elasticsearch connection
@@ -63,11 +62,9 @@ public class IndexOperations extends ElasticsearchOperations {
      *            The index to create
      * @param indexSettings
      *            Settings for the index
-     * @param indexSettingJSONFile
+     * @param indexSettingsJSONFile
      *            Path of the JSON file which specifies Index Settings.
-     * @param indexMappings
-     *            Mapping for the index
-     * @param indexMappingJSONFile
+     * @param indexMappingsJSONFile
      *            Path of the JSON file which specifies Index Mapping.
      * @param indexAlias
      *            The alias of the index
@@ -85,11 +82,10 @@ public class IndexOperations extends ElasticsearchOperations {
     @DisplayName("Index - Create")
     public void createIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to create") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @DisplayName("Index Settings") Map<String, String> indexSettings,
-            @Placement(tab = "Optional Arguments", order = 2) @Optional @DisplayName("Index Settings (JSON file Path)") String indexSettingJSONFile,
-            @Placement(tab = "Optional Arguments", order = 4) @Optional @DisplayName("Index Mapping") Map<String, Object> indexMappings,
-            @Placement(tab = "Optional Arguments", order = 2) @Optional @DisplayName("Index Mapping (JSON file Path)") String indexMappingJSONFile,
-            @Placement(tab = "Optional Arguments", order = 6) @Optional @DisplayName("Index Alias") String indexAlias,
-            @Placement(tab = "Optional Arguments", order = 5) @Optional @DisplayName("Source (mappings, settings and aliases)") @Summary("The whole source including all of its sections (mappings, settings and aliases) can be provided in this file.") String sourceJSONFile,
+            @Placement(tab = "Optional Arguments", order = 2) @Optional @DisplayName("Index Settings (JSON file Path)") String indexSettingsJSONFile,
+            @Placement(tab = "Optional Arguments", order = 4) @Optional @DisplayName("Index Mappings (JSON file Path)") String indexMappingsJSONFile,
+            @Placement(tab = "Optional Arguments", order = 5) @Optional @DisplayName("Index Alias") String indexAlias,
+            @Placement(tab = "Optional Arguments", order = 6) @Optional @DisplayName("Source (Mappings, Settings and Aliases) (JSON file Path)") @Summary("The whole source including all of its sections (mappings, settings and aliases) can be provided in this file.") String sourceJSONFile,
             @Placement(tab = "Optional Arguments", order = 7) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation.") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 8) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node.") @DisplayName("Master Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
@@ -103,14 +99,12 @@ public class IndexOperations extends ElasticsearchOperations {
                     settingsBuilder.put(entry.getKey(), entry.getValue());
                 }
                 createIndexReq.settings(settingsBuilder);
-            } else if (indexSettingJSONFile != null) {
-                createIndexReq.settings(ElasticsearchUtils.readFileToString(indexSettingJSONFile), XContentType.JSON);
+            } else if (indexSettingsJSONFile != null) {
+                createIndexReq.settings(ElasticsearchUtils.readFileToString(indexSettingsJSONFile), XContentType.JSON);
             }
 
-            if (indexMappings != null) {
-                createIndexReq.mapping(indexMappings);
-            } else if (indexMappingJSONFile != null) {
-                createIndexReq.mapping(ElasticsearchUtils.readFileToString(indexMappingJSONFile), XContentType.JSON);
+            if (indexMappingsJSONFile != null) {
+                createIndexReq.mapping(ElasticsearchUtils.readFileToString(indexMappingsJSONFile), XContentType.JSON);
             }
 
             if (sourceJSONFile != null) {
