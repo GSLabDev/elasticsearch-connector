@@ -24,10 +24,6 @@ public class ElasticsearchUtils {
     private ElasticsearchUtils() {
     }
 
-    public static BasicHeader getContentTypeJsonHeader() {
-        return new BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json");
-    }
-
     public static RequestOptions getContentTypeJsonRequestOption() {
         RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder().addHeader("Content-Type", "application/json");
         return builder.build();
