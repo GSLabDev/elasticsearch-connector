@@ -94,7 +94,7 @@ public class DocumentOperations extends ElasticsearchOperations {
     public void indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
@@ -109,7 +109,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             } else {
                 indexRequest = new IndexRequest(index).id(documentId).source(inputSource.getDocumentSource());
             }
-            
+
             if (timeoutInSec != 0) {
                 indexRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
             }
@@ -165,8 +165,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Set realtime flag") @Optional(defaultValue = "true") boolean realtime,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Refresh") @Summary("Perform a refresh before retrieving the document") @Optional(defaultValue = "false") boolean refresh,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional(defaultValue = "0") long version,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType,
-            CompletionCallback<String, Void> callback) {
+            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType, CompletionCallback<String, Void> callback) {
 
         GetRequest getRequest = new GetRequest(index, documentId);
 
@@ -234,18 +233,17 @@ public class DocumentOperations extends ElasticsearchOperations {
     public void deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
-            CompletionCallback<DeleteResponse, Void> callback) {
+            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType, CompletionCallback<DeleteResponse, Void> callback) {
 
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
         if (timeoutInSec != 0) {
             deleteRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
         }
-        
+
         ifPresent(routing, routingValue -> deleteRequest.routing(routingValue));
         ifPresent(refreshPolicy, refreshPolicyValue -> deleteRequest.setRefreshPolicy(refreshPolicyValue));
         ifPresent(version, versionValue -> deleteRequest.version(versionValue));
@@ -302,7 +300,7 @@ public class DocumentOperations extends ElasticsearchOperations {
     public void updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
+            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Retry on Conflict") @Optional(defaultValue = "0") @Summary("How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update operation") int retryOnConflict,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Fetch Source") @Optional(defaultValue = "false") boolean fetchSource,
@@ -326,7 +324,7 @@ public class DocumentOperations extends ElasticsearchOperations {
         if (timeoutInSec != 0) {
             updateRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
         }
-        
+
         ifPresent(routing, routingValue -> updateRequest.routing(routingValue));
         ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue));
         ifPresent(retryOnConflict, retryOnConflictValue -> updateRequest.retryOnConflict(retryOnConflictValue));

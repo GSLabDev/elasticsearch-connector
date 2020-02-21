@@ -147,12 +147,11 @@ public class IndexOperations extends ElasticsearchOperations {
      *            Timeout in seconds to connect to the master node.
      * @param indicesOpts
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
-     * @param callback 
+     * @param callback
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Index - Delete")
-    public void deleteIndex(@Connection ElasticsearchConnection esConnection,
-            @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
+    public void deleteIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpts, CompletionCallback<AcknowledgedResponse, Void> callback) {
@@ -181,12 +180,12 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         } catch (Exception e) {
-    	    if (e instanceof ElasticsearchException && ((ElasticsearchStatusException) e).status() == RestStatus.NOT_FOUND) {
-    	    	throw new IndexNotFoundException(e);
-    	    } else {
-    	    	logger.error(e);
-        		throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
-    	    }
+            if (e instanceof ElasticsearchException && ((ElasticsearchStatusException) e).status() == RestStatus.NOT_FOUND) {
+                throw new IndexNotFoundException(e);
+            } else {
+                logger.error(e);
+                throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
+            }
         }
     }
 
@@ -214,8 +213,7 @@ public class IndexOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
-            @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts,
-            CompletionCallback<OpenIndexResponse, Void> callback) {
+            @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts, CompletionCallback<OpenIndexResponse, Void> callback) {
 
         OpenIndexRequest openIndexRequest = new OpenIndexRequest(index);
 
@@ -272,8 +270,7 @@ public class IndexOperations extends ElasticsearchOperations {
     public void closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt,
-            CompletionCallback<CloseIndexResponse, Void> callback) {
+            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt, CompletionCallback<CloseIndexResponse, Void> callback) {
 
         CloseIndexRequest closeIndexRequest = new CloseIndexRequest(index);
 

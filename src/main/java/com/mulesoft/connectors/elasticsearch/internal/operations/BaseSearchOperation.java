@@ -16,7 +16,7 @@ import org.mule.runtime.extension.api.annotation.Ignore;
 import com.mulesoft.connectors.elasticsearch.api.SearchRequestConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchSourceConfiguration;
 
-public class BaseSearchOperation {
+public class BaseSearchOperation extends ElasticsearchOperations {
 
     /**
      * SearchRequest Builder
