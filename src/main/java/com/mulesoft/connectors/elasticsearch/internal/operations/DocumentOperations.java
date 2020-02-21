@@ -36,8 +36,8 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
+import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
 import com.mulesoft.connectors.elasticsearch.api.IndexDocumentOptions;
@@ -51,12 +51,12 @@ import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
  * @author Great Software Laboratory Pvt. Ltd.
  *
  */
-public class DocumentOperations {
+public class DocumentOperations extends ElasticsearchOperations {
 
     /**
      * Logging object
      */
-    private static final Logger logger = LoggerFactory.getLogger(IndexOperations.class);
+    private static final Logger logger = Logger.getLogger(DocumentOperations.class.getName());
 
     /**
      * Index Document operation adds or updates a typed JSON document in a specific index, making it searchable.
@@ -87,12 +87,11 @@ public class DocumentOperations {
      *            Type of the operation. When create type is used, the index operation will fail if a document by that id already exists in the index.
      * @param pipeline
      *            Name of the ingest pipeline to be executed before indexing the document
-     * @return IndexResponse
+     * @param callback
      */
-
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Index")
-    public IndexResponse indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    public void indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
@@ -100,7 +99,8 @@ public class DocumentOperations {
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Operation type") @Optional OpType operationType,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Pipeline") @Optional @Summary("The name of the ingest pipeline to be executed before indexing the document") String pipeline) {
+            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Pipeline") @Optional @Summary("The name of the ingest pipeline to be executed before indexing the document") String pipeline,
+            CompletionCallback<IndexResponse, Void> callback) {
 
         IndexRequest indexRequest;
         try {
@@ -123,8 +123,8 @@ public class DocumentOperations {
 
             IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
 
-            logger.info("Index Response : " + indexResp);
-            return indexResp;
+            logger.info("Index Document operation Status : " + indexResp.status());
+            responseConsumer(indexResp, callback);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
@@ -153,12 +153,11 @@ public class DocumentOperations {
      *            Version number of the indexed document
      * @param versionType
      *            Version type: internal, external, external_gte,
-     * @return Result that includes the index, type, id and version of the document
+     * @param callback
      */
-
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Get")
-    public String getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    public void getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Source retrieval") @Optional DocumentFetchSourceOptions fetchSourceContext,
             @Placement(tab = "Optional Arguments", order = 2) @DisplayName("Routing") @Optional String routing,
@@ -166,7 +165,8 @@ public class DocumentOperations {
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Set realtime flag") @Optional(defaultValue = "true") boolean realtime,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Refresh") @Summary("Perform a refresh before retrieving the document") @Optional(defaultValue = "false") boolean refresh,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional(defaultValue = "0") long version,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType) {
+            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType,
+            CompletionCallback<String, Void> callback) {
 
         GetRequest getRequest = new GetRequest(index, documentId);
 
@@ -197,11 +197,11 @@ public class DocumentOperations {
         GetResponse getResp;
         try {
             getResp = esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
+            logger.info("Get Response : " + getResp);
+            responseConsumer(getResp.getSourceAsString(), callback);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        logger.info("Get Response : " + getResp);
-        return getResp.getSourceAsString();
     }
 
     /**
@@ -227,17 +227,18 @@ public class DocumentOperations {
      *            Version number of the indexed document
      * @param versionType
      *            Version type: internal, external, external_gte
-     * @return DeleteResponse
+     * @param callback
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Delete")
-    public DeleteResponse deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    public void deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType) {
+            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
+            CompletionCallback<DeleteResponse, Void> callback) {
 
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
@@ -253,11 +254,11 @@ public class DocumentOperations {
         DeleteResponse deleteResp;
         try {
             deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
+            logger.info("Delete document response : " + deleteResp);
+            responseConsumer(deleteResp, callback);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        logger.info("Delete document response : " + deleteResp);
-        return deleteResp;
     }
 
     /**
@@ -294,11 +295,11 @@ public class DocumentOperations {
      *            Indicate that the script must run regardless of whether the document exists or not
      * @param docAsUpsert
      *            Indicate that the partial document must be used as the upsert document if it does not exist yet.
-     * @return UpdateResponse
+     * @param callback
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Update")
-    public UpdateResponse updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    public void updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue="0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
@@ -308,7 +309,8 @@ public class DocumentOperations {
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional(defaultValue = "0") long version,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Noop Detection") @Optional(defaultValue = "true") boolean detectNoop,
             @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Scripted Upsert") @Optional(defaultValue = "false") boolean scriptedUpsert,
-            @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert) {
+            @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert,
+            CompletionCallback<UpdateResponse, Void> callback) {
 
         UpdateRequest updateRequest = new UpdateRequest(index, documentId);
         if (inputSource.getJsonInputPath() != null) {
@@ -339,11 +341,11 @@ public class DocumentOperations {
         UpdateResponse updateResp;
         try {
             updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
+            logger.info("Update Response : " + updateResp);
+            responseConsumer(updateResp, callback);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        logger.info("Update Response : " + updateResp);
-        return updateResp;
     }
 
     /**
@@ -359,13 +361,12 @@ public class DocumentOperations {
      * 
      * @param jsonData
      *            Input file / data with list of operations to be performed like index, delete, update.
-     * @return Response
+     * @param callback
      */
-
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Bulk")
-    public Response bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
-            @ParameterGroup(name = "Input data") JsonData jsonData) {
+    public void bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
+            @ParameterGroup(name = "Input data") JsonData jsonData, CompletionCallback<Response, Void> callback) {
         String resource = type != null ? "/" + type + "/_bulk" : "/_bulk";
         resource = index != null ? "/" + index + resource : resource;
         Map<String, String> params = Collections.singletonMap("pretty", "true");
@@ -382,7 +383,9 @@ public class DocumentOperations {
             Request request = new Request("POST", resource);
             request.addParameters(params);
             request.setEntity(entity);
-            return esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request);
+            Response response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request);
+            logger.info("Bulk operation response : " + response);
+            responseConsumer(response, callback);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
