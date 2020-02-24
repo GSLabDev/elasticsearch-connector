@@ -96,7 +96,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
-            @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
+            @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional long version,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Operation type") @Optional OpType operationType,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Pipeline") @Optional @Summary("The name of the ingest pipeline to be executed before indexing the document") String pipeline,
@@ -116,7 +116,9 @@ public class DocumentOperations extends ElasticsearchOperations {
 
             ifPresent(routing, routingValue -> indexRequest.routing(routingValue));
             ifPresent(refreshPolicy, refreshPolicyValue -> indexRequest.setRefreshPolicy(refreshPolicyValue));
-            ifPresent(version, versionValue -> indexRequest.version(versionValue));
+            if(version != 0) {
+                indexRequest.version(version);
+            }
             ifPresent(versionType, versionTypeValue -> indexRequest.versionType(versionTypeValue));
             ifPresent(operationType, operationTypeValue -> indexRequest.opType(operationTypeValue));
             ifPresent(pipeline, pipelineValue -> indexRequest.setPipeline(pipelineValue));
@@ -164,7 +166,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Preference value") @Optional String preference,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Set realtime flag") @Optional(defaultValue = "true") boolean realtime,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Refresh") @Summary("Perform a refresh before retrieving the document") @Optional(defaultValue = "false") boolean refresh,
-            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional(defaultValue = "0") long version,
+            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional long version,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType, CompletionCallback<String, Void> callback) {
 
         GetRequest getRequest = new GetRequest(index, documentId);
@@ -188,7 +190,9 @@ public class DocumentOperations extends ElasticsearchOperations {
 
         ifPresent(routing, routingValue -> getRequest.routing(routingValue));
         ifPresent(preference, preferenceValue -> getRequest.preference(preferenceValue));
-        ifPresent(version, versionValue -> getRequest.version(versionValue));
+        if(version != 0) {
+            getRequest.version(version);
+        }
         ifPresent(versionType, versionTypeValue -> getRequest.versionType(versionTypeValue));
 
         getRequest.realtime(realtime);
@@ -197,7 +201,7 @@ public class DocumentOperations extends ElasticsearchOperations {
         try {
             getResp = esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Get Response : " + getResp);
-            responseConsumer(getResp.getSourceAsString(), callback);
+            responseConsumer(getResp.toString(), callback);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
