@@ -6,6 +6,7 @@ package com.mulesoft.connectors.elasticsearch.internal.operations;
 import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 import static com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils.ifPresent;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
@@ -127,8 +128,12 @@ public class DocumentOperations extends ElasticsearchOperations {
 
             logger.info("Index Document operation Status : " + indexResp.status());
             responseConsumer(indexResp, callback);
-        } catch (Exception e) {
+        } catch (IOException e) {
+            logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
     }
 
@@ -202,8 +207,12 @@ public class DocumentOperations extends ElasticsearchOperations {
             getResp = esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Get Response : " + getResp);
             responseConsumer(getResp.toString(), callback);
-        } catch (Exception e) {
+        } catch (IOException e) {
+            logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
     }
 
@@ -239,7 +248,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
-            @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional(defaultValue = "0") long version,
+            @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional long version,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType, CompletionCallback<DeleteResponse, Void> callback) {
 
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
@@ -247,10 +256,12 @@ public class DocumentOperations extends ElasticsearchOperations {
         if (timeoutInSec != 0) {
             deleteRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
         }
+        if (version != 0) {
+            deleteRequest.version(version);
+        }
 
         ifPresent(routing, routingValue -> deleteRequest.routing(routingValue));
         ifPresent(refreshPolicy, refreshPolicyValue -> deleteRequest.setRefreshPolicy(refreshPolicyValue));
-        ifPresent(version, versionValue -> deleteRequest.version(versionValue));
         ifPresent(versionType, versionTypeValue -> deleteRequest.versionType(versionTypeValue));
 
         DeleteResponse deleteResp;
@@ -258,8 +269,12 @@ public class DocumentOperations extends ElasticsearchOperations {
             deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Delete document response : " + deleteResp);
             responseConsumer(deleteResp, callback);
-        } catch (Exception e) {
+        } catch (IOException e) {
+            logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        } catch (Exception e) {
+            logger.error(e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
     }
 
