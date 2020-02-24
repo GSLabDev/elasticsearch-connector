@@ -378,12 +378,12 @@ public class DocumentOperations extends ElasticsearchOperations {
      * 
      * @param jsonData
      *            Input file / data with list of operations to be performed like index, delete, update.
-     * @param callback
+     * @return Response
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Bulk")
-    public void bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
-            @ParameterGroup(name = "Input data") JsonData jsonData, CompletionCallback<Response, Void> callback) {
+    public Response bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
+            @ParameterGroup(name = "Input data") JsonData jsonData) {
         String resource = type != null ? "/" + type + "/_bulk" : "/_bulk";
         resource = index != null ? "/" + index + resource : resource;
         Map<String, String> params = Collections.singletonMap("pretty", "true");
@@ -402,7 +402,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             request.setEntity(entity);
             Response response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request);
             logger.info("Bulk operation response : " + response);
-            responseConsumer(response, callback);
+            return response;
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }

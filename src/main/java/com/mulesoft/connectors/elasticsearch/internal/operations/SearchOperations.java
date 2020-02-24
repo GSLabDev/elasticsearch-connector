@@ -62,14 +62,13 @@ public class SearchOperations extends BaseSearchOperation {
      *            Different types of Elasticsearch query query configuration
      * @param searchSourceConfiguration
      *            Search source configuration to control the search behavior.
-     * @param callback
+     * @return SearchResponse
      */
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     @DisplayName("Search - Query")
-    public void search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
+    public SearchResponse search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
             @DisplayName("Query Type") @Placement(order = 1, tab = "Query") Query queryConfiguration,
-            @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration,
-            CompletionCallback<SearchResponse, Void> callback) {
+            @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration) {
 
         SearchSourceBuilder searchSourceBuilder = searchSourceConfiguration != null ? getSearchSourceBuilderOptions(searchSourceConfiguration) : new SearchSourceBuilder();
         searchSourceBuilder.query(queryConfiguration.getQuery());
@@ -79,7 +78,7 @@ public class SearchOperations extends BaseSearchOperation {
         try {
             SearchResponse response = esConnection.getElasticsearchConnection().search(searchRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Search response : " + response);
-            responseConsumer(response, callback);
+            return response;
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
@@ -93,12 +92,12 @@ public class SearchOperations extends BaseSearchOperation {
      *            Scroll identifier returned in last scroll request
      * @param timeValue
      *            Set the scroll interval time keep the search context alive(minutes)
-     * @param callback
+     * @return SearchResponse
      */
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     @DisplayName("Search - Scroll")
-    public void searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last request") String scrollId,
-            @DisplayName("Keep alive time") @Summary("Keep the search context alive for the minutes time") long timeValue, CompletionCallback<SearchResponse, Void> callback) {
+    public SearchResponse searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last request") String scrollId,
+            @DisplayName("Keep alive time") @Summary("Keep the search context alive for the minutes time") long timeValue) {
 
         SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
         scrollRequest.scroll(new Scroll(TimeValue.timeValueMinutes(timeValue)));
@@ -107,7 +106,7 @@ public class SearchOperations extends BaseSearchOperation {
         try {
             searchResponse = esConnection.getElasticsearchConnection().scroll(scrollRequest, RequestOptions.DEFAULT);
             logger.info("Search response : " + searchResponse);
-            responseConsumer(searchResponse, callback);
+            return searchResponse;
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
@@ -121,12 +120,11 @@ public class SearchOperations extends BaseSearchOperation {
      *            Restricts the search request to an index
      * @param jsonData
      *            JSON file or string containing Elasticsearch query configuration
-     * @param callback
+     * @return Search Result
      */
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     @DisplayName("Search - JSON Query")
-    public void searchUsingJsonData(@Connection ElasticsearchConnection esConnection, @Optional String index, @ParameterGroup(name = "JSON Query") JsonData jsonData,
-            CompletionCallback<Result<String, StatusLine>, Void> callback) {
+    public Result<String, StatusLine> searchUsingJsonData(@Connection ElasticsearchConnection esConnection, @Optional String index, @ParameterGroup(name = "JSON Query") JsonData jsonData) {
 
         String resource = index != null ? index.trim() + "/_search" : "/_search";
         String jsonContent;
@@ -160,7 +158,7 @@ public class SearchOperations extends BaseSearchOperation {
                     .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
                     .build();
             logger.info("Search response : " + result);
-            responseConsumer(result, callback);
+            return result;
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
@@ -174,17 +172,17 @@ public class SearchOperations extends BaseSearchOperation {
      *            The Elasticsearch connection
      * @param scrollId
      *            Scroll identifier to clear scroll
-     * @param callback
+     * @return ClearScrollResponse
      */
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     @DisplayName("Search - Clear Scroll")
-    public void clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll ID") String scrollId, CompletionCallback<ClearScrollResponse, Void> callback) {
+    public ClearScrollResponse clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll ID") String scrollId) {
         ClearScrollRequest clearScrollrequest = new ClearScrollRequest();
         clearScrollrequest.addScrollId(scrollId);
         try {
             ClearScrollResponse response = esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest, RequestOptions.DEFAULT);
             logger.info("Clear scroll response : " + response);
-            responseConsumer(response, callback);
+            return response;
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
