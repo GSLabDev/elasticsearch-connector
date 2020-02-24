@@ -5,9 +5,7 @@ package org.mule.extension.elastic.document;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertTrue;
 
-import org.elasticsearch.action.index.IndexResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,10 +27,8 @@ public class IndexDocumentOperationTestCase extends MuleArtifactFunctionalTestCa
      */
     @Before
     public void setup() throws InterruptedException {
-
         try {
             flowRunner("testCreateIndexFlow").run().getMessage().getPayload().getValue();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -55,12 +51,10 @@ public class IndexDocumentOperationTestCase extends MuleArtifactFunctionalTestCa
      */
     @Test
     public void executeIndexDocumentOperation() {
-        IndexResponse payloadValue;
         try {
-            payloadValue = ((IndexResponse) flowRunner("indexDocumentFlow").run().getMessage().getPayload().getValue());
-            assertTrue(payloadValue != null);
+            Object payloadValue = flowRunner("indexDocumentFlow").run().getMessage().getPayload().getValue();
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -71,15 +65,12 @@ public class IndexDocumentOperationTestCase extends MuleArtifactFunctionalTestCa
      */
     @Test
     public void executeIndexDocumentOperationForJSONinput() {
-        IndexResponse payloadValue;
         try {
-            payloadValue = ((IndexResponse) flowRunner("indexDocumentFlowForJSONinput").run().getMessage().getPayload().getValue());
-            assertTrue(payloadValue.getType().equals("doc"));
+            Object payloadValue = flowRunner("indexDocumentFlowForJSONinput").run().getMessage().getPayload().getValue();
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 
 }

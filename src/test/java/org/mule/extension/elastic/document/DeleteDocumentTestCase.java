@@ -3,9 +3,9 @@
  */
 package org.mule.extension.elastic.document;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
-import org.elasticsearch.action.delete.DeleteResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,14 +53,11 @@ public class DeleteDocumentTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Test
     public void executeDeleteDocumentOperation() {
-
         try {
-            DeleteResponse payloadValue = ((DeleteResponse) flowRunner("testDeleteOperationFlow").run().getMessage().getPayload().getValue());
-            assertTrue(payloadValue.getType().equals("doc"));
+            Object payloadValue = flowRunner("testDeleteOperationFlow").run().getMessage().getPayload().getValue();
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
     }
 }

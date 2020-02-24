@@ -3,7 +3,8 @@
  */
 package org.mule.extension.elastic.document;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,7 +27,6 @@ public class BulkOperationTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Before
     public void setup() {
-
         try {
             flowRunner("testCreateIndexFlow").run().getMessage().getPayload().getValue();
         } catch (Exception e) {
@@ -53,11 +53,10 @@ public class BulkOperationTestCase extends MuleArtifactFunctionalTestCase {
     public void executeIndexDocumentOperation() {
         try {
             Object payloadValue = (flowRunner("testBulkOperationFlow").run().getMessage().getPayload().getValue());
-            assertTrue(payloadValue != null);
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 }

@@ -3,9 +3,9 @@
  */
 package org.mule.extension.elastic.index;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -28,7 +28,6 @@ public class DeleteIndexOperationTestCase extends MuleArtifactFunctionalTestCase
     public void setup() {
         try {
             flowRunner("testCreateIndexFlow").run().getMessage().getPayload().getValue();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,14 +38,12 @@ public class DeleteIndexOperationTestCase extends MuleArtifactFunctionalTestCase
      */
     @Test
     public void executeIndexDocumentOperation() {
-        AcknowledgedResponse payloadValue;
         try {
-            payloadValue = ((AcknowledgedResponse) flowRunner("testDeleteIndexFlow").run().getMessage().getPayload().getValue());
-            assertTrue(payloadValue.isAcknowledged() == true);
+            Object payloadValue = flowRunner("testDeleteIndexFlow").run().getMessage().getPayload().getValue();
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
 }

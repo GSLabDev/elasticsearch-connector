@@ -3,9 +3,9 @@
  */
 package org.mule.extension.elastic.index;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
-import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,10 +27,8 @@ public class OpenIndexOperationTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Before
     public void setup() {
-
         try {
             flowRunner("testCreateIndexFlow").run().getMessage().getPayload().getValue();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -43,7 +41,6 @@ public class OpenIndexOperationTestCase extends MuleArtifactFunctionalTestCase {
     public void tearDown() {
         try {
             flowRunner("testDeleteIndexFlow").run().getMessage().getPayload().getValue();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,12 +51,9 @@ public class OpenIndexOperationTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Test
     public void executeIndexDocumentOperation() {
-
-        OpenIndexResponse payloadValue;
         try {
-            payloadValue = ((OpenIndexResponse) flowRunner("testOpenIndexFlow").run().getMessage().getPayload().getValue());
-
-            assertTrue(payloadValue.isAcknowledged() == true);
+            Object payloadValue = flowRunner("testOpenIndexFlow").run().getMessage().getPayload().getValue();
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -3,7 +3,8 @@
  */
 package org.mule.extension.elastic.index;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -22,11 +23,9 @@ public class InfoTestCase extends MuleArtifactFunctionalTestCase {
     public void executeInfoOperation() {
         try {
             Object payloadValue = flowRunner("testInfoFlow").run().getMessage().getPayload();
-            assertTrue(payloadValue != null);
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
             e.printStackTrace();
         }
-    
-
-}
+    }
 }

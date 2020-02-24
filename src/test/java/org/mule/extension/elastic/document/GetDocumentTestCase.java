@@ -6,7 +6,8 @@
  */
 package org.mule.extension.elastic.document;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +30,6 @@ public class GetDocumentTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Before
     public void setup() throws InterruptedException {
-
         try {
             flowRunner("testCreateIndexFlow").run().getMessage().getPayload().getValue();
             flowRunner("indexDocumentFlow").run().getMessage().getPayload().getValue();
@@ -55,7 +55,7 @@ public class GetDocumentTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Test
     public void executeGetDocumentOperation() throws Exception {
-        String payloadValue = (flowRunner("testGetDocumentFlow").run().getMessage().getPayload().getValue().toString());
-        assertTrue(payloadValue != null);
+        Object payloadValue = flowRunner("testGetDocumentFlow").run().getMessage().getPayload().getValue().toString();
+        assertThat(payloadValue, notNullValue());
     }
 }

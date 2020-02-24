@@ -3,9 +3,9 @@
  */
 package org.mule.extension.elastic.index;
 
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
 
-import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.junit.After;
 import org.junit.Test;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
@@ -28,7 +28,6 @@ public class CreateIndexOperationTestCase extends MuleArtifactFunctionalTestCase
     public void tearDown() {
         try {
             flowRunner("testDeleteIndexFlow").run().getMessage().getPayload().getValue();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,11 +38,9 @@ public class CreateIndexOperationTestCase extends MuleArtifactFunctionalTestCase
      */
     @Test
     public void executeCreateIndexOperation() {
-
-        CreateIndexResponse payloadValue;
         try {
-            payloadValue = ((CreateIndexResponse) flowRunner("testCreateIndexFlow").run().getMessage().getPayload().getValue());
-            assertTrue(payloadValue.isShardsAcknowledged() == true);
+            Object payloadValue = flowRunner("testCreateIndexFlow").run().getMessage().getPayload().getValue();
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
             e.printStackTrace();
         }

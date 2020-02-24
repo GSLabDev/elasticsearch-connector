@@ -5,9 +5,7 @@ package org.mule.extension.elastic.document;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertTrue;
 
-import org.elasticsearch.action.update.UpdateResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,12 +27,9 @@ public class UpdateDocumentTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Before
     public void setup() {
-
         try {
             flowRunner("testCreateIndexFlow").run().getMessage().getPayload().getValue();
-
             flowRunner("indexDocumentFlow").run().getMessage().getPayload().getValue();
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,11 +52,9 @@ public class UpdateDocumentTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Test
     public void executeIndexDocumentOperation() {
-
-        UpdateResponse payloadValue;
         try {
-            payloadValue = ((UpdateResponse) flowRunner("testecFlowUpdate").run().getMessage().getPayload().getValue());
-            assertTrue(payloadValue != null);
+            Object payloadValue = flowRunner("testecFlowUpdate").run().getMessage().getPayload().getValue();
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,12 +65,9 @@ public class UpdateDocumentTestCase extends MuleArtifactFunctionalTestCase {
      */
     @Test
     public void executeIndexDocumentOperationWithJSON() {
-
-        UpdateResponse payloadValue;
         try {
-            payloadValue = ((UpdateResponse) flowRunner("testecFlowUpdateWithJSON").run().getMessage().getPayload().getValue());
-            assertTrue(payloadValue.getType().equals("doc"));
-
+            Object payloadValue = flowRunner("testecFlowUpdateWithJSON").run().getMessage().getPayload().getValue();
+            assertThat(payloadValue, notNullValue());
         } catch (Exception e) {
             e.printStackTrace();
         }
