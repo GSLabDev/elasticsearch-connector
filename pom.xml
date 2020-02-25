@@ -24,6 +24,12 @@
 		<httpConnectorVersion>1.2.0</httpConnectorVersion>
 		<socketsConnectorVersion>1.1.1</socketsConnectorVersion>
 		<jackson.databind.version>2.10.2</jackson.databind.version>
+		
+		<munit.extensions.maven.plugin.version>1.0.0-BETA4</munit.extensions.maven.plugin.version>
+		<jacoco.version>0.8.4</jacoco.version>
+		<munit.input.directory>src/test/munit</munit.input.directory>
+		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
+		<mavenResourcesVersion>3.0.2</mavenResourcesVersion>
 	</properties>
 
 	<dependencies>
@@ -139,12 +145,18 @@
 				<version>3.2.7</version>
 				<extensions>true</extensions>
 				<configuration>
+					<coverage>
+						<runCoverage>true</runCoverage>
+						<formats>
+							<format>html</format>
+						</formats>
+					</coverage>
 				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.3</version>
+				<version>${jacoco.version}</version>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>
@@ -179,6 +191,64 @@
 						<jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
 					</systemPropertyVariables>
 				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${mavenResourcesVersion}</version>
+				<executions>
+					<execution>
+						<id>copy-munit-resources</id>
+						<phase>process-test-resources</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${munit.output.directory}</outputDirectory>
+							<resources>
+								<resource>
+									<directory>${munit.input.directory}</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>com.mulesoft.munit</groupId>
+				<artifactId>munit-extensions-maven-plugin</artifactId>
+				<version>${munit.extensions.maven.plugin.version}</version>
+				<executions>
+					<execution>
+						<id>test</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<argLines>
+						<argLine>
+							-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec
+						</argLine>
+					</argLines>
+					<runtimeVersion>4.2.1</runtimeVersion>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>com.mulesoft.munit</groupId>
+						<artifactId>munit-runner</artifactId>
+						<version>2.1.5</version>
+						<classifier>mule-plugin</classifier>
+					</dependency>
+					<dependency>
+						<groupId>com.mulesoft.munit</groupId>
+						<artifactId>munit-tools</artifactId>
+						<version>2.1.5</version>
+						<classifier>mule-plugin</classifier>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
