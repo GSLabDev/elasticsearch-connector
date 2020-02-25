@@ -304,6 +304,10 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            operation
      * @param fetchSource
      *            Enable or disable source retrieval
+     * @param ifSeqNo        
+     *            If set, only perform this update request if the document was last modification was assigned this sequence number.
+     * @param ifPrimaryTerm           
+     *            If set, only perform this update request if the document was last modification was assigned this primary term.
      * @param version
      *            Version number of the indexed document
      * @param detectNoop
@@ -312,6 +316,8 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Indicate that the script must run regardless of whether the document exists or not
      * @param docAsUpsert
      *            Indicate that the partial document must be used as the upsert document if it does not exist yet.
+     * @param waitForActiveShards
+     *            The number of shard copies that must be active before proceeding with the update operation.
      * @param callback
      */
     @MediaType(value = ANY, strict = false)
@@ -323,41 +329,44 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Retry on Conflict") @Optional(defaultValue = "0") @Summary("How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update operation") int retryOnConflict,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Fetch Source") @Optional(defaultValue = "false") boolean fetchSource,
-            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional(defaultValue = "0") long version,
+            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("If Seq No") @Optional long ifSeqNo,
+            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("If Primary Term") @Optional long ifPrimaryTerm,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Noop Detection") @Optional(defaultValue = "true") boolean detectNoop,
             @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Scripted Upsert") @Optional(defaultValue = "false") boolean scriptedUpsert,
             @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert,
+            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional int waitForActiveShards,
             CompletionCallback<UpdateResponse, Void> callback) {
-
-        UpdateRequest updateRequest = new UpdateRequest(index, documentId);
-        if (inputSource.getJsonInputPath() != null) {
-            try {
-                updateRequest.doc(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
-            } catch (Exception e) {
-                throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-            }
-        } else {
-            updateRequest.doc(inputSource.getDocumentSource());
-        }
-
-        if (timeoutInSec != 0) {
-            updateRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
-        }
-
-        ifPresent(routing, routingValue -> updateRequest.routing(routingValue));
-        ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue));
-        ifPresent(retryOnConflict, retryOnConflictValue -> updateRequest.retryOnConflict(retryOnConflictValue));
-
-        if (version != 0L) {
-            updateRequest.version(version);
-        }
-        updateRequest.fetchSource(fetchSource);
-        updateRequest.detectNoop(detectNoop);
-        updateRequest.scriptedUpsert(scriptedUpsert);
-        updateRequest.docAsUpsert(docAsUpsert);
-        UpdateResponse updateResp;
         try {
-            updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
+            UpdateRequest updateRequest = new UpdateRequest(index, documentId);
+            if (inputSource.getJsonInputPath() != null) {
+                updateRequest.doc(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
+            } else {
+                updateRequest.doc(inputSource.getDocumentSource());
+            }
+            
+            ifPresent(routing, routingValue -> updateRequest.routing(routingValue));
+            if (timeoutInSec != 0) {
+                updateRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
+            }
+            ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue));
+            if (retryOnConflict != 0) {
+                updateRequest.retryOnConflict(retryOnConflict);
+            }
+            updateRequest.fetchSource(fetchSource);
+            if (ifSeqNo != 0) {
+                updateRequest.setIfSeqNo(ifSeqNo);
+            }
+            if (ifPrimaryTerm != 0) {
+                updateRequest.setIfPrimaryTerm(ifPrimaryTerm); 
+            }
+            updateRequest.detectNoop(detectNoop);
+            updateRequest.scriptedUpsert(scriptedUpsert);
+            updateRequest.docAsUpsert(docAsUpsert);
+            if (waitForActiveShards != 0) {
+                updateRequest.waitForActiveShards(waitForActiveShards); 
+            }
+            
+            UpdateResponse updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Update Response : " + updateResp);
             responseConsumer(updateResp, callback);
         } catch (Exception e) {
