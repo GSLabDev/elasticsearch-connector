@@ -6,11 +6,11 @@ package com.mulesoft.connectors.elasticsearch.api;
 import org.mule.runtime.api.meta.model.display.PathModel.Location;
 import org.mule.runtime.api.meta.model.display.PathModel.Type;
 import org.mule.runtime.extension.api.annotation.dsl.xml.ParameterDsl;
-import org.mule.runtime.extension.api.annotation.param.ExclusiveOptionals;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Path;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.mule.runtime.extension.api.annotation.param.display.Text;
 
 /**
@@ -18,7 +18,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Text;
  * 
  *         JSON file path or JSON text exclusive parameter option class
  */
-@ExclusiveOptionals(isOneRequired = true)
 public class JsonData {
 
     /**
@@ -29,6 +28,7 @@ public class JsonData {
     @Path(type = Type.FILE, acceptedFileExtensions = "json", location = Location.ANY)
     @ParameterDsl(allowReferences = false)
     @DisplayName("File")
+    @Summary("Provide the JSON file path. Either of the fields JSON file path or JSON text must be set.")
     private String jsonfile;
 
     /**
@@ -38,6 +38,7 @@ public class JsonData {
     @Optional
     @Text
     @DisplayName("Text")
+    @Summary("Provide the JSON string. Either of the fields JSON file path or JSON text must be set.")
     private String jsonText;
 
     public String getJsonfile() {

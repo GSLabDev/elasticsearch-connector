@@ -43,6 +43,7 @@ import org.apache.log4j.Logger;
 import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
 import com.mulesoft.connectors.elasticsearch.api.IndexDocumentOptions;
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
+import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
@@ -375,7 +376,7 @@ public class DocumentOperations extends ElasticsearchOperations {
     }
 
     /**
-     * Bulk operation makes it possible to perform many index, delete and update operations in a single API call.
+     * Bulk operation makes it possible to perform many create, index, delete and update operations in a single API call.
      * 
      * @param esConnection
      *            The Elasticsearch connection
@@ -386,13 +387,13 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Type name on which bulk operation Performed
      * 
      * @param jsonData
-     *            Input file / data with list of operations to be performed like index, delete, update.
-     * @return Response
+     *            Input file / data with list of operations to be performed like create, index, delete, update.
+     * @param callback
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Document - Bulk")
-    public Response bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
-            @ParameterGroup(name = "Input data") JsonData jsonData) {
+    public void bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
+            @ParameterGroup(name = "Input data") JsonData jsonData, CompletionCallback<ElasticsearchResponse, Void> callback) {
         String resource = type != null ? "/" + type + "/_bulk" : "/_bulk";
         resource = index != null ? "/" + index + resource : resource;
         Map<String, String> params = Collections.singletonMap("pretty", "true");
@@ -409,9 +410,9 @@ public class DocumentOperations extends ElasticsearchOperations {
             Request request = new Request("POST", resource);
             request.addParameters(params);
             request.setEntity(entity);
-            Response response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request);
+            ElasticsearchResponse response = new ElasticsearchResponse(esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request));
             logger.info("Bulk operation response : " + response);
-            return response;
+            responseConsumer(response, callback);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
