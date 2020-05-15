@@ -30,7 +30,6 @@ public class InfoOperation extends ElasticsearchOperations {
      * @param esConnection
      *            The Elasticsearch connection
      * @param callback
-     * 
      */
     @MediaType(value = ANY, strict = false)
     @DisplayName("Elasticsearch - Info")

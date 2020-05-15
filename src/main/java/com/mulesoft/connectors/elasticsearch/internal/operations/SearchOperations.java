@@ -4,6 +4,7 @@
 package com.mulesoft.connectors.elasticsearch.internal.operations;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
@@ -88,34 +89,6 @@ public class SearchOperations extends BaseSearchOperation {
      * 
      * @param esConnection
      *            The Elasticsearch connection
-     * @param scrollId
-     *            Scroll identifier returned in last scroll request
-     * @param timeValue
-     *            Set the scroll interval time keep the search context alive(minutes)
-     * @return SearchResponse
-     */
-    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
-    @DisplayName("Search - Scroll")
-    public SearchResponse searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last request") String scrollId,
-            @DisplayName("Keep alive time") @Summary("Keep the search context alive for the minutes time") long timeValue) {
-
-        SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
-        scrollRequest.scroll(new Scroll(TimeValue.timeValueMinutes(timeValue)));
-
-        SearchResponse searchResponse;
-        try {
-            searchResponse = esConnection.getElasticsearchConnection().scroll(scrollRequest, RequestOptions.DEFAULT);
-            logger.info("Search response : " + searchResponse);
-            return searchResponse;
-        } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-        }
-    }
-
-    /**
-     * 
-     * @param esConnection
-     *            The Elasticsearch connection
      * @param index
      *            Restricts the search request to an index
      * @param jsonData
@@ -163,26 +136,59 @@ public class SearchOperations extends BaseSearchOperation {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
     }
-
+    
     /**
-     * The search contexts used by the Search Scroll operation are automatically deleted when the scroll times out. Clear scroll operation release search contexts as soon as they
-     * are not necessary anymore using the Clear Scroll.
-     * 
+     * The Search Scroll operation is used to retrieve a large number of results from a search request.
      * @param esConnection
      *            The Elasticsearch connection
      * @param scrollId
-     *            Scroll identifier to clear scroll
-     * @return ClearScrollResponse
+     *            Scroll identifier returned in last scroll/search request
+     * @param timeValue
+     *            Scroll time interval (in seconds) to keep the search context alive
+     * @param callback
+     */
+    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @DisplayName("Search - Scroll")
+    public void searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last scroll/search request") String scrollId,
+            @Optional @DisplayName("Keep alive time") @Summary("Time interval (in seconds) to keep the search context alive.") long timeValue,
+            CompletionCallback<SearchResponse, Void> callback) {
+
+        SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
+        
+        if(timeValue != 0) {
+            scrollRequest.scroll(new Scroll(TimeValue.timeValueSeconds(timeValue)));
+        }
+        
+        SearchResponse searchResponse;
+        try {
+            searchResponse = esConnection.getElasticsearchConnection().scroll(scrollRequest, RequestOptions.DEFAULT);
+            logger.info("Search response : " + searchResponse);
+            responseConsumer(searchResponse, callback);
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        }
+    }
+
+    /**
+     * Clear scroll operation release search contexts as soon as they are not necessary anymore.
+     * This happens automatically when the scroll expires
+     * 
+     * @param esConnection
+     *            The Elasticsearch connection
+     * @param scrollIds
+     *            List of scroll identifiers to clear
+     * @param callback
      */
     @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     @DisplayName("Search - Clear Scroll")
-    public ClearScrollResponse clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll ID") String scrollId) {
+    public void clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll IDs") List<String> scrollIds,
+            CompletionCallback<ClearScrollResponse, Void> callback) {
         ClearScrollRequest clearScrollrequest = new ClearScrollRequest();
-        clearScrollrequest.addScrollId(scrollId);
+        clearScrollrequest.setScrollIds(scrollIds);
         try {
             ClearScrollResponse response = esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest, RequestOptions.DEFAULT);
             logger.info("Clear scroll response : " + response);
-            return response;
+            responseConsumer(response, callback);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
