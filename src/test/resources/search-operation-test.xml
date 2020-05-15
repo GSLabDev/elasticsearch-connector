@@ -243,7 +243,12 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</flow>
 	
 	<flow name="testClearScrollFlow" doc:id="99c84f1d-1a9d-4cb0-acc1-c5058158ab78" >
-		<elasticsearch:clear-scroll doc:name="Clear scroll" doc:id="8abbe295-6b63-4f3d-98c3-0af7de05d205" config-ref="${elastic.config}" scrollId="#[vars.scrollId]"/>
+		<elasticsearch:clear-scroll doc:name="Search - Clear Scroll" doc:id="3228bf08-5c75-4ab7-8702-58ef7591e4f7" config-ref="${elastic.config}">
+			<elasticsearch:scroll-ids >
+				<elasticsearch:scroll-id value="#[vars.scrollId]" />
+			</elasticsearch:scroll-ids>
+		</elasticsearch:clear-scroll>
+		
 		<logger level="INFO" doc:name="Logger" doc:id="cf90d854-1983-4e4c-be12-9d011ce00179" message="#[payload]"/>
 	</flow>
 	

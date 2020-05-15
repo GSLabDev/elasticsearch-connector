@@ -114,9 +114,9 @@ public class SearchOperationTest extends MuleArtifactFunctionalTestCase {
         String key = "scrollId";
         String value = payloadValue.getScrollId();
 
-        payloadValue = (SearchResponse) flowRunner("testSearchScrollFlow").withVariable(key, value).run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue.toString());
-        assertNotNull(payloadValue);
+        Object scrollPayloadValue = flowRunner("testSearchScrollFlow").withVariable(key, value).run().getMessage().getPayload().getValue();
+        LOGGER.info(scrollPayloadValue.toString());
+        assertNotNull(scrollPayloadValue);
         assertNotNull(value);
         value = payloadValue.getScrollId();
     }
@@ -128,7 +128,7 @@ public class SearchOperationTest extends MuleArtifactFunctionalTestCase {
         String key = "scrollId";
         String value = payloadValue.getScrollId();
 
-        ClearScrollResponse response = (ClearScrollResponse) flowRunner("testClearScrollFlow").withVariable(key, value).run().getMessage().getPayload().getValue();
+        Object response = flowRunner("testClearScrollFlow").withVariable(key, value).run().getMessage().getPayload().getValue();
 
         LOGGER.info(response.toString());
         assertNotNull(response);
