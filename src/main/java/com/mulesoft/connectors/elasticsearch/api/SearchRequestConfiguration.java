@@ -5,6 +5,7 @@ package com.mulesoft.connectors.elasticsearch.api;
 
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
@@ -56,7 +57,8 @@ public class SearchRequestConfiguration {
      */
     @Parameter
     @Optional(defaultValue = "0")
-    int scrollIntervalTime;
+    @Summary("Time interval (in minutes) to keep the search context alive.")
+    private int scrollIntervalTime;
 
     public String getIndex() {
         return index;
