@@ -165,8 +165,8 @@ public class IndexOperations extends ElasticsearchOperations {
             deleteIndexRequest.masterNodeTimeout(TimeValue.timeValueSeconds(masterNodeTimeoutInSec));
         }
         if (indicesOpts != null) {
-            IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpts.isIgnoreUnavailable(), indicesOpts.isAllowNoIndices(), indicesOpts.isExpandToOpenIndices(),
-                    indicesOpts.isExpandToClosedIndices(), indicesOpts.isAllowAliasesToMultipleIndices(), indicesOpts.isForbidClosedIndices(), indicesOpts.isIgnoreAliases(),
+            IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpts.isIgnoreUnavailable(), indicesOpts.isAllowNoIndices(), indicesOpts.isExpandWildcardsOpen(),
+                    indicesOpts.isExpandWildcardsClosed(), indicesOpts.isAllowAliasesToMultipleIndices(), indicesOpts.isForbidClosedIndices(), indicesOpts.isIgnoreAliases(),
                     indicesOpts.isIgnoreThrottled());
             deleteIndexRequest.indicesOptions(indOptions);
         }
@@ -229,8 +229,8 @@ public class IndexOperations extends ElasticsearchOperations {
         }
 
         if (indicesOpts != null) {
-            IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpts.isIgnoreUnavailable(), indicesOpts.isAllowNoIndices(), indicesOpts.isExpandToOpenIndices(),
-                    indicesOpts.isExpandToClosedIndices(), indicesOpts.isAllowAliasesToMultipleIndices(), indicesOpts.isForbidClosedIndices(), indicesOpts.isIgnoreAliases(),
+            IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpts.isIgnoreUnavailable(), indicesOpts.isAllowNoIndices(), indicesOpts.isExpandWildcardsOpen(),
+                    indicesOpts.isExpandWildcardsClosed(), indicesOpts.isAllowAliasesToMultipleIndices(), indicesOpts.isForbidClosedIndices(), indicesOpts.isIgnoreAliases(),
                     indicesOpts.isIgnoreThrottled());
             openIndexRequest.indicesOptions(indOptions);
         }
@@ -282,8 +282,8 @@ public class IndexOperations extends ElasticsearchOperations {
         }
 
         if (indicesOpt != null) {
-            IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpt.isIgnoreUnavailable(), indicesOpt.isAllowNoIndices(), indicesOpt.isExpandToOpenIndices(),
-                    indicesOpt.isExpandToClosedIndices(), indicesOpt.isAllowAliasesToMultipleIndices(), indicesOpt.isForbidClosedIndices(), indicesOpt.isIgnoreAliases(),
+            IndicesOptions indOptions = IndicesOptions.fromOptions(indicesOpt.isIgnoreUnavailable(), indicesOpt.isAllowNoIndices(), indicesOpt.isExpandWildcardsOpen(),
+                    indicesOpt.isExpandWildcardsClosed(), indicesOpt.isAllowAliasesToMultipleIndices(), indicesOpt.isForbidClosedIndices(), indicesOpt.isIgnoreAliases(),
                     indicesOpt.isIgnoreThrottled());
             closeIndexRequest.indicesOptions(indOptions);
         }

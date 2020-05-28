@@ -4,6 +4,7 @@
 package com.mulesoft.connectors.elasticsearch.api;
 
 import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
@@ -11,28 +12,60 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
  */
 public class IndexOptions {
 
+    /**
+     * Whether specified concrete indices should be ignored when unavailable (missing or closed).
+     */
     @Parameter
+    @Summary("Whether specified concrete indices should be ignored when unavailable (missing or closed)")
     private boolean ignoreUnavailable;
 
+    /**
+     * Whether to ignore if a wildcard expression resolves to no concrete indices.
+     */
     @Parameter
+    @Summary(" Whether to ignore if a wildcard expression resolves to no concrete indices.")
     private boolean allowNoIndices;
 
+    /**
+     * Whether wildcard expressions should get expanded to open indices.
+     */
     @Parameter
-    private boolean expandToOpenIndices;
+    @Summary("Whether wildcard expressions should get expanded to open indices.")
+    private boolean expandWildcardsOpen;
 
+    /**
+     * Whether wildcard expressions should get expanded to closed indices.
+     */
     @Parameter
-    private boolean expandToClosedIndices;
+    @Summary("Whether wildcard expressions should get expanded to closed indices.")
+    private boolean expandWildcardsClosed;
 
+    /**
+     * Whether aliases pointing to multiple indices are allowed.
+     */
     @Parameter
+    @Summary("Whether aliases pointing to multiple indices are allowed.")
     private boolean allowAliasesToMultipleIndices;
 
+    /**
+     * Whether execution on closed indices is allowed.
+     */
     @Parameter
+    @Summary("Whether execution on closed indices is allowed..")
     private boolean forbidClosedIndices;
 
+    /**
+     * Whether aliases should be ignored (when resolving a wildcard).
+     */
     @Parameter
+    @Summary("Whether aliases should be ignored (when resolving a wildcard).")
     private boolean ignoreAliases;
-    
+
+    /**
+     * Whether indices that are marked as throttled should be ignored.
+     */
     @Parameter
+    @Summary("Whether indices that are marked as throttled should be ignored.")
     private boolean ignoreThrottled;
 
     public boolean isIgnoreUnavailable() {
@@ -43,12 +76,12 @@ public class IndexOptions {
         return allowNoIndices;
     }
 
-    public boolean isExpandToOpenIndices() {
-        return expandToOpenIndices;
+    public boolean isExpandWildcardsOpen() {
+        return expandWildcardsOpen;
     }
 
-    public boolean isExpandToClosedIndices() {
-        return expandToClosedIndices;
+    public boolean isExpandWildcardsClosed() {
+        return expandWildcardsClosed;
     }
 
     public boolean isAllowAliasesToMultipleIndices() {
