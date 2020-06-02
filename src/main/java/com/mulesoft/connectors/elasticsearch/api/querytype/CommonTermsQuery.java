@@ -11,15 +11,11 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 /**
- * @author Great Software Laboratory Pvt. Ltd.
+ * CommonTermsQuery query is a query that executes high-frequency terms in a optional sub-query to prevent slow queries due to "common" terms like stopwords. This query basically
+ * builds 2 queries off the #add(Term) added terms where low-frequency terms are added to a required boolean clause and high-frequency terms are added to an optional boolean
+ * clause. The optional clause is only executed if the required "low-frequency' clause matches.
  */
 public class CommonTermsQuery implements Query {
-
-    // Declared here because Mule SDK throwing error: Can not set **Type field to java.lang.String
-    public enum QueryOperator {
-        OR,
-        AND
-    }
 
     /**
      * Restrict the search request to field
@@ -40,7 +36,7 @@ public class CommonTermsQuery implements Query {
      */
     @Parameter
     @Optional
-    String analyzer;
+    private String analyzer;
 
     /**
      * Sets the boost value of the query

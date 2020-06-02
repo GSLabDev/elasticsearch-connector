@@ -11,7 +11,7 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 /**
- * @author Great Software Laboratory Pvt. Ltd.
+ * Match query is a query that analyzes the text and constructs a query as the result of the analysis.
  */
 public class MatchQuery extends BaseMatchQuery implements Query {
 
@@ -29,6 +29,7 @@ public class MatchQuery extends BaseMatchQuery implements Query {
     @Override
     public MatchQueryBuilder getQuery() {
         MatchQueryBuilder matchQueryBuilder = QueryBuilders.matchQuery(getField(), getSearchString());
+        matchQueryBuilder.boost(getBoost());
 
         if (getFuzziness() != null) {
             matchQueryBuilder.fuzziness(getFuzziness());
@@ -41,9 +42,20 @@ public class MatchQuery extends BaseMatchQuery implements Query {
         if (getZeroTermsQuery() != null) {
             matchQueryBuilder.zeroTermsQuery(ZeroTermsQuery.valueOf(getZeroTermsQuery().name()));
         }
+        
+        if (getAnalyzer() != null) {
+            matchQueryBuilder.analyzer(getAnalyzer());
+        }
+        
+        if (getMinimumShouldMatch() != null) {
+            matchQueryBuilder.minimumShouldMatch(getMinimumShouldMatch());
+        }
+        
+        if (getFuzzyRewrite() != null) {
+            matchQueryBuilder.fuzzyRewrite(getFuzzyRewrite());
+        }
 
         return matchQueryBuilder.autoGenerateSynonymsPhraseQuery(isAutoGenerateSynonymsPhraseQuery())
-                .cutoffFrequency(getCutoffFrequency())
                 .lenient(isLenient())
                 .fuzzyTranspositions(isFuzzyTranspositions())
                 .prefixLength(getPrefixLength())

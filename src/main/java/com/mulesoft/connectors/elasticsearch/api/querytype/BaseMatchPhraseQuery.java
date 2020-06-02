@@ -40,6 +40,13 @@ public class BaseMatchPhraseQuery {
     @Optional
     private String analyzer;
 
+    /**
+     * A slop factor for phrase queries
+     */
+    @Parameter
+    @Optional
+    private int slop;
+
     public String getField() {
         return field;
     }
@@ -56,4 +63,7 @@ public class BaseMatchPhraseQuery {
         return analyzer;
     }
 
+    public int getSlop() {
+        return slop;
+    }
 }

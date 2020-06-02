@@ -3,6 +3,8 @@
  */
 package com.mulesoft.connectors.elasticsearch.api;
 
+import java.util.List;
+
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
@@ -25,11 +27,11 @@ public class SearchRequestConfiguration {
     }
 
     /**
-     * Restricts the search request to an index
+     * Restricts the search request to one or more indices.
      */
     @Parameter
     @Optional
-    private String index;
+    private List<String> indices;
 
     /**
      * The type of the search operation to perform
@@ -37,13 +39,6 @@ public class SearchRequestConfiguration {
     @Parameter
     @Optional
     private SearchType searchType;
-
-    /**
-     * Limits the search request to a type
-     */
-    @Parameter
-    @Optional
-    private String type;
 
     /**
      * Search the document using routing
@@ -60,16 +55,26 @@ public class SearchRequestConfiguration {
     @Summary("Time interval (in minutes) to keep the search context alive.")
     private int scrollIntervalTime;
 
-    public String getIndex() {
-        return index;
+    /**
+     * The preference to execute the search. Use the preference parameter e.g. to execute the search to prefer local shards. The default is to randomize across shards.
+     */
+    @Parameter
+    @Optional
+    private String preference;
+
+    /**
+     * It controls how unavailable indices are resolved and how wildcard expressions are expanded
+     */
+    @Parameter
+    @Optional
+    private IndexOptions indicesOptions;
+
+    public List<String> getIndices() {
+        return indices;
     }
 
     public SearchType getSearchType() {
         return searchType;
-    }
-
-    public String getType() {
-        return type;
     }
 
     public String getRouting() {
@@ -78,6 +83,14 @@ public class SearchRequestConfiguration {
 
     public int getScrollIntervalTime() {
         return scrollIntervalTime;
+    }
+
+    public String getPreference() {
+        return preference;
+    }
+
+    public IndexOptions getIndicesOptions() {
+        return indicesOptions;
     }
 
 }

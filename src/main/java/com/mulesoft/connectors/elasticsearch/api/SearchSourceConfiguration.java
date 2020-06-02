@@ -38,7 +38,7 @@ public class SearchSourceConfiguration {
     private int size;
 
     /**
-     * Time allowed to finish the search operation
+     * Time (in minutes) allowed to finish the search operation
      */
     @Parameter
     @Optional
@@ -108,18 +108,39 @@ public class SearchSourceConfiguration {
     private boolean trackScores;
 
     /**
-     * Enable the total hits tracking
+     * Enable the total hits tracking i.e whether the total hit count for the query should be tracked.
      */
     @Parameter
     @Optional
     private boolean trackTotalHits;
+    
+    /**
+     * The total hit count that should be tracked.
+     */
+    @Parameter
+    @Optional
+    private int trackTotalHitsUpTo;
 
     /**
-     * Returns a version for each search hit.
+     * Whether the document's version will be included in the search hits.
      */
     @Parameter
     @Optional
     private boolean version;
+    
+    /**
+     * The minimum score below which docs will be filtered out.
+     */
+    @Parameter
+    @Optional
+    private float minimumScore;
+    
+    /**
+     * Whether search hits be returned with the sequence number and primary term of the last modification of the document.
+     */
+    @Parameter
+    @Optional
+    private boolean seqNoAndPrimaryTerm;
 
     public int getFrom() {
         return from;
@@ -171,9 +192,21 @@ public class SearchSourceConfiguration {
 
     public boolean isTrackTotalHits() {
         return trackTotalHits;
+    }    
+
+    public int getTrackTotalHitsUpTo() {
+        return trackTotalHitsUpTo;
     }
 
     public boolean isVersion() {
         return version;
+    }
+    
+    public float getMinimumScore() {
+        return minimumScore;
+    }
+
+    public boolean isSeqNoAndPrimaryTerm() {
+        return seqNoAndPrimaryTerm;
     }
 }

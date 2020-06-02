@@ -5,6 +5,7 @@ package com.mulesoft.connectors.elasticsearch.internal.operations;
 
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchType;
+import org.elasticsearch.action.support.IndicesOptions;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -13,7 +14,9 @@ import org.elasticsearch.search.sort.ScoreSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.mule.runtime.extension.api.annotation.Ignore;
 
+import com.mulesoft.connectors.elasticsearch.api.IndexOptions;
 import com.mulesoft.connectors.elasticsearch.api.SearchRequestConfiguration;
+import com.mulesoft.connectors.elasticsearch.api.SearchRequestOptionalConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchSourceConfiguration;
 
 public class BaseSearchOperation extends ElasticsearchOperations {
@@ -26,19 +29,14 @@ public class BaseSearchOperation extends ElasticsearchOperations {
      * @return SearchRequest
      */
     @Ignore
-    protected SearchRequest getSearchRequest(SearchRequestConfiguration searchRequestConfig) {
+    protected SearchRequest getSearchRequest(SearchRequestConfiguration searchRequestConfig, SearchRequestOptionalConfiguration searchRequestOptionalConfig) {
         SearchRequest searchRequest = new SearchRequest();
 
-        if (searchRequestConfig.getIndex() != null) {
-            searchRequest.indices(searchRequestConfig.getIndex());
+        if (searchRequestConfig.getIndices() != null) {
+            searchRequest.indices(searchRequestConfig.getIndices().toArray(new String[0]));
         }
 
         searchRequest.searchType(searchRequestConfig.getSearchType() != null ? SearchType.valueOf(searchRequestConfig.getSearchType().name()) : SearchType.DEFAULT);
-
-        if (searchRequestConfig.getType() != null) {
-            // Limits the request to a type
-            searchRequest.types(searchRequestConfig.getType());
-        }
 
         if (searchRequestConfig.getRouting() != null) {
             // Set a routing parameter
@@ -49,6 +47,26 @@ public class BaseSearchOperation extends ElasticsearchOperations {
             searchRequest.scroll(new Scroll(TimeValue.timeValueMinutes(searchRequestConfig.getScrollIntervalTime())));
         }
 
+        if (searchRequestConfig.getPreference() != null) {
+            searchRequest.preference(searchRequestConfig.getPreference());
+        }
+
+        if (searchRequestConfig.getIndicesOptions() != null) {
+            IndexOptions options = searchRequestConfig.getIndicesOptions();
+            IndicesOptions indOptions = IndicesOptions.fromOptions(options.isIgnoreUnavailable(), options.isAllowNoIndices(), options.isExpandWildcardsOpen(),
+                    options.isExpandWildcardsClosed(), options.isAllowAliasesToMultipleIndices(), options.isForbidClosedIndices(), options.isIgnoreAliases(),
+                    options.isIgnoreThrottled());
+            searchRequest.indicesOptions(indOptions);
+        }
+
+        if (searchRequestOptionalConfig != null) {
+            searchRequest.allowPartialSearchResults(searchRequestOptionalConfig.isAllowPartialSearchResults());
+            searchRequest.requestCache(searchRequestOptionalConfig.isRequestCache());
+            searchRequest.setBatchedReduceSize(searchRequestOptionalConfig.getBatchedReduceSize());
+            searchRequest.setCcsMinimizeRoundtrips(searchRequest.isCcsMinimizeRoundtrips());
+            searchRequest.setMaxConcurrentShardRequests(searchRequestOptionalConfig.getMaxConcurrentShardRequests());
+            searchRequest.setPreFilterShardSize(searchRequestOptionalConfig.getPreFilterShardSize());
+        }
         return searchRequest;
     }
 
@@ -78,8 +96,13 @@ public class BaseSearchOperation extends ElasticsearchOperations {
         searchSourceBuilder.fetchSource(searchSourceConfig.isFetchSource());
 
         if (searchSourceConfig.getIncludeFields() != null && searchSourceConfig.getExcludeFields() != null) {
-
             searchSourceBuilder.fetchSource(searchSourceConfig.getIncludeFields().toArray(new String[0]), searchSourceConfig.getExcludeFields().toArray(new String[0]));
+            
+        } else if (searchSourceConfig.getIncludeFields() != null) {
+            searchSourceBuilder.fetchSource(searchSourceConfig.getIncludeFields().toArray(new String[0]), new String[0]);
+            
+        } else if (searchSourceConfig.getExcludeFields() != null) {
+            searchSourceBuilder.fetchSource(new String[0], searchSourceConfig.getExcludeFields().toArray(new String[0]));
         }
 
         return searchSourceBuilder.from(searchSourceConfig.getFrom())
@@ -89,7 +112,10 @@ public class BaseSearchOperation extends ElasticsearchOperations {
                 .terminateAfter(searchSourceConfig.getTerminateAfter())
                 .trackScores(searchSourceConfig.isTrackScores())
                 .trackTotalHits(searchSourceConfig.isTrackTotalHits())
-                .version(searchSourceConfig.isVersion());
+                .trackTotalHitsUpTo(searchSourceConfig.getTrackTotalHitsUpTo())
+                .version(searchSourceConfig.isVersion())
+                .minScore(searchSourceConfig.getMinimumScore())
+                .seqNoAndPrimaryTerm(searchSourceConfig.isSeqNoAndPrimaryTerm());
     }
 
 }

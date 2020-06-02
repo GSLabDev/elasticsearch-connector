@@ -9,14 +9,13 @@ import org.elasticsearch.index.query.MultiMatchQueryBuilder;
 import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.search.MatchQuery.ZeroTermsQuery;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 /**
- * @author Great Software Laboratory Pvt. Ltd.
+ * Same as MatchQuery but supports multiple fields.
  */
 public class MultiMatchQuery extends BaseMatchQuery implements Query {
 
@@ -26,7 +25,8 @@ public class MultiMatchQuery extends BaseMatchQuery implements Query {
         CROSS_FIELDS,
         MOST_FIELDS,
         PHRASE,
-        PHRASE_PREFIX
+        PHRASE_PREFIX,
+        BOOL_PREFIX
     }
 
     /**
@@ -35,6 +35,13 @@ public class MultiMatchQuery extends BaseMatchQuery implements Query {
     @Parameter
     @Placement(order = 2)
     private List<String> fields;
+
+    /**
+     * The phrase slop if evaluated to a phrase query type.
+     */
+    @Parameter
+    @Optional
+    private int slop;
 
     /**
      * Type of the multi match query is executed internally
@@ -52,22 +59,17 @@ public class MultiMatchQuery extends BaseMatchQuery implements Query {
      * 1.0 - Add together the scores of the multiple field
      * 
      * 0.0 < n < 1.0 - Take the single best score plus tie_breaker multiplied by each of the scores from other matching fields.
-     * 
-     * 
      */
     @Parameter
     @Optional(defaultValue = "0.0")
     private float tieBreaker;
 
-    /**
-     * Set minimum should match with possible value using integer and percentage.
-     */
-    @Parameter
-    @Optional
-    private String minimumShouldMatch;
-
     public List<String> getFields() {
         return fields;
+    }
+
+    public int getSlop() {
+        return slop;
     }
 
     public MultiMatchQueryType getType() {
@@ -78,14 +80,12 @@ public class MultiMatchQuery extends BaseMatchQuery implements Query {
         return tieBreaker;
     }
 
-    public String getMinimumShouldMatch() {
-        return minimumShouldMatch;
-    }
-
     @Override
     public MultiMatchQueryBuilder getQuery() {
 
         MultiMatchQueryBuilder multiMatchQueryBuilder = QueryBuilders.multiMatchQuery(getSearchString(), getFields().toArray(new String[0]));
+        multiMatchQueryBuilder.boost(getBoost());
+        multiMatchQueryBuilder.slop(getSlop());
 
         if (getFuzziness() != null) {
             multiMatchQueryBuilder.fuzziness(getFuzziness());
@@ -96,7 +96,7 @@ public class MultiMatchQuery extends BaseMatchQuery implements Query {
         }
 
         if (getZeroTermsQuery() != null) {
-            multiMatchQueryBuilder.zeroTermsQuery(ZeroTermsQuery.valueOf(getZeroTermsQuery().name()));
+            multiMatchQueryBuilder.zeroTermsQuery(org.elasticsearch.index.search.MatchQuery.ZeroTermsQuery.valueOf(getZeroTermsQuery().name()));
         }
 
         if (getType() != null) {
@@ -107,11 +107,18 @@ public class MultiMatchQuery extends BaseMatchQuery implements Query {
             multiMatchQueryBuilder.minimumShouldMatch(getMinimumShouldMatch());
         }
 
+        if (getAnalyzer() != null) {
+            multiMatchQueryBuilder.analyzer(getAnalyzer());
+        }
+
+        if (getFuzzyRewrite() != null) {
+            multiMatchQueryBuilder.fuzzyRewrite(getFuzzyRewrite());
+        }
+
         return multiMatchQueryBuilder.fuzzyTranspositions(isFuzzyTranspositions())
                 .prefixLength(getPrefixLength())
                 .maxExpansions(getMaxExpansions())
                 .lenient(isLenient())
-                .cutoffFrequency(getCutoffFrequency())
                 .autoGenerateSynonymsPhraseQuery(isAutoGenerateSynonymsPhraseQuery())
                 .tieBreaker(getTieBreaker());
     }

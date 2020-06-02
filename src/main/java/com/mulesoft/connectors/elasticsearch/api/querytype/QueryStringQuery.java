@@ -10,7 +10,9 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
 /**
- * @author Great Software Laboratory Pvt. Ltd.
+ * A query that parses a query string and runs it. There are two modes that this operates. The first, when no field is added (using field(String), will run the query once and non
+ * prefixed fields will use the defaultField(String) set. The second, when one or more fields are added (using field(String)), will run the parsed query against the provided
+ * fields, and combine them using Dismax.
  */
 public class QueryStringQuery extends BaseQueryString implements Query {
 
@@ -43,6 +45,20 @@ public class QueryStringQuery extends BaseQueryString implements Query {
     private boolean escape;
 
     /**
+     * Fuzzy rewrite.
+     */
+    @Parameter
+    @Optional
+    private String fuzzyRewrite;
+
+    /**
+     * Protects against too-difficult regular expression queries.
+     */
+    @Parameter
+    @Optional
+    private int maxDeterminizedStates;
+
+    /**
      * Sets the default slop for phrases. If zero, then exact phrase matches are required.
      */
     @Parameter
@@ -50,11 +66,32 @@ public class QueryStringQuery extends BaseQueryString implements Query {
     private int phraseSlop;
 
     /**
+     * The optional analyzer used to analyze the query string for phrase searches.
+     */
+    @Parameter
+    @Optional
+    private String quoteAnalyzer;
+
+    /**
+     * The optional analyzer used to analyze the query string for phrase searches.
+     */
+    @Parameter
+    @Optional
+    private String rewrite;
+
+    /**
      * The disjunction max tie breaker for multi fields
      */
     @Parameter
     @Optional(defaultValue = "0")
     private float tieBreaker;
+
+    /**
+     * In case of date field, we can adjust the from/to fields using a timezone
+     */
+    @Parameter
+    @Optional
+    private String timeZone;
 
     public boolean isAllowLeadingWildcard() {
         return allowLeadingWildcard;
@@ -80,15 +117,35 @@ public class QueryStringQuery extends BaseQueryString implements Query {
         return tieBreaker;
     }
 
+    public String getFuzzyRewrite() {
+        return fuzzyRewrite;
+    }
+
+    public int getMaxDeterminizedStates() {
+        return maxDeterminizedStates;
+    }
+
+    public String getQuoteAnalyzer() {
+        return quoteAnalyzer;
+    }
+
+    public String getRewrite() {
+        return rewrite;
+    }
+
+    public String getTimeZone() {
+        return timeZone;
+    }
+
     @Override
     public QueryStringQueryBuilder getQuery() {
         QueryStringQueryBuilder queryStringQueryBuilder = QueryBuilders.queryStringQuery(getQueryString());
 
-        if (getFieldAndBoost() != null) {
-            queryStringQueryBuilder.fields(getFieldAndBoost());
+        if (getFieldsAndBoost() != null) {
+            queryStringQueryBuilder.fields(getFieldsAndBoost());
         }
 
-        if (getDefaultField() != null && getFieldAndBoost() == null) {
+        if (getDefaultField() != null && getFieldsAndBoost() == null) {
             queryStringQueryBuilder.defaultField(getDefaultField());
         }
 
@@ -104,8 +161,28 @@ public class QueryStringQuery extends BaseQueryString implements Query {
             queryStringQueryBuilder.minimumShouldMatch(getMinimumShouldMatch());
         }
 
+        if (getMaxDeterminizedStates() != 0) {
+            queryStringQueryBuilder.maxDeterminizedStates(getMaxDeterminizedStates());
+        }
+
+        if (getFuzzyRewrite() != null) {
+            queryStringQueryBuilder.fuzzyRewrite(getFuzzyRewrite());
+        }
+
+        if (getRewrite() != null) {
+            queryStringQueryBuilder.rewrite(getRewrite());
+        }
+
+        if (getQuoteAnalyzer() != null) {
+            queryStringQueryBuilder.quoteAnalyzer(getQuoteAnalyzer());
+        }
+
         if (getQuoteFieldSuffix() != null) {
             queryStringQueryBuilder.quoteFieldSuffix(getQuoteFieldSuffix());
+        }
+        
+        if (getTimeZone() != null) {
+            queryStringQueryBuilder.timeZone(getTimeZone());
         }
 
         return queryStringQueryBuilder.autoGenerateSynonymsPhraseQuery(isAutoGenerateSynonymsPhraseQuery())

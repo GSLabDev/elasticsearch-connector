@@ -9,7 +9,7 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
 /**
- * @author Great Software Laboratory Pvt. Ltd.
+ * A query that matches on all documents.
  */
 public class MatchAllQuery implements Query {
 

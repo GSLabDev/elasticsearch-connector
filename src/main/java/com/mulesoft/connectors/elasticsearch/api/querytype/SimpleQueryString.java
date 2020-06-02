@@ -4,7 +4,7 @@
 package com.mulesoft.connectors.elasticsearch.api.querytype;
 
 /**
- * @author Great Software Laboratory Pvt. Ltd.
+ * SimpleQuery is a query parser that acts similar to a query_string query, but won't throw exceptions for any weird string syntax.
  */
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilders;
@@ -52,8 +52,8 @@ public class SimpleQueryString extends BaseQueryString implements Query {
     public SimpleQueryStringBuilder getQuery() {
         SimpleQueryStringBuilder simpleQueryStringBuilder = QueryBuilders.simpleQueryStringQuery(getQueryString());
 
-        if (getFieldAndBoost() != null) {
-            simpleQueryStringBuilder.fields(getFieldAndBoost());
+        if (getFieldsAndBoost() != null) {
+            simpleQueryStringBuilder.fields(getFieldsAndBoost());
         }
 
         if (getSimpleQueryStringFlag() != null) {

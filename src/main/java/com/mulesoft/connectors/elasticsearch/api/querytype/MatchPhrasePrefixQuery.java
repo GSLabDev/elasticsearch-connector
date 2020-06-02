@@ -9,7 +9,7 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
 /**
- * @author Great Software Laboratory Pvt. Ltd.
+ * Match query is a query that analyzes the text and constructs a phrase prefix query as the result of the analysis.
  */
 public class MatchPhrasePrefixQuery extends BaseMatchPhraseQuery implements Query {
 
@@ -30,6 +30,7 @@ public class MatchPhrasePrefixQuery extends BaseMatchPhraseQuery implements Quer
         MatchPhrasePrefixQueryBuilder matchPhrasePrefixQueryBuilder = QueryBuilders.matchPhrasePrefixQuery(getField(), getQueryString());
 
         matchPhrasePrefixQueryBuilder.boost(getBoost());
+        matchPhrasePrefixQueryBuilder.slop(getSlop());
 
         if (getAnalyzer() != null) {
             matchPhrasePrefixQueryBuilder.analyzer(getAnalyzer());

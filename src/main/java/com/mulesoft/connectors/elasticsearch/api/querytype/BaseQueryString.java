@@ -14,12 +14,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
  */
 public class BaseQueryString {
 
-    // Declared here because Mule SDK throwing error: Can not set **Type field to java.lang.String
-    public enum QueryOperator {
-        OR,
-        AND
-    }
-
     /**
      * The actual query to be parsed
      */
@@ -32,7 +26,7 @@ public class BaseQueryString {
      */
     @Parameter
     @Optional
-    private Map<String, Float> fieldAndBoost;
+    private Map<String, Float> fieldsAndBoost;
 
     /**
      * The analyzer name used to analyze the query string
@@ -115,8 +109,8 @@ public class BaseQueryString {
         return queryString;
     }
 
-    public Map<String, Float> getFieldAndBoost() {
-        return fieldAndBoost;
+    public Map<String, Float> getFieldsAndBoost() {
+        return fieldsAndBoost;
     }
 
     public String getAnalyzer() {

@@ -13,17 +13,6 @@ import org.mule.runtime.extension.api.annotation.param.display.Placement;
  */
 public class BaseMatchQuery {
 
-    // Declared here because Mule SDK throwing error: Can not set **Type field to java.lang.String
-    public enum ZeroTermQuery {
-        ALL,
-        NONE
-    }
-
-    public enum QueryOperator {
-        OR,
-        AND
-    }
-
     /**
      * Search text string
      */
@@ -37,6 +26,13 @@ public class BaseMatchQuery {
     @Parameter
     @Optional
     private Fuzziness fuzziness;
+
+    /**
+     * Fuzzy Rewrite
+     */
+    @Parameter
+    @Optional
+    private String fuzzyRewrite;
 
     /**
      * Allow the fuzzy transpositions match
@@ -78,14 +74,14 @@ public class BaseMatchQuery {
      */
     @Parameter
     @Optional
-    private ZeroTermQuery zeroTermsQuery;
+    private ZeroTermsQuery zeroTermsQuery;
 
     /**
-     * Specify an absolute or relative document frequency
+     * The analyzer to use.
      */
     @Parameter
-    @Optional(defaultValue = "0.0")
-    private float cutoffFrequency;
+    @Optional
+    private String analyzer;
 
     /**
      * Enable the auto generate synonyms phrase
@@ -93,6 +89,20 @@ public class BaseMatchQuery {
     @Parameter
     @Optional(defaultValue = "false")
     private boolean autoGenerateSynonymsPhraseQuery;
+
+    /**
+     * Sets the boost value of the query
+     */
+    @Parameter
+    @Optional(defaultValue = "1.0")
+    private float boost;
+
+    /**
+     * Set minimum should match with possible value using integer and percentage.
+     */
+    @Parameter
+    @Optional
+    private String minimumShouldMatch;
 
     public String getSearchString() {
         return searchString;
@@ -122,16 +132,27 @@ public class BaseMatchQuery {
         return lenient;
     }
 
-    public ZeroTermQuery getZeroTermsQuery() {
+    public ZeroTermsQuery getZeroTermsQuery() {
         return zeroTermsQuery;
-    }
-
-    public float getCutoffFrequency() {
-        return cutoffFrequency;
     }
 
     public boolean isAutoGenerateSynonymsPhraseQuery() {
         return autoGenerateSynonymsPhraseQuery;
     }
 
+    public String getAnalyzer() {
+        return analyzer;
+    }
+
+    public String getFuzzyRewrite() {
+        return fuzzyRewrite;
+    }
+
+    public String getMinimumShouldMatch() {
+        return minimumShouldMatch;
+    }
+
+    public float getBoost() {
+        return boost;
+    }
 }
