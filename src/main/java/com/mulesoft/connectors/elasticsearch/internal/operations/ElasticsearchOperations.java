@@ -43,5 +43,17 @@ public class ElasticsearchOperations {
     protected <P, A> void responseConsumer(ElasticsearchErrorTypes error, Exception e, CompletionCallback<P, A> callback) {
         callback.error(new ElasticsearchException(error, e));
     }
+    
+    @Ignore
+    protected <P> String getJsonResponse(P response) {
+        String jsonResponse = null;
+        try {
+            jsonResponse = OBJECT_MAPPER.writeValueAsString(response);
+        } catch (JsonProcessingException e) {
+            logger.error(e.getMessage());
+            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
+        }
+        return jsonResponse;
+    }
 
 }

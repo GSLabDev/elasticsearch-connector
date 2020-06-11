@@ -30,6 +30,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.VersionType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
+import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -47,6 +48,7 @@ import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.IndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
@@ -89,11 +91,12 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Type of the operation. When create type is used, the index operation will fail if a document by that id already exists in the index.
      * @param pipeline
      *            Name of the ingest pipeline to be executed before indexing the document
-     * @param callback
+     * @return IndexResponse as JSON String
      */
-    @MediaType(value = ANY, strict = false)
+    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
     @DisplayName("Document - Index")
-    public void indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    @OutputResolver(output = IndexResponseOutputMetadataResolver.class)
+    public String indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
@@ -101,10 +104,10 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional long version,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Operation type") @Optional OpType operationType,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Pipeline") @Optional @Summary("The name of the ingest pipeline to be executed before indexing the document") String pipeline,
-            CompletionCallback<IndexResponse, Void> callback) {
+            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Pipeline") @Optional @Summary("The name of the ingest pipeline to be executed before indexing the document") String pipeline) {
 
         IndexRequest indexRequest;
+        String response = null;
         try {
             if (inputSource.getJsonInputPath() != null) {
                 indexRequest = new IndexRequest(index).id(documentId).source(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
@@ -128,7 +131,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
 
             logger.info("Index Document operation Status : " + indexResp.status());
-            responseConsumer(indexResp, callback);
+            response = getJsonResponse(indexResp);
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -136,6 +139,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
+        return response;
     }
 
     /**
