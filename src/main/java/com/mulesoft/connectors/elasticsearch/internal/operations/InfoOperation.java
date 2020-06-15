@@ -30,7 +30,7 @@ public class InfoOperation extends ElasticsearchOperations {
      *            The Elasticsearch connection
      * @return MainResponse as JSON String
      */
-    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Elasticsearch - Info")
     @OutputResolver(output = MainResponseOutputMetadataResolver.class)
     public String info(@Connection ElasticsearchConnection esConnection) {

@@ -93,7 +93,7 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Name of the ingest pipeline to be executed before indexing the document
      * @return IndexResponse as JSON String
      */
-    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Index")
     @OutputResolver(output = IndexResponseOutputMetadataResolver.class)
     public String indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
