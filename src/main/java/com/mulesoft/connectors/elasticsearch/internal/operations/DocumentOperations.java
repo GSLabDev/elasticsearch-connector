@@ -44,10 +44,12 @@ import org.apache.log4j.Logger;
 import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
 import com.mulesoft.connectors.elasticsearch.api.IndexDocumentOptions;
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
+import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchGetResponse;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.GetResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.IndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
@@ -165,11 +167,12 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Version number of the indexed document
      * @param versionType
      *            Version type: internal, external, external_gte,
-     * @param callback
+     * @return GetResponse as JSON String
      */
-    @MediaType(value = ANY, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Get")
-    public void getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    @OutputResolver(output = GetResponseOutputMetadataResolver.class)
+    public String getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Source retrieval") @Optional DocumentFetchSourceOptions fetchSourceContext,
             @Placement(tab = "Optional Arguments", order = 2) @DisplayName("Routing") @Optional String routing,
@@ -177,9 +180,10 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Set realtime flag") @Optional(defaultValue = "true") boolean realtime,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Refresh") @Summary("Perform a refresh before retrieving the document") @Optional(defaultValue = "false") boolean refresh,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional long version,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType, CompletionCallback<String, Void> callback) {
+            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType) {
 
         GetRequest getRequest = new GetRequest(index, documentId);
+        String response = null;
 
         if (fetchSourceContext != null && fetchSourceContext.isFetchSource()) {
             String[] includes = Strings.EMPTY_ARRAY, excludes = Strings.EMPTY_ARRAY;
@@ -207,11 +211,10 @@ public class DocumentOperations extends ElasticsearchOperations {
 
         getRequest.realtime(realtime);
         getRequest.refresh(refresh);
-        GetResponse getResp;
         try {
-            getResp = esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
-            logger.info("Get Response : " + getResp);
-            responseConsumer(getResp.toString(), callback);
+            ElasticsearchGetResponse getResponse = new ElasticsearchGetResponse(esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption()));
+            logger.info("Get Response : " + getResponse);
+            response = getJsonResponse(getResponse);
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -219,6 +222,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
+        return response;
     }
 
     /**
