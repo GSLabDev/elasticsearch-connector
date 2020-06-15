@@ -17,7 +17,6 @@ import org.elasticsearch.action.DocWriteRequest.OpType;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
-import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
@@ -49,6 +48,7 @@ import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.DeleteResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.GetResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.IndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
@@ -248,18 +248,19 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Version number of the indexed document
      * @param versionType
      *            Version type: internal, external, external_gte
-     * @param callback
+     * @return DeleteResponse as JSON String
      */
-    @MediaType(value = ANY, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Delete")
-    public void deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    @OutputResolver(output = DeleteResponseOutputMetadataResolver.class)
+    public String deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional long version,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType, CompletionCallback<DeleteResponse, Void> callback) {
-
+            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType) {
+        String response = null;
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
         if (timeoutInSec != 0) {
@@ -277,7 +278,7 @@ public class DocumentOperations extends ElasticsearchOperations {
         try {
             deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Delete document response : " + deleteResp);
-            responseConsumer(deleteResp, callback);
+            response = getJsonResponse(deleteResp);
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -285,6 +286,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
+        return response;
     }
 
     /**
