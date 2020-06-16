@@ -1,16 +1,10 @@
 package com.mulesoft.connectors.elasticsearch.internal.metadata;
 
-import static org.mule.metadata.api.model.MetadataFormat.JSON;
-
-import org.mule.metadata.api.builder.BaseTypeBuilder;
 import org.mule.metadata.api.builder.ObjectTypeBuilder;
-import org.mule.metadata.api.model.MetadataType;
 
 public class OutputMetadataResolver {
 
-    public static MetadataType getResponseStaticMetadata(String keyName) {      
-        final ObjectTypeBuilder objectBuilder = BaseTypeBuilder.create(JSON).objectType().id(keyName);
-        
+    public static void getResponseStaticMetadata(ObjectTypeBuilder objectBuilder) {
         objectBuilder.addField().key("forcedRefresh").value().booleanType();
         objectBuilder.addField().key("id").value().stringType();
         objectBuilder.addField().key("index").value().stringType();
@@ -38,8 +32,6 @@ public class OutputMetadataResolver {
         
         objectBuilder.addField().key("type").value().stringType();
         objectBuilder.addField().key("version").value().numberType();
-        
-        return objectBuilder.build();
     }
     
     private static void getCauseObjectTypeBuilder(ObjectTypeBuilder typeBuilder) {

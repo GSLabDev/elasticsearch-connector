@@ -9,8 +9,13 @@ import org.mule.metadata.api.builder.ObjectTypeBuilder;
 import static org.mule.metadata.api.model.MetadataFormat.JSON;
 
 public class IndexResponseOutputMetadataResolver extends OutputStaticTypeResolver {
+
     @Override
     public MetadataType getStaticMetadata() {
-      return OutputMetadataResolver.getResponseStaticMetadata("IndexResponse");
+        final ObjectTypeBuilder objectBuilder = BaseTypeBuilder.create(JSON).objectType().id("IndexResponse");
+        
+        OutputMetadataResolver.getResponseStaticMetadata(objectBuilder);
+        
+        return objectBuilder.build();
     }
-  }
+}

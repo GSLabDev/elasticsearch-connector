@@ -51,6 +51,7 @@ import com.mulesoft.connectors.elasticsearch.internal.error.exception.Elasticsea
 import com.mulesoft.connectors.elasticsearch.internal.metadata.DeleteResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.GetResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.IndexResponseOutputMetadataResolver;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.UpdateResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
@@ -329,11 +330,12 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Indicate that the partial document must be used as the upsert document if it does not exist yet.
      * @param waitForActiveShards
      *            The number of shard copies that must be active before proceeding with the update operation.
-     * @param callback
+     * @return UpdateResponse as JSON String
      */
-    @MediaType(value = ANY, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Update")
-    public void updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    @OutputResolver(output = UpdateResponseOutputMetadataResolver.class)
+    public String updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
@@ -345,8 +347,9 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Noop Detection") @Optional(defaultValue = "true") boolean detectNoop,
             @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Scripted Upsert") @Optional(defaultValue = "false") boolean scriptedUpsert,
             @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert,
-            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional int waitForActiveShards,
-            CompletionCallback<UpdateResponse, Void> callback) {
+            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional int waitForActiveShards) {
+        String response = null;
+        
         try {
             UpdateRequest updateRequest = new UpdateRequest(index, documentId);
             if (inputSource.getJsonInputPath() != null) {
@@ -379,10 +382,11 @@ public class DocumentOperations extends ElasticsearchOperations {
             
             UpdateResponse updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Update Response : " + updateResp);
-            responseConsumer(updateResp, callback);
+            response = getJsonResponse(updateResp);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
+        return response;
     }
 
     /**

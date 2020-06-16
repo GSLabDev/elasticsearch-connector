@@ -11,6 +11,10 @@ public class DeleteResponseOutputMetadataResolver extends OutputStaticTypeResolv
     
     @Override
     public MetadataType getStaticMetadata() {
-      return OutputMetadataResolver.getResponseStaticMetadata("DeleteResponse");
+      final ObjectTypeBuilder objectBuilder = BaseTypeBuilder.create(JSON).objectType().id("DeleteResponse");
+      
+      OutputMetadataResolver.getResponseStaticMetadata(objectBuilder);
+      
+      return objectBuilder.build();
     }
 }
