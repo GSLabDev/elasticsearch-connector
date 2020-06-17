@@ -51,6 +51,7 @@ import com.mulesoft.connectors.elasticsearch.internal.error.exception.Elasticsea
 import com.mulesoft.connectors.elasticsearch.internal.metadata.DeleteResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.GetResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.IndexResponseOutputMetadataResolver;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.ResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.UpdateResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
@@ -402,12 +403,14 @@ public class DocumentOperations extends ElasticsearchOperations {
      * 
      * @param jsonData
      *            Input file / data with list of operations to be performed like create, index, delete, update.
-     * @param callback
+     * @return Response as JSON String
      */
-    @MediaType(value = ANY, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Bulk")
-    public void bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
-            @ParameterGroup(name = "Input data") JsonData jsonData, CompletionCallback<ElasticsearchResponse, Void> callback) {
+    @OutputResolver(output = ResponseOutputMetadataResolver.class)
+    public String bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
+            @ParameterGroup(name = "Input data") JsonData jsonData) {
+        String result = null;
         String resource = type != null ? "/" + type + "/_bulk" : "/_bulk";
         resource = index != null ? "/" + index + resource : resource;
         Map<String, String> params = Collections.singletonMap("pretty", "true");
@@ -426,9 +429,10 @@ public class DocumentOperations extends ElasticsearchOperations {
             request.setEntity(entity);
             ElasticsearchResponse response = new ElasticsearchResponse(esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request));
             logger.info("Bulk operation response : " + response);
-            responseConsumer(response, callback);
+            result = getJsonResponse(response);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
+        return result;
     }
 }

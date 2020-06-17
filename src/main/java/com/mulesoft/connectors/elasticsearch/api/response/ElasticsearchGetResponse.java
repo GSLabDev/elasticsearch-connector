@@ -1,11 +1,15 @@
 package com.mulesoft.connectors.elasticsearch.api.response;
 
+import java.io.Serializable;
+
 import org.elasticsearch.action.get.GetResponse;
 
 /**
  * The response of a get action.
  */
-public class ElasticsearchGetResponse {
+public class ElasticsearchGetResponse implements Serializable {
+
+    private static final long serialVersionUID = 3322996627258818644L;
 
     /**
      * The id of the document.
