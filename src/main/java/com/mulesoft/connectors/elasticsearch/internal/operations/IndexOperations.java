@@ -43,6 +43,7 @@ import com.mulesoft.connectors.elasticsearch.internal.error.exception.Elasticsea
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.IndexNotFoundException;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.CreateIndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.AcknowledgedResponseOutputMetadataResolver;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.OpenIndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
@@ -212,16 +213,17 @@ public class IndexOperations extends ElasticsearchOperations {
      *            The number of active shard copies to wait for
      * @param indicesOpts
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
-     * @param callback
+     * @return OpenIndexResponse as JSON String
      */
-    @MediaType(value = ANY, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Index - Open")
-    public void openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
+    @OutputResolver(output = OpenIndexResponseOutputMetadataResolver.class)
+    public String openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
-            @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts, CompletionCallback<OpenIndexResponse, Void> callback) {
-
+            @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts) {
+        String response = null;
         OpenIndexRequest openIndexRequest = new OpenIndexRequest(index);
 
         if (timeoutInSec != 0) {
@@ -246,7 +248,7 @@ public class IndexOperations extends ElasticsearchOperations {
         try {
             openIndexResp = esConnection.getElasticsearchConnection().indices().open(openIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Open Index acknowledged : " + openIndexResp.isAcknowledged());
-            responseConsumer(openIndexResp, callback);
+            response = getJsonResponse(openIndexResp);
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -254,6 +256,7 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
+        return response;
     }
 
     /**
