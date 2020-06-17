@@ -26,6 +26,7 @@ import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
+import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -40,6 +41,7 @@ import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchCo
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.IndexNotFoundException;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.CreateIndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
@@ -76,11 +78,12 @@ public class IndexOperations extends ElasticsearchOperations {
      *            Timeout in seconds to connect to the master node.
      * @param waitForActiveShards
      *            The number of active shard copies to wait for before the create index.
-     * @param callback
+     * @return CreateIndexResponse as JSON String
      */
-    @MediaType(value = ANY, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Index - Create")
-    public void createIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to create") String index,
+    @OutputResolver(output = CreateIndexResponseOutputMetadataResolver.class)
+    public String createIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to create") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional @DisplayName("Index Settings") Map<String, String> indexSettings,
             @Placement(tab = "Optional Arguments", order = 2) @Optional @DisplayName("Index Settings (JSON file Path)") String indexSettingsJSONFile,
             @Placement(tab = "Optional Arguments", order = 4) @Optional @DisplayName("Index Mappings (JSON file Path)") String indexMappingsJSONFile,
@@ -88,8 +91,8 @@ public class IndexOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 6) @Optional @DisplayName("Source (Mappings, Settings and Aliases) (JSON file Path)") @Summary("The whole source including all of its sections (mappings, settings and aliases) can be provided in this file.") String sourceJSONFile,
             @Placement(tab = "Optional Arguments", order = 7) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation.") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 8) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node.") @DisplayName("Master Node Timeout (Seconds)") long masterNodeTimeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
-            CompletionCallback<CreateIndexResponse, Void> callback) {
+            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards) {
+        String response = null;
         try {
             CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
 
@@ -124,7 +127,7 @@ public class IndexOperations extends ElasticsearchOperations {
 
             CreateIndexResponse createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Create index acknowledged : " + createIndexResp.isAcknowledged());
-            responseConsumer(createIndexResp, callback);
+            response = getJsonResponse(createIndexResp);
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -132,6 +135,7 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
+        return response;
     }
 
     /**

@@ -23,7 +23,6 @@ import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -37,7 +36,6 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
 import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
@@ -321,8 +319,6 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            If set, only perform this update request if the document was last modification was assigned this sequence number.
      * @param ifPrimaryTerm           
      *            If set, only perform this update request if the document was last modification was assigned this primary term.
-     * @param version
-     *            Version number of the indexed document
      * @param detectNoop
      *            Enable or disable the noop detection
      * @param scriptedUpsert
