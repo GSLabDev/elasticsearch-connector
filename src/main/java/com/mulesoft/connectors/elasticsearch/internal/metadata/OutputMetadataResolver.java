@@ -25,7 +25,7 @@ public class OutputMetadataResolver {
         shardInfoObjectBuilder.addField().key("failed").value().numberType();
              
         final ObjectTypeBuilder failuresObjectBuilder = shardInfoObjectBuilder.addField().key("failures").value().arrayType().of().objectType();
-        getCauseObjectTypeBuilder(failuresObjectBuilder);
+        getNestedCauseObjectTypeBuilder(failuresObjectBuilder, false);
               
         shardInfoObjectBuilder.addField().key("successful").value().numberType();
         shardInfoObjectBuilder.addField().key("total").value().numberType();
@@ -34,21 +34,37 @@ public class OutputMetadataResolver {
         objectBuilder.addField().key("version").value().numberType();
     }
     
-    private static void getCauseObjectTypeBuilder(ObjectTypeBuilder typeBuilder) {
+    static void getNestedCauseObjectTypeBuilder(ObjectTypeBuilder typeBuilder, boolean nodeId) {
         final ObjectTypeBuilder causeObjectBuilder = typeBuilder.addField().key("cause").value().objectType();
         causeObjectBuilder.addField().key("cause").value(causeObjectBuilder);
         
-        causeObjectBuilder.addField().key("localizedMessage").value().stringType();
-        causeObjectBuilder.addField().key("message").value().stringType();
+        addFieldsInCauseObjectTypeBuilder(causeObjectBuilder);
+
+        final ObjectTypeBuilder suppressedObjectBuilder = causeObjectBuilder.addField().key("suppressed").value().arrayType().of().objectType();
+        getCauseObjectTypeBuilder(suppressedObjectBuilder);
         
-        final ObjectTypeBuilder stackTraceObjectBuilder = causeObjectBuilder.addField().key("stackTrace").value().arrayType().of().objectType();
+        if (nodeId) {
+            typeBuilder.addField().key("nodeId").value().stringType();
+        }
+    }
+
+    static void getCauseObjectTypeBuilder(ObjectTypeBuilder typeBuilder) {
+        typeBuilder.addField().key("cause").value(typeBuilder);
+
+        addFieldsInCauseObjectTypeBuilder(typeBuilder);
+
+        typeBuilder.addField().key("suppressed").value().arrayType().of().objectType();
+    }
+
+    private static void addFieldsInCauseObjectTypeBuilder(ObjectTypeBuilder objectTypeBuilder) {
+        objectTypeBuilder.addField().key("localizedMessage").value().stringType();
+        objectTypeBuilder.addField().key("message").value().stringType();
+
+        final ObjectTypeBuilder stackTraceObjectBuilder = objectTypeBuilder.addField().key("stackTrace").value().arrayType().of().objectType();
         stackTraceObjectBuilder.addField().key("className").value().stringType();
         stackTraceObjectBuilder.addField().key("fileName").value().stringType();
         stackTraceObjectBuilder.addField().key("lineNumber").value().numberType();
         stackTraceObjectBuilder.addField().key("methodName").value().stringType();
         stackTraceObjectBuilder.addField().key("nativeMethod").value().booleanType();
-      
-        final ObjectTypeBuilder suppressedObjectBuilder = causeObjectBuilder.addField().key("suppressed").value().arrayType().of().objectType();
-        suppressedObjectBuilder.addField().key("cause").value(causeObjectBuilder);
     }
 }

@@ -43,6 +43,7 @@ import com.mulesoft.connectors.elasticsearch.internal.error.exception.Elasticsea
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.IndexNotFoundException;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.CreateIndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.AcknowledgedResponseOutputMetadataResolver;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.CloseIndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.OpenIndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
@@ -273,15 +274,16 @@ public class IndexOperations extends ElasticsearchOperations {
      *            Timeout in seconds to connect to the master node
      * @param indicesOpt
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
-     * @param callback
+     * @param CloseIndexResponse as JSON String
      */
-    @MediaType(value = ANY, strict = false)
+    @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Index - Close")
-    public void closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
+    @OutputResolver(output = CloseIndexResponseOutputMetadataResolver.class)
+    public String closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt, CompletionCallback<CloseIndexResponse, Void> callback) {
-
+            @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt) {
+        String response;
         CloseIndexRequest closeIndexRequest = new CloseIndexRequest(index);
 
         if (timeoutInSec != 0) {
@@ -302,7 +304,7 @@ public class IndexOperations extends ElasticsearchOperations {
         try {
             closeIndexResp = esConnection.getElasticsearchConnection().indices().close(closeIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Close Index acknowledged : " + closeIndexResp.isAcknowledged());
-            responseConsumer(closeIndexResp, callback);
+            response = getJsonResponse(closeIndexResp);
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -310,6 +312,7 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
+        return response;
     }
 
 }
