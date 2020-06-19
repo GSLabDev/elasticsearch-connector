@@ -15,6 +15,8 @@ public class ResponseOutputMetadataResolver extends OutputStaticTypeResolver {
             
       objectBuilder.addField().key("headers").value().arrayType().of().objectType();
       
+      objectBuilder.addField().key("entity").value().stringType();
+      
       final ObjectTypeBuilder hostObjectBuilder = objectBuilder.addField().key("host").value().objectType();
       
       final ObjectTypeBuilder hostAddressObjectBuilder = hostObjectBuilder.addField().key("address").value().objectType();

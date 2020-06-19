@@ -8,11 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
-import org.apache.http.util.EntityUtils;
 import org.elasticsearch.action.search.ClearScrollRequest;
 import org.elasticsearch.action.search.ClearScrollResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -20,10 +18,10 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchScrollRequest;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.Response;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -31,7 +29,6 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
 import org.apache.log4j.Logger;
 
@@ -40,9 +37,11 @@ import com.mulesoft.connectors.elasticsearch.api.SearchRequestConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchRequestOptionalConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchSourceConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.querytype.Query;
+import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.ResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
@@ -100,12 +99,13 @@ public class SearchOperations extends BaseSearchOperation {
      *            Restricts the search request to an index
      * @param jsonData
      *            JSON file or string containing Elasticsearch query configuration
-     * @return Search Result
+     * @return Search Result as JSON String
      */
-    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @MediaType(value = MediaType.APPLICATION_JSON)
     @DisplayName("Search - JSON Query")
-    public Result<String, StatusLine> searchUsingJsonData(@Connection ElasticsearchConnection esConnection, @Optional String index, @ParameterGroup(name = "JSON Query") JsonData jsonData) {
-
+    @OutputResolver(output = ResponseOutputMetadataResolver.class)
+    public String searchUsingJsonData(@Connection ElasticsearchConnection esConnection, @Optional String index, @ParameterGroup(name = "JSON Query") JsonData jsonData) {
+        String result;
         String resource = index != null ? index.trim() + "/_search" : "/_search";
         String jsonContent;
 
@@ -121,27 +121,21 @@ public class SearchOperations extends BaseSearchOperation {
 
         HttpEntity entity = new NStringEntity(jsonContent, ContentType.APPLICATION_JSON);
         Map<String, String> params = Collections.singletonMap("pretty", "true");
-        Response response;
+        ElasticsearchResponse response;
         try {
             Request request = new Request(HttpGet.METHOD_NAME, "/" + resource);
             request.addParameters(params);
             request.setEntity(entity);
-            response = esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request);
+            response = new ElasticsearchResponse(esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request));
 
             logger.debug("RequestLine:" + response.getRequestLine());
-            String responseBody = EntityUtils.toString(response.getEntity());
-
-            Result<String, StatusLine> result = Result.<String, StatusLine>builder()
-                    .output(responseBody)
-                    .attributes(response.getStatusLine())
-                    .length(response.getEntity().getContentLength())
-                    .mediaType(org.mule.runtime.api.metadata.MediaType.APPLICATION_JSON)
-                    .build();
-            logger.info("Search response : " + result);
-            return result;
+            logger.info("Search response : " + response);
+            
+            result = getJsonResponse(response);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
+        return result;
     }
     
     /**

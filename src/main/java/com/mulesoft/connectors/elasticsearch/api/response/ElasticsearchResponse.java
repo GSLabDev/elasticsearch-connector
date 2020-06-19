@@ -7,7 +7,11 @@ import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.RequestLine;
 import org.apache.http.StatusLine;
+import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
+
+import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
+import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 
 /**
  * Holds an elasticsearch response.
@@ -17,27 +21,32 @@ public class ElasticsearchResponse implements Serializable{
     private static final long serialVersionUID = 8287834136687129724L;
 
     /**
-     * Returns the request line that generated this response
+     * The request line that generated this response
      */
     private RequestLine requestLine;
     
     /**
-     * Returns the node that returned this response
+     * The response body available (as String), null otherwise
+     */
+    private String entity;
+    
+    /**
+     * The node that returned this response
      */
     private HttpHost host;
     
     /**
-     * Returns the status line of the current response
+     * The status line of the current response
      */
     private StatusLine statusLine;
     
     /**
-     * Returns all the response headers
+     * All the response headers
      */
     private Header[] headers;
     
     /**
-     * Returns a list of all warning headers returned in the response.
+     * A list of all warning headers returned in the response.
      */
     private List<String> warnings;
     
@@ -46,6 +55,11 @@ public class ElasticsearchResponse implements Serializable{
 
     public ElasticsearchResponse(Response response) {
         requestLine = response.getRequestLine();
+        try {
+            entity = EntityUtils.toString(response.getEntity());
+        } catch (Exception e) {
+            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+        }
         host = response.getHost();
         statusLine = response.getStatusLine();
         headers = response.getHeaders();
@@ -54,6 +68,10 @@ public class ElasticsearchResponse implements Serializable{
 
     public RequestLine getRequestLine() {
         return requestLine;
+    }
+    
+    public String getEntity() {
+        return entity;
     }
 
     public HttpHost getHost() {
@@ -80,5 +98,4 @@ public class ElasticsearchResponse implements Serializable{
                 ", response=" + statusLine +
                 '}';
     }
-
 }
