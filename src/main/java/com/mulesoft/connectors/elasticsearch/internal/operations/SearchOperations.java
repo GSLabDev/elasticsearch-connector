@@ -41,6 +41,7 @@ import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.ClearScrollResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.ResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
@@ -178,20 +179,23 @@ public class SearchOperations extends BaseSearchOperation {
      *            The Elasticsearch connection
      * @param scrollIds
      *            List of scroll identifiers to clear
-     * @param callback
+     * @return ClearScrollResponse as JSON String
      */
-    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @MediaType(value = MediaType.APPLICATION_JSON)
     @DisplayName("Search - Clear Scroll")
-    public void clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll IDs") List<String> scrollIds,
-            CompletionCallback<ClearScrollResponse, Void> callback) {
+    @OutputResolver(output = ClearScrollResponseOutputMetadataResolver.class)
+    public String clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll IDs") List<String> scrollIds) {
+        String result = null;
+        
         ClearScrollRequest clearScrollrequest = new ClearScrollRequest();
         clearScrollrequest.setScrollIds(scrollIds);
         try {
             ClearScrollResponse response = esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest, RequestOptions.DEFAULT);
             logger.info("Clear scroll response : " + response);
-            responseConsumer(response, callback);
+            result = getJsonResponse(response);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
+        return result;
     }
 }
