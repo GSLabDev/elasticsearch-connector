@@ -43,6 +43,7 @@ import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTy
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.ClearScrollResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.ResponseOutputMetadataResolver;
+import com.mulesoft.connectors.elasticsearch.internal.metadata.SearchResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
@@ -67,16 +68,17 @@ public class SearchOperations extends BaseSearchOperation {
      *            Search source configuration to control the search behavior.
      * @param searchRequestOptionalConfiguration
      *            Some optional parameters for search request configuration
-     * @param callback
+     * @return SearchResponse as JSON String
      */
-    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @MediaType(value = MediaType.APPLICATION_JSON)
     @DisplayName("Search - Query")
-    public void search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
+    @OutputResolver(output = SearchResponseOutputMetadataResolver.class)
+    public String search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
             @DisplayName("Query Type") @Placement(order = 1, tab = "Query") Query queryConfiguration,
             @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration,
-            @DisplayName("Search Config") @Placement(order = 3, tab = "Search Optional Parameters") @Optional SearchRequestOptionalConfiguration searchRequestOptionalConfiguration,
-            CompletionCallback<SearchResponse, Void> callback) {
+            @DisplayName("Search Config") @Placement(order = 3, tab = "Search Optional Parameters") @Optional SearchRequestOptionalConfiguration searchRequestOptionalConfiguration) {
 
+        String result = null;
         SearchSourceBuilder searchSourceBuilder = searchSourceConfiguration != null ? getSearchSourceBuilderOptions(searchSourceConfiguration) : new SearchSourceBuilder();
         searchSourceBuilder.query(queryConfiguration.getQuery());
         SearchRequest searchRequest = getSearchRequest(searchRequestConfiguration, searchRequestOptionalConfiguration);
@@ -85,10 +87,12 @@ public class SearchOperations extends BaseSearchOperation {
         try {
             SearchResponse response = esConnection.getElasticsearchConnection().search(searchRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Search response : " + response);
-            responseConsumer(response, callback);
+
+            result = getJsonResponse(response);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
+        return result;
     }
 
     /**
@@ -147,14 +151,15 @@ public class SearchOperations extends BaseSearchOperation {
      *            Scroll identifier returned in last scroll/search request
      * @param timeValue
      *            Scroll time interval (in seconds) to keep the search context alive
-     * @param callback
+     * @return SearchResponse as JSON String
      */
-    @MediaType(value = MediaType.APPLICATION_JSON, strict = false)
+    @MediaType(value = MediaType.APPLICATION_JSON)
     @DisplayName("Search - Scroll")
-    public void searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last scroll/search request") String scrollId,
-            @Optional @DisplayName("Keep alive time") @Summary("Time interval (in seconds) to keep the search context alive.") long timeValue,
-            CompletionCallback<SearchResponse, Void> callback) {
+    @OutputResolver(output = SearchResponseOutputMetadataResolver.class)
+    public String searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last scroll/search request") String scrollId,
+            @Optional @DisplayName("Keep alive time") @Summary("Time interval (in seconds) to keep the search context alive.") long timeValue) {
 
+        String response = null;
         SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
         
         if(timeValue != 0) {
@@ -165,10 +170,12 @@ public class SearchOperations extends BaseSearchOperation {
         try {
             searchResponse = esConnection.getElasticsearchConnection().scroll(scrollRequest, RequestOptions.DEFAULT);
             logger.info("Search response : " + searchResponse);
-            responseConsumer(searchResponse, callback);
+
+            response = getJsonResponse(searchResponse);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
+        return response;
     }
 
     /**
