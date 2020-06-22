@@ -29,7 +29,6 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
 import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.api.JsonData;

@@ -3,7 +3,6 @@
  */
 package com.mulesoft.connectors.elasticsearch.internal.operations;
 
-import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 import static com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils.ifPresent;
 
 import java.io.IOException;
@@ -13,20 +12,17 @@ import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
-import org.elasticsearch.action.DocWriteRequest.OpType;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
-import org.elasticsearch.action.support.WriteRequest.RefreshPolicy;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.index.VersionType;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
@@ -39,6 +35,9 @@ import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
+import com.mulesoft.connectors.elasticsearch.api.ElasticsearchRefreshPolicy;
+import com.mulesoft.connectors.elasticsearch.api.ElasticsearchVersionType;
+import com.mulesoft.connectors.elasticsearch.api.OperationType;
 import com.mulesoft.connectors.elasticsearch.api.IndexDocumentOptions;
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchGetResponse;
@@ -102,10 +101,10 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
+            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional ElasticsearchRefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional long version,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType,
-            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Operation type") @Optional OpType operationType,
+            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional ElasticsearchVersionType versionType,
+            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Operation type") @Optional OperationType operationType,
             @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Pipeline") @Optional @Summary("The name of the ingest pipeline to be executed before indexing the document") String pipeline) {
 
         IndexRequest indexRequest;
@@ -122,12 +121,12 @@ public class DocumentOperations extends ElasticsearchOperations {
             }
 
             ifPresent(routing, routingValue -> indexRequest.routing(routingValue));
-            ifPresent(refreshPolicy, refreshPolicyValue -> indexRequest.setRefreshPolicy(refreshPolicyValue));
+            ifPresent(refreshPolicy, refreshPolicyValue -> indexRequest.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
             if(version != 0) {
                 indexRequest.version(version);
             }
-            ifPresent(versionType, versionTypeValue -> indexRequest.versionType(versionTypeValue));
-            ifPresent(operationType, operationTypeValue -> indexRequest.opType(operationTypeValue));
+            ifPresent(versionType, versionTypeValue -> indexRequest.versionType(versionTypeValue.getVersionType()));
+            ifPresent(operationType, operationTypeValue -> indexRequest.opType(operationTypeValue.getOpType()));
             ifPresent(pipeline, pipelineValue -> indexRequest.setPipeline(pipelineValue));
 
             IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
@@ -180,7 +179,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Set realtime flag") @Optional(defaultValue = "true") boolean realtime,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Refresh") @Summary("Perform a refresh before retrieving the document") @Optional(defaultValue = "false") boolean refresh,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional long version,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional VersionType versionType) {
+            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional ElasticsearchVersionType versionType) {
 
         GetRequest getRequest = new GetRequest(index, documentId);
         String response = null;
@@ -207,7 +206,7 @@ public class DocumentOperations extends ElasticsearchOperations {
         if(version != 0) {
             getRequest.version(version);
         }
-        ifPresent(versionType, versionTypeValue -> getRequest.versionType(versionTypeValue));
+        ifPresent(versionType, versionTypeValue -> getRequest.versionType(versionTypeValue.getVersionType()));
 
         getRequest.realtime(realtime);
         getRequest.refresh(refresh);
@@ -257,9 +256,9 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
+            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional ElasticsearchRefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional long version,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional VersionType versionType) {
+            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional ElasticsearchVersionType versionType) {
         String response = null;
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
@@ -271,8 +270,8 @@ public class DocumentOperations extends ElasticsearchOperations {
         }
 
         ifPresent(routing, routingValue -> deleteRequest.routing(routingValue));
-        ifPresent(refreshPolicy, refreshPolicyValue -> deleteRequest.setRefreshPolicy(refreshPolicyValue));
-        ifPresent(versionType, versionTypeValue -> deleteRequest.versionType(versionTypeValue));
+        ifPresent(refreshPolicy, refreshPolicyValue -> deleteRequest.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
+        ifPresent(versionType, versionTypeValue -> deleteRequest.versionType(versionTypeValue.getVersionType()));
 
         DeleteResponse deleteResp;
         try {
@@ -336,7 +335,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional RefreshPolicy refreshPolicy,
+            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional ElasticsearchRefreshPolicy refreshPolicy,
             @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Retry on Conflict") @Optional(defaultValue = "0") @Summary("How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update operation") int retryOnConflict,
             @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Fetch Source") @Optional(defaultValue = "false") boolean fetchSource,
             @Placement(tab = "Optional Arguments", order = 7) @DisplayName("If Seq No") @Optional long ifSeqNo,
@@ -359,7 +358,7 @@ public class DocumentOperations extends ElasticsearchOperations {
             if (timeoutInSec != 0) {
                 updateRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
             }
-            ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue));
+            ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
             if (retryOnConflict != 0) {
                 updateRequest.retryOnConflict(retryOnConflict);
             }

@@ -4,7 +4,6 @@
 package com.mulesoft.connectors.elasticsearch.internal.operations;
 
 import static com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils.ifPresent;
-import static org.mule.runtime.extension.api.annotation.param.MediaType.ANY;
 
 import java.io.IOException;
 import java.util.Map;
@@ -33,7 +32,6 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
-import org.mule.runtime.extension.api.runtime.process.CompletionCallback;
 import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.api.IndexOptions;
@@ -274,7 +272,7 @@ public class IndexOperations extends ElasticsearchOperations {
      *            Timeout in seconds to connect to the master node
      * @param indicesOpt
      *            IndicesOptions controls how unavailable indices are resolved and how wildcard expressions are expanded
-     * @param CloseIndexResponse as JSON String
+     * @return CloseIndexResponse as JSON String
      */
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Index - Close")
