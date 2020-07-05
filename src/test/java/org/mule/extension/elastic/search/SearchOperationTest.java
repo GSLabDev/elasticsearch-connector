@@ -5,8 +5,6 @@ package org.mule.extension.elastic.search;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.elasticsearch.action.search.ClearScrollResponse;
-import org.elasticsearch.action.search.SearchResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,157 +28,141 @@ public class SearchOperationTest extends MuleArtifactFunctionalTestCase {
 
     @Test
     public void executeMatchAllSearchOperation() throws Exception {
-
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testMatchAllSearchFlow").run().getMessage().getPayload().getValue());
+        String payloadValue = (String) flowRunner("testMatchAllSearchFlow").run().getMessage().getPayload().getValue();
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executeSearchMatchOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchMatchFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchMatchFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
 
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executeMultiMatchOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testMultiMatchFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testMultiMatchFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
 
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchMatchPhraseOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchMatchPhraseFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchMatchPhraseFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
 
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchMatchPrefixOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchMatchPrefixFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchMatchPrefixFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
 
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchCommomTermsOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchCommomTermsFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchCommomTermsFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
 
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchQueryStringOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchQueryStringFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchQueryStringFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
 
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchSimpleQueryStringOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchSimpleQueryStringFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchSimpleQueryStringFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
 
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchUsingJsonRequestOperation() throws Exception {
-        String payloadValue = ((String) flowRunner("testSearchUsingJsonRequestFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchUsingJsonRequestFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
 
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchScrollInitOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchScrollInitFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchScrollInitFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
         assertNotNull(payloadValue);
-        assertNotNull(payloadValue.getScrollId());
     }
 
     @Test
     public void executSearchScrollOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchScrollInitFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
-        String key = "scrollId";
-        String value = payloadValue.getScrollId();
-
-        Object scrollPayloadValue = flowRunner("testSearchScrollFlow").withVariable(key, value).run().getMessage().getPayload().getValue();
-        LOGGER.info(scrollPayloadValue.toString());
-        assertNotNull(scrollPayloadValue);
-        assertNotNull(value);
-        value = payloadValue.getScrollId();
+        String payloadValue = (String) flowRunner("testSearchScrollFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
+        assertNotNull(payloadValue);
     }
 
     @Test
     public void executClearScrollOperation() throws Exception {
-        SearchResponse payloadValue = ((SearchResponse) flowRunner("testSearchScrollInitFlow").run().getMessage().getPayload().getValue());
-        LOGGER.info(payloadValue.toString());
-        String key = "scrollId";
-        String value = payloadValue.getScrollId();
-
-        Object response = flowRunner("testClearScrollFlow").withVariable(key, value).run().getMessage().getPayload().getValue();
-
-        LOGGER.info(response.toString());
-        assertNotNull(response);
-
+        String payloadValue = (String) flowRunner("testClearScrollFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
+        assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchWithoutIndexOperation() throws Exception {
-        SearchResponse payloadValue = (SearchResponse) flowRunner("testSearchWithoutIndexFlow").run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchWithoutIndexFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchCommomTermsWithDefaultOperation() throws Exception {
-        SearchResponse payloadValue = (SearchResponse) flowRunner("SearchCommomTermsWithDefaultFlow").run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("SearchCommomTermsWithDefaultFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchMatchTermsWithDefaultOperation() throws Exception {
-        SearchResponse payloadValue = (SearchResponse) flowRunner("testSearchMatchWithDefaultFlow").run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchMatchWithDefaultFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchMatchPhraseWithDefaultOperation() throws Exception {
-        SearchResponse payloadValue = (SearchResponse) flowRunner("testSearchMatchPhraseWithDefaultFlow").run().getMessage().getPayload().getValue();
+        String payloadValue = (String) flowRunner("testSearchMatchPhraseWithDefaultFlow").run().getMessage().getPayload().getValue();
         LOGGER.info(payloadValue.toString());
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executMultiMatchWithDefaultOperation() throws Exception {
-        SearchResponse payloadValue = (SearchResponse) flowRunner("testMultiMatchWithDefaultFlow").run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testMultiMatchWithDefaultFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executSearchSimpleQueryStringWithDefaultOperation() throws Exception {
-        SearchResponse payloadValue = (SearchResponse) flowRunner("testSearchSimpleQueryStringWithDefaultFlow").run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchSimpleQueryStringWithDefaultFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
         assertNotNull(payloadValue);
     }
 
     @Test
     public void executtestSearchQueryStringWithDefaultOperation() throws Exception {
-        SearchResponse payloadValue = (SearchResponse) flowRunner("testSearchQueryStringWithDefaultFlow").run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue.toString());
+        String payloadValue = (String) flowRunner("testSearchQueryStringWithDefaultFlow").run().getMessage().getPayload().getValue();
+        LOGGER.info(payloadValue);
         assertNotNull(payloadValue);
     }
 

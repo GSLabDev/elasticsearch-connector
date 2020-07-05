@@ -32,7 +32,7 @@ public class TrustStoreConfiguration {
      */
 
     @Parameter
-    @Path(type = Type.FILE, acceptedFileExtensions = "jks", location = Location.ANY)
+    @Path(type = Type.FILE, location = Location.ANY)
     @DisplayName("Path")
     private String trustStorePath;
 
