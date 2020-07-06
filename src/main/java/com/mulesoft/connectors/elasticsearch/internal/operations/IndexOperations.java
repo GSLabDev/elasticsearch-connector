@@ -8,7 +8,6 @@ import static com.mulesoft.connectors.elasticsearch.internal.utils.Elasticsearch
 import java.io.IOException;
 import java.util.Map;
 
-import org.elasticsearch.ElasticsearchStatusException;
 import org.elasticsearch.action.admin.indices.alias.Alias;
 import org.elasticsearch.client.indices.CloseIndexRequest;
 import org.elasticsearch.client.indices.CloseIndexResponse;
@@ -24,7 +23,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.settings.Settings.Builder;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.rest.RestStatus;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -38,7 +36,6 @@ import com.mulesoft.connectors.elasticsearch.api.IndexOptions;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
-import com.mulesoft.connectors.elasticsearch.internal.error.exception.IndexNotFoundException;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.CreateIndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.AcknowledgedResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.CloseIndexResponseOutputMetadataResolver;
@@ -186,12 +183,8 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         } catch (Exception e) {
-            if (e instanceof ElasticsearchException && ((ElasticsearchStatusException) e).status() == RestStatus.NOT_FOUND) {
-                throw new IndexNotFoundException(e);
-            } else {
-                logger.error(e);
-                throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
-            }
+            logger.error(e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
         return result;
     }

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema/mule/elasticsearch/current/mule-elasticsearch.xsd">
+
+	<munit:config name="index-operation-with-error-test-suite.xml" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="43e43249-8aa9-476f-aa53-66fcfb7eb77c" file="mule-application.properties" />
+
+	<elasticsearch:config name="Elasticsearch_HTTP_Config2"
+		doc:name="Elasticsearch Config" doc:id="07349911-a3c3-4468-adfb-92fdec18ea5f">
+		<elasticsearch:http-connection host="${elastic.host}"
+			port="${elastic.port}" />
+	</elasticsearch:config>
+
+	<munit:test name="createIndexWithErrorFlowTest" description="Test"
+		doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62" expectedErrorType="ELASTICSEARCH:EXECUTION">
+		<munit:execution>
+			<elasticsearch:create-index doc:name="Index - Create"
+				doc:id="5e825e49-e369-464c-8b3e-bfcd12ca6312" config-ref="Elasticsearch_HTTP_Config2"
+				index="testIndex">
+			</elasticsearch:create-index>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="deleteIndexWithErrorFlowTest" description="Test"
+		doc:id="1baf2f9d-2718-450f-b00c-627af0833d07" expectedErrorType="ELASTICSEARCH:EXECUTION">
+		<munit:execution>
+			<elasticsearch:delete-index doc:name="Index - Delete"
+				doc:id="a2db8672-d2ad-4290-b546-c2c7ca499de0" config-ref="Elasticsearch_HTTP_Config2"
+				index="dummy">
+			</elasticsearch:delete-index>
+		</munit:execution>
+	</munit:test>
+</mule>

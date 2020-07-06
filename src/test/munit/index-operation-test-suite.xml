@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule
-	xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch"
+<mule xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch"
 	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
 	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
@@ -13,48 +12,102 @@ http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/m
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema/mule/elasticsearch/current/mule-elasticsearch.xsd">
 
-	<munit:config name="index-operation-test-suite.xml"/>
+	<munit:config name="index-operation-test-suite.xml" />
 	<configuration-properties doc:name="Configuration properties"
 		doc:id="43e43249-8aa9-476f-aa53-66fcfb7eb77c" file="mule-application.properties" />
-		
-	<elasticsearch:config name="Elasticsearch_HTTP_Config2" doc:name="Elasticsearch Config" doc:id="07349911-a3c3-4468-adfb-92fdec18ea5f" >
-		<elasticsearch:http-connection host="${elastic.host}" port="${elastic.port}" />
+
+	<elasticsearch:config name="Elasticsearch_HTTP_Config1"
+		doc:name="Elasticsearch Config" doc:id="07349911-a3c3-4468-adfb-92fdec18ea5f">
+		<elasticsearch:http-connection host="${elastic.host}"
+			port="${elastic.port}" />
 	</elasticsearch:config>
-	
-	<munit:test name="createIndexWithIndexSettingAndMappingFlowTest" description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62" >
+
+	<munit:test name="createIndexWithIndexSettingAndMappingFlowTest"
+		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62">
 		<munit:execution>
-			<elasticsearch:create-index doc:name="Index - Create" doc:id="710e782b-d8df-4a63-9911-d4f2a623034d" config-ref="Elasticsearch_HTTP_Config2" index="#[uuid()]" indexAlias="twitter_alias1" timeoutInSec="5" masterNodeTimeoutInSec="5" waitForActiveShards="2" indexMappingsJSONFile="munit/createIndexMapping.json">
-				<elasticsearch:index-settings >
-					<elasticsearch:index-setting key="index.number_of_shards" value="4" />
-					<elasticsearch:index-setting key="index.number_of_replicas" value="5" />
+			<elasticsearch:create-index doc:name="Index - Create"
+				doc:id="710e782b-d8df-4a63-9911-d4f2a623034d" config-ref="Elasticsearch_HTTP_Config1"
+				index="#[uuid()]" indexAlias="twitter_alias1" timeoutInSec="5"
+				masterNodeTimeoutInSec="5" waitForActiveShards="2"
+				indexMappingsJSONFile="munit/createIndexMapping.json">
+				<elasticsearch:index-settings>
+					<elasticsearch:index-setting key="index.number_of_shards"
+						value="4" />
+					<elasticsearch:index-setting key="index.number_of_replicas"
+						value="5" />
 				</elasticsearch:index-settings>
 			</elasticsearch:create-index>
-			<logger level="INFO" doc:name="Logger" doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]"/>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
 		</munit:execution>
 		<munit:validation>
-			<munit-tools:assert-that doc:name="Assert that" doc:id="6a886161-abdf-40be-97be-a178a08e7263" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="6a886161-abdf-40be-97be-a178a08e7263" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>
-	
-	<munit:test name="createIndexWithIndexSettingJSONFileFlowTest" description="Test" doc:id="2d49e289-4dac-45e1-a55b-2c22737a0d32" >
+
+	<munit:test name="createIndexWithIndexSettingJSONFileFlowTest"
+		description="Test" doc:id="2d49e289-4dac-45e1-a55b-2c22737a0d32">
 		<munit:execution>
-			<elasticsearch:create-index doc:name="Index - Create" doc:id="4888a71e-db8a-4bf2-80ff-9ac77b946577" config-ref="Elasticsearch_HTTP_Config2" index="#[uuid()]" indexAlias="twitter_alias_new" timeoutInSec="5" masterNodeTimeoutInSec="5" waitForActiveShards="2" indexSettingsJSONFile="munit/createIndexSetting.json">
+			<elasticsearch:create-index doc:name="Index - Create"
+				doc:id="4888a71e-db8a-4bf2-80ff-9ac77b946577" config-ref="Elasticsearch_HTTP_Config1"
+				index="#[uuid()]" indexAlias="twitter_alias_new" timeoutInSec="5"
+				masterNodeTimeoutInSec="5" waitForActiveShards="2"
+				indexSettingsJSONFile="munit/createIndexSetting.json">
 			</elasticsearch:create-index>
-			<logger level="INFO" doc:name="Logger" doc:id="1b4e28ea-cf94-49b3-bebe-81b5b52fad1b" message="#[payload]"/>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="1b4e28ea-cf94-49b3-bebe-81b5b52fad1b" message="#[payload]" />
 		</munit:execution>
 		<munit:validation>
-			<munit-tools:assert-that doc:name="Assert that" doc:id="6de700ee-a2d5-416c-80b5-eecf4f831254" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="6de700ee-a2d5-416c-80b5-eecf4f831254" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>
-	
-	<munit:test name="createIndexWithSourceJSONFileFlowTest" description="Test" doc:id="423b3f1e-38cf-4aa2-b1d0-395269a6667c" >
+
+	<munit:test name="createIndexWithSourceJSONFileFlowTest"
+		description="Test" doc:id="423b3f1e-38cf-4aa2-b1d0-395269a6667c">
 		<munit:execution>
-			<elasticsearch:create-index doc:name="Index - Create" doc:id="456b84d5-2b7a-4f5f-bd07-a3076c54fccb" config-ref="Elasticsearch_HTTP_Config2" index="#[uuid()]" timeoutInSec="5" masterNodeTimeoutInSec="5" waitForActiveShards="2" sourceJSONFile="munit/createIndexSource.json">
+			<elasticsearch:create-index doc:name="Index - Create"
+				doc:id="456b84d5-2b7a-4f5f-bd07-a3076c54fccb" config-ref="Elasticsearch_HTTP_Config1"
+				index="#[uuid()]" timeoutInSec="5" masterNodeTimeoutInSec="5"
+				waitForActiveShards="2" sourceJSONFile="munit/createIndexSource.json">
 			</elasticsearch:create-index>
-			<logger level="INFO" doc:name="Logger" doc:id="92ddfba1-a43b-4b5a-9b5b-0d4beca4b3c8" message="#[payload]"/>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="92ddfba1-a43b-4b5a-9b5b-0d4beca4b3c8" message="#[payload]" />
 		</munit:execution>
 		<munit:validation>
-			<munit-tools:assert-that doc:name="Assert that" doc:id="dd580738-5e80-4662-b5a4-970df024f5aa" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="dd580738-5e80-4662-b5a4-970df024f5aa" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="createAndDeleteIndex" description="Test"
+		doc:id="9e3ca102-5255-4b67-b742-d0e2800df08f">
+		<munit:execution>
+			<elasticsearch:create-index doc:name="Index - Create"
+				doc:id="3f65ed99-d709-4d75-9002-d7ced881e28b" config-ref="Elasticsearch_HTTP_Config1"
+				index="test">
+			</elasticsearch:create-index>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="75ad576a-7937-43ec-b9eb-da1262ce9f24" message="#[payload]" />
+			<elasticsearch:delete-index doc:name="Index - Delete"
+				doc:id="25dac5d7-ceea-4211-8157-f4ccf2f9d27e" config-ref="Elasticsearch_HTTP_Config1"
+				index="test" timeoutInSec="5" masterNodeTimeoutInSec="6">
+				<elasticsearch:indices-opts
+					ignoreUnavailable="true" allowNoIndices="true" expandWildcardsOpen="true"
+					expandWildcardsClosed="true" allowAliasesToMultipleIndices="true"
+					forbidClosedIndices="true" ignoreAliases="true" ignoreThrottled="true" />
+			</elasticsearch:delete-index>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="dcc48043-c405-439e-8e2b-9fab159ba490" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="cd8fe1ba-dbe6-4107-be79-d89177a17706" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>
 </mule>
