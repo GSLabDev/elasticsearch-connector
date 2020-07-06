@@ -108,6 +108,57 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<munit-tools:assert-that doc:name="Assert that"
 				doc:id="cd8fe1ba-dbe6-4107-be79-d89177a17706" is="#[MunitTools::notNullValue()]"
 				expression="#[payload]" />
+			<munit-tools:assert-that expression="#[payload.acknowledged]"
+				is="#[MunitTools::equalTo(true)]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="openIndexFlowTest" description="Test"
+		doc:id="873979a6-a571-4391-b73f-d8b4b0730d22">
+		<munit:execution>
+			<elasticsearch:open-index doc:name="Index - Open"
+				doc:id="5999b7b7-f510-4d94-ae68-6fe2a9384e71" config-ref="Elasticsearch_HTTP_Config1"
+				index="test_index" timeoutInSec="3" masterNodeTimeoutInSec="5"
+				waitForActiveShards="1">
+				<elasticsearch:indices-opts
+					ignoreUnavailable="true" allowNoIndices="true" expandWildcardsOpen="true"
+					expandWildcardsClosed="true" allowAliasesToMultipleIndices="true"
+					forbidClosedIndices="true" ignoreAliases="true" ignoreThrottled="true" />
+			</elasticsearch:open-index>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="e9aa5034-b9ad-419c-a008-8de6d15a1ce3" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="43749bd0-c13b-401b-afec-4241f3010c17" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+			<munit-tools:assert-that expression="#[payload.acknowledged]"
+				is="#[MunitTools::equalTo(true)]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="closeIndexFlowTest" description="Test"
+		doc:id="ac5945b2-a375-4c2b-bead-d1b8f5d16fe0">
+		<munit:execution>
+			<elasticsearch:close-index doc:name="Index - Close"
+				doc:id="3df98052-dd96-4676-9123-e18f27b6dfcc" config-ref="Elasticsearch_HTTP_Config1"
+				index="test_index" timeoutInSec="4" masterNodeTimeoutInSec="5">
+				<elasticsearch:indices-opt allowNoIndices="true"
+					expandWildcardsOpen="true" expandWildcardsClosed="true"
+					allowAliasesToMultipleIndices="true" forbidClosedIndices="true"
+					ignoreAliases="true" ignoreThrottled="true" ignoreUnavailable="true" />
+			</elasticsearch:close-index>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="aea2e3f2-54ec-4c03-8686-e44c2b949adb" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="026c2a70-5dde-466c-9523-98e97608180a" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+
+			<munit-tools:assert-that expression="#[payload.acknowledged]"
+				is="#[MunitTools::equalTo(true)]" />
+
 		</munit:validation>
 	</munit:test>
 </mule>

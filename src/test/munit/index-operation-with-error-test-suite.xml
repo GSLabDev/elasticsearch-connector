@@ -27,8 +27,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:create-index doc:name="Index - Create"
 				doc:id="5e825e49-e369-464c-8b3e-bfcd12ca6312" config-ref="Elasticsearch_HTTP_Config2"
-				index="testIndex">
-			</elasticsearch:create-index>
+				index="testIndex"/>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
 		</munit:execution>
@@ -39,8 +38,21 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:delete-index doc:name="Index - Delete"
 				doc:id="a2db8672-d2ad-4290-b546-c2c7ca499de0" config-ref="Elasticsearch_HTTP_Config2"
-				index="dummy">
-			</elasticsearch:delete-index>
+				index="dummy"/>
+		</munit:execution>
+	</munit:test>
+	
+	<munit:test name="openIndexWithErrorFlowTest" description="Test"
+		doc:id="5a05ec90-121b-4caa-bbb1-5232ce0d12f9" expectedErrorType="ELASTICSEARCH:EXECUTION">
+		<munit:execution>
+			<elasticsearch:open-index doc:name="Index - Open" doc:id="e7bcf3e2-fa20-4f42-8069-a34706c1d54e" config-ref="Elasticsearch_HTTP_Config2" index="dummy_index"/>
+		</munit:execution>
+	</munit:test>
+	
+	<munit:test name="closeIndexWithErrorFlowTest" description="Test"
+		doc:id="e402ddae-51be-414f-9d73-dca9d0e8a2cc" expectedErrorType="ELASTICSEARCH:EXECUTION">
+		<munit:execution>
+			<elasticsearch:close-index doc:name="Index - Close" doc:id="466498b0-8f6d-44a1-b6cf-d2a1a58dc0be" config-ref="Elasticsearch_HTTP_Config2" index="dummy_index"/>
 		</munit:execution>
 	</munit:test>
 </mule>
