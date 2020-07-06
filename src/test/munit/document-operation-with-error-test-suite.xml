@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema/mule/elasticsearch/current/mule-elasticsearch.xsd">
+
+	<munit:config name="document-operation-with-error-test-suite.xml" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="43e43249-8aa9-476f-aa53-66fcfb7eb77c" file="mule-application.properties" />
+
+	<elasticsearch:config name="Elasticsearch_HTTP_Config5"
+		doc:name="Elasticsearch Config" doc:id="07349911-a3c3-4468-adfb-92fdec18ea5f">
+		<elasticsearch:http-connection host="${elastic.host}"
+			port="${elastic.port}" />
+	</elasticsearch:config>
+
+	<munit:test name="indexDocumentWithErrorFlowTest"
+		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62"
+		expectedErrorType="ELASTICSEARCH:EXECUTION">
+		<munit:execution>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="6e422bda-d927-4c21-934a-17f694bd6b97" config-ref="Elasticsearch_HTTP_Config5"
+				index="dummy_index" documentId="dummy_id" jsonInputPath="testInputDummy.json" />
+
+			<logger level="INFO" doc:name="Logger"
+				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
+</mule>

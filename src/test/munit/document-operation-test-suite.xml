@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema/mule/elasticsearch/current/mule-elasticsearch.xsd">
+
+	<munit:config name="document-operation-test-suite.xml" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="43e43249-8aa9-476f-aa53-66fcfb7eb77c" file="mule-application.properties" />
+
+	<elasticsearch:config name="Elasticsearch_HTTP_Config3"
+		doc:name="Elasticsearch Config" doc:id="07349911-a3c3-4468-adfb-92fdec18ea5f">
+		<elasticsearch:http-connection host="${elastic.host}"
+			port="${elastic.port}" />
+	</elasticsearch:config>
+
+	<munit:test name="IndexDocumentWithDocumentSourcesFlowTest"
+		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62">
+		<munit:execution>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="257c504b-3523-42ee-9f2a-769b7c61c07b" config-ref="Elasticsearch_HTTP_Config3"
+				index="#[uuid()]" documentId="#[uuid()]" routing="routing" timeoutInSec="5"
+				refreshPolicy="IMMEDIATE" version="2" versionType="EXTERNAL"
+				operationType="INDEX">
+				<elasticsearch:document-sources>
+					<elasticsearch:document-source key="key1"
+						value="value1" />
+					<elasticsearch:document-source key="key11"
+						value="value11" />
+					<elasticsearch:document-source key="key111"
+						value="value111" />
+					<elasticsearch:document-source key="key1111"
+						value="value1111" />
+				</elasticsearch:document-sources>
+			</elasticsearch:index-document>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="fea7b3cb-7a34-454c-bf3e-1d83d576e960" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="6a886161-abdf-40be-97be-a178a08e7263" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="IndexDocumentWithJSONInputFileFlowTest"
+		description="Test" doc:id="0cfd1107-8e4e-4499-8155-583d1a32239c">
+		<munit:execution>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="79d62631-285b-4c03-adcf-e2628aa68deb" config-ref="Elasticsearch_HTTP_Config3"
+				index="#[uuid()]" documentId="#[uuid()]" routing="routing" timeoutInSec="5"
+				refreshPolicy="WAIT_UNTIL" version="10" versionType="EXTERNAL_GTE"
+				operationType="INDEX" jsonInputPath="${index.jsoninputpath}"/>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="cc63295c-6708-4c00-8cd2-6596a333058a" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="9fecaebf-3048-493d-bd63-eba3f79a49aa" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+</mule>
