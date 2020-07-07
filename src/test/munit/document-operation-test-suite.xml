@@ -27,8 +27,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="257c504b-3523-42ee-9f2a-769b7c61c07b" config-ref="Elasticsearch_HTTP_Config3"
-				index="#[uuid()]" documentId="#[uuid()]" routing="routing" timeoutInSec="5"
-				refreshPolicy="IMMEDIATE" version="2" versionType="EXTERNAL"
+				index="test_index_1" documentId="test_doc_id_1" routing="routing"
+				timeoutInSec="5" refreshPolicy="IMMEDIATE" version="2" versionType="EXTERNAL"
 				operationType="INDEX">
 				<elasticsearch:document-sources>
 					<elasticsearch:document-source key="key1"
@@ -41,8 +41,12 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 						value="value1111" />
 				</elasticsearch:document-sources>
 			</elasticsearch:index-document>
+
 			<logger level="INFO" doc:name="Logger"
 				doc:id="fea7b3cb-7a34-454c-bf3e-1d83d576e960" message="#[payload]" />
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="cddf3e2a-2a49-4637-a8ea-909d9409bd9d" config-ref="Elasticsearch_HTTP_Config3"
+				index="test_index_1" documentId="test_doc_id_1" />
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that doc:name="Assert that"
@@ -56,16 +60,80 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="79d62631-285b-4c03-adcf-e2628aa68deb" config-ref="Elasticsearch_HTTP_Config3"
-				index="#[uuid()]" documentId="#[uuid()]" routing="routing" timeoutInSec="5"
-				refreshPolicy="WAIT_UNTIL" version="10" versionType="EXTERNAL_GTE"
-				operationType="INDEX" jsonInputPath="${index.jsoninputpath}"/>
+				index="test_index_2" documentId="test_doc_id_2" routing="routing"
+				timeoutInSec="5" refreshPolicy="WAIT_UNTIL" version="10"
+				versionType="EXTERNAL_GTE" operationType="INDEX" jsonInputPath="${index.jsoninputpath}" />
 			<logger level="INFO" doc:name="Logger"
 				doc:id="cc63295c-6708-4c00-8cd2-6596a333058a" message="#[payload]" />
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="d120fa7b-7ee7-4c1a-a348-5334ded1eac4" config-ref="Elasticsearch_HTTP_Config3"
+				index="test_index_2" documentId="test_doc_id_2" />
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that doc:name="Assert that"
 				doc:id="9fecaebf-3048-493d-bd63-eba3f79a49aa" is="#[MunitTools::notNullValue()]"
 				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="IndexGetAndDeleteDocumentFlowTest"
+		description="Test" doc:id="ab01b2fb-f0ec-4580-a3cf-d433c12312ba">
+		<munit:execution>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="a9c2fb94-a3eb-4d61-8561-31d37cea5efe" config-ref="Elasticsearch_HTTP_Config3"
+				index="get_doc_index" documentId="get_doc_id">
+				<elasticsearch:document-sources>
+					<elasticsearch:document-source key="key1"
+						value="value1" />
+					<elasticsearch:document-source key="key2"
+						value="value2" />
+				</elasticsearch:document-sources>
+			</elasticsearch:index-document>
+			<elasticsearch:get-document doc:name="Document - Get"
+				doc:id="36b58af6-cd5c-4f67-819f-bdf4edb2b0db" config-ref="Elasticsearch_HTTP_Config3"
+				index="get_doc_index" documentId="get_doc_id" routing="routing"
+				preference="preference" realtime="false" refresh="true" version="1"
+				versionType="EXTERNAL_GTE">
+				<elasticsearch:fetch-source-context
+					fetchSource="false">
+					<elasticsearch:include-fields>
+						<elasticsearch:include-field value="key1" />
+					</elasticsearch:include-fields>
+					<elasticsearch:exclude-fields>
+						<elasticsearch:exclude-field value="key2" />
+					</elasticsearch:exclude-fields>
+				</elasticsearch:fetch-source-context>
+			</elasticsearch:get-document>
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="7361df69-0e06-4a91-82ac-3f8b6f9ecbe0"
+				config-ref="Elasticsearch_HTTP_Config3" index="get_doc_index"
+				documentId="get_doc_id" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="a0887f78-ae81-4128-bfcb-69a1b669c37b" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="DeleteDocumentFlowTest" description="Test"
+		doc:id="aa27b7a0-1952-419a-9434-9e6bb7f7946b">
+		<munit:execution>
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="dc4277e8-6123-446b-b277-caef7b503178"
+				config-ref="Elasticsearch_HTTP_Config3" index="dummy_index"
+				documentId="dummy_doc_id" routing="routing" timeoutInSec="6"
+				refreshPolicy="IMMEDIATE" version="11" versionType="EXTERNAL" />
+
+			<logger level="INFO" doc:name="Logger"
+				doc:id="bb1339fc-2083-42eb-a088-28819c0c3f0b" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="e5055ea3-7fd8-41ab-aed2-986ab5eafe95" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+			<munit-tools:assert-that expression="#[payload.result]"
+				is="#[MunitTools::equalTo('NOT_FOUND')]" />
 		</munit:validation>
 	</munit:test>
 </mule>

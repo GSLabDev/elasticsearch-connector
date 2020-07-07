@@ -34,4 +34,15 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
 		</munit:execution>
 	</munit:test>
+	
+	<munit:test name="getDocumentWithErrorFlowTest" description="Test"
+		doc:id="dc1bce6a-a42f-4bad-b892-4b70c0ebda37" expectedErrorType="ELASTICSEARCH:EXECUTION">
+		<munit:execution>
+			<elasticsearch:get-document doc:name="Document - Get"
+				doc:id="520e9c30-7117-4ccb-9ea1-405b8fc42598" config-ref="Elasticsearch_HTTP_Config5"
+				index="dummy_index5" documentId="dummy_doc_id"/>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="e3cfc760-d141-425a-b0b4-a0ac164f841a" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
 </mule>
