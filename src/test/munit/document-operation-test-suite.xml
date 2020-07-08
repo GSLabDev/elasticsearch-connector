@@ -224,4 +224,71 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>
+
+	<munit:test name="BulkDocumentWithTextFlowTest" description="Test"
+		doc:id="87393dcb-e3fa-4ef5-8543-6a9055654c69">
+		<munit:execution>
+			<elasticsearch:bulk-operation doc:name="Document - Bulk"
+			doc:id="cd0d94f0-f110-4396-910a-6a2ce2784dec" config-ref="Elasticsearch_HTTP_Config3">
+			<elasticsearch:json-text>{ &quot;update&quot; : {&quot;_id&quot; : &quot;1&quot;, &quot;_index&quot; : &quot;accounts123&quot;, &quot;retry_on_conflict&quot; : 3} }
+{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;} }
+{ &quot;update&quot; : { &quot;_id&quot; : &quot;0&quot;, &quot;_index&quot; : &quot;accounts123&quot;, &quot;retry_on_conflict&quot; : 3} }
+{ &quot;script&quot; : { &quot;source&quot;: &quot;ctx._source.counter += params.param1&quot;, &quot;lang&quot; : &quot;painless&quot;, &quot;params&quot; : {&quot;param1&quot; : 1}}, &quot;upsert&quot; : {&quot;counter&quot; : 1}}
+{ &quot;update&quot; : {&quot;_id&quot; : &quot;2&quot;, &quot;_index&quot; : &quot;accounts123&quot;, &quot;retry_on_conflict&quot; : 3} }
+{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;}, &quot;doc_as_upsert&quot; : true }
+{ &quot;update&quot; : {&quot;_id&quot; : &quot;3&quot;, &quot;_index&quot; : &quot;accounts123&quot;, &quot;_source&quot; : true} }
+{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;} }
+{ &quot;update&quot; : {&quot;_id&quot; : &quot;4&quot;, &quot;_index&quot; : &quot;accounts123&quot;} }
+{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;}, &quot;_source&quot;: true}
+{ &quot;delete&quot; : {&quot;_id&quot; : &quot;5&quot;,  &quot;_index&quot; : &quot;accounts123&quot;} }
+</elasticsearch:json-text>
+		</elasticsearch:bulk-operation>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="1b48966d-7d2b-4855-bd8b-739f357f0c5a" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="BulkDocumentWithFileFlowTest" description="Test"
+		doc:id="99b55148-8b15-49f8-804c-819f5b375ef2">
+		<munit:execution>
+			<elasticsearch:bulk-operation doc:name="Document - Bulk"
+				doc:id="99129fb1-e202-44c7-a46b-afba6202c16a" config-ref="Elasticsearch_HTTP_Config3"
+				jsonfile="${bulk.jsoninputpath}">
+			</elasticsearch:bulk-operation>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="719c8371-74c1-4491-b51d-77ab95991efb" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="BulkDocumentWithIndexFlowTest" description="Test"
+		doc:id="22a1c269-2339-4ebc-b577-33ea77bf9583">
+		<munit:execution>
+			<elasticsearch:bulk-operation doc:name="Document - Bulk"
+			doc:id="7d431aaf-3541-4da7-8cd3-043904755cd8" config-ref="Elasticsearch_HTTP_Config3" index="accounts123">
+			<elasticsearch:json-text>{ &quot;update&quot; : {&quot;_id&quot; : &quot;1&quot;, &quot;retry_on_conflict&quot; : 3} }
+{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;} }
+{ &quot;update&quot; : { &quot;_id&quot; : &quot;0&quot;, &quot;retry_on_conflict&quot; : 3} }
+{ &quot;script&quot; : { &quot;source&quot;: &quot;ctx._source.counter += params.param1&quot;, &quot;lang&quot; : &quot;painless&quot;, &quot;params&quot; : {&quot;param1&quot; : 1}}, &quot;upsert&quot; : {&quot;counter&quot; : 1}}
+{ &quot;update&quot; : {&quot;_id&quot; : &quot;2&quot;, &quot;retry_on_conflict&quot; : 3} }
+{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;}, &quot;doc_as_upsert&quot; : true }
+{ &quot;update&quot; : {&quot;_id&quot; : &quot;3&quot;, &quot;_source&quot; : true} }
+{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;} }
+{ &quot;update&quot; : {&quot;_id&quot; : &quot;4&quot;} }
+{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;}, &quot;_source&quot;: true}
+{ &quot;delete&quot; : {&quot;_id&quot; : &quot;5&quot;} }
+</elasticsearch:json-text>
+		</elasticsearch:bulk-operation>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="41024c0c-6b93-4e1b-8302-3e4b1e72019f" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
 </mule>

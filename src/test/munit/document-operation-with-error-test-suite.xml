@@ -52,11 +52,50 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:update-document
 				doc:name="Document - Update" doc:id="b4affaa4-16c1-4033-a866-e2693973f6c5"
-				config-ref="Elasticsearch_HTTP_Config5" index="dummy_index_7" documentId="dummy_doc_7"
-				jsonInputPath="testInputDummy.json">
+				config-ref="Elasticsearch_HTTP_Config5" index="dummy_index_7"
+				documentId="dummy_doc_7" jsonInputPath="testInputDummy.json">
 			</elasticsearch:update-document>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="3a44f0f7-ba52-43e3-b7ce-a531bd39b35b" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="BulkDocumentWithErrorFlowTest"
+		description="Test" doc:id="1f79520b-34c7-44b0-ba6d-70deaff3bac5"
+		expectedErrorType="ELASTICSEARCH:OPERATION_FAILED">
+		<munit:execution>
+			<elasticsearch:bulk-operation doc:name="Document - Bulk"
+				doc:id="5ae823a0-e420-4858-bd0c-2d833be6221e" config-ref="Elasticsearch_HTTP_Config5">
+				<elasticsearch:json-text>{ &quot;update&quot; : {&quot;_id&quot; :
+					&quot;1&quot;, &quot;_index&quot; : &quot;accounts123&quot;,
+					&quot;retry_on_conflict&quot; : 3} }
+					{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;} }
+					{ &quot;update&quot; : { &quot;_id&quot; : &quot;0&quot;,
+					&quot;_index&quot; : &quot;accounts123&quot;,
+					&quot;retry_on_conflict&quot; : 3} }
+					{ &quot;script&quot; : { &quot;source&quot;:
+					&quot;ctx._source.counter += params.param1&quot;, &quot;lang&quot;
+					: &quot;painless&quot;, &quot;params&quot; : {&quot;param1&quot; :
+					1}}, &quot;upsert&quot; : {&quot;counter&quot; : 1}}
+					{ &quot;update&quot; : {&quot;_id&quot; : &quot;2&quot;,
+					&quot;_index&quot; : &quot;accounts123&quot;,
+					&quot;retry_on_conflict&quot; : 3} }
+					{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;},
+					&quot;doc_as_upsert&quot; : true }
+					{ &quot;update&quot; : {&quot;_id&quot; : &quot;3&quot;,
+					&quot;_index&quot; : &quot;accounts123&quot;, &quot;_source&quot; :
+					true} }
+					{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;} }
+					{ &quot;update&quot; : {&quot;_id&quot; : &quot;4&quot;,
+					&quot;_index&quot; : &quot;accounts123&quot;} }
+					{ &quot;doc&quot; : {&quot;field&quot; : &quot;value&quot;},
+					&quot;_source&quot;: true}
+					{ &quot;delete&quot; : {&quot;_id&quot; : &quot;5&quot;,
+					&quot;_index&quot; : &quot;accounts123&quot;} }
+				</elasticsearch:json-text>
+			</elasticsearch:bulk-operation>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="098dbde4-7873-4bb3-8cdc-0ecd71234307" message="#[payload]" />
 		</munit:execution>
 	</munit:test>
 </mule>
