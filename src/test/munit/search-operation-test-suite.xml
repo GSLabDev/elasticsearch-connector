@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema/mule/elasticsearch/current/mule-elasticsearch.xsd">
+
+	<munit:config name="search-operation-test-suite.xml" />
+	<configuration-properties doc:name="Configuration properties"
+		doc:id="43e43249-8aa9-476f-aa53-66fcfb7eb77c" file="mule-application.properties" />
+
+	<elasticsearch:config name="Elasticsearch_HTTP_Config6"
+		doc:name="Elasticsearch Config" doc:id="07349911-a3c3-4468-adfb-92fdec18ea5f">
+		<elasticsearch:http-connection host="${elastic.host}"
+			port="${elastic.port}" />
+	</elasticsearch:config>
+
+	<munit:test name="jsonQuerySearchWithJsonFileFlowTest"
+		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62">
+		<munit:execution>
+			<elasticsearch:search-using-json-data
+				doc:name="Search - JSON Query" doc:id="473bb738-9a23-4da6-a7f5-85010de8b3d7"
+				config-ref="Elasticsearch_HTTP_Config6" jsonfile="input/match-all-query.json">
+			</elasticsearch:search-using-json-data>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="5875d103-14ea-46b7-bbd5-92bb0f323f9e" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="6a886161-abdf-40be-97be-a178a08e7263" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="jsonQuerySearchWithTextFlowTest"
+		description="Test" doc:id="a7d26e30-e1c1-49e9-bb57-8ce05554ab70">
+		<munit:execution>
+			<elasticsearch:search-using-json-data
+				doc:name="Search - JSON Query" doc:id="85e2e967-c75b-4f8b-866a-f268cc18d6ff"
+				config-ref="Elasticsearch_HTTP_Config6">
+				<elasticsearch:json-text>{
+					&quot;query&quot;: {
+					&quot;multi_match&quot; : {
+					&quot;query&quot; : &quot;Nanette Dale Virginia Owens&quot;,
+					&quot;type&quot;: &quot;best_fields&quot;,
+					&quot;fields&quot;: [ &quot;lastname&quot;, &quot;firstname&quot; ] ,
+					&quot;operator&quot; : &quot;or&quot;
+					}
+					}
+					}
+				</elasticsearch:json-text>
+			</elasticsearch:search-using-json-data>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="2c305d33-8832-4704-8077-1fa85e99b5d0" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+</mule>
