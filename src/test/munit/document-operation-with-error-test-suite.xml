@@ -34,15 +34,29 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
 		</munit:execution>
 	</munit:test>
-	
+
 	<munit:test name="getDocumentWithErrorFlowTest" description="Test"
 		doc:id="dc1bce6a-a42f-4bad-b892-4b70c0ebda37" expectedErrorType="ELASTICSEARCH:EXECUTION">
 		<munit:execution>
 			<elasticsearch:get-document doc:name="Document - Get"
 				doc:id="520e9c30-7117-4ccb-9ea1-405b8fc42598" config-ref="Elasticsearch_HTTP_Config5"
-				index="dummy_index5" documentId="dummy_doc_id"/>
+				index="dummy_index5" documentId="dummy_doc_id" />
 			<logger level="INFO" doc:name="Logger"
 				doc:id="e3cfc760-d141-425a-b0b4-a0ac164f841a" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="UpdateDocumentWithErrorFlowTest"
+		description="Test" doc:id="c50b7ecc-22f7-428f-b8fe-cc1daf0906de"
+		expectedErrorType="ELASTICSEARCH:OPERATION_FAILED">
+		<munit:execution>
+			<elasticsearch:update-document
+				doc:name="Document - Update" doc:id="b4affaa4-16c1-4033-a866-e2693973f6c5"
+				config-ref="Elasticsearch_HTTP_Config5" index="dummy_index_7" documentId="dummy_doc_7"
+				jsonInputPath="testInputDummy.json">
+			</elasticsearch:update-document>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="3a44f0f7-ba52-43e3-b7ce-a531bd39b35b" message="#[payload]" />
 		</munit:execution>
 	</munit:test>
 </mule>
