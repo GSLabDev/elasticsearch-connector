@@ -391,11 +391,7 @@ public class DocumentOperations extends ElasticsearchOperations {
      * @param esConnection
      *            The Elasticsearch connection
      * @param index
-     *            Index name on which bulk operation Performed
-     * 
-     * @param type
-     *            Type name on which bulk operation Performed
-     * 
+     *            Index name on which bulk operation performed.
      * @param jsonData
      *            Input file / data with list of operations to be performed like create, index, delete, update.
      * @return Response as JSON String
@@ -403,11 +399,10 @@ public class DocumentOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Bulk")
     @OutputResolver(output = ResponseOutputMetadataResolver.class)
-    public String bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index, @Optional String type,
+    public String bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index,
             @ParameterGroup(name = "Input data") JsonData jsonData) {
         String result = null;
-        String resource = type != null ? "/" + type + "/_bulk" : "/_bulk";
-        resource = index != null ? "/" + index + resource : resource;
+        String resource = index != null ? "/" + index + "/_bulk" : "/_bulk";
         Map<String, String> params = Collections.singletonMap("pretty", "true");
         HttpEntity entity;
         try {
