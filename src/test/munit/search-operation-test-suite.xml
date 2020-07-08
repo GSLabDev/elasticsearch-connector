@@ -46,21 +46,102 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:name="Search - JSON Query" doc:id="85e2e967-c75b-4f8b-866a-f268cc18d6ff"
 				config-ref="Elasticsearch_HTTP_Config6">
 				<elasticsearch:json-text>{
-					&quot;query&quot;: {
-					&quot;multi_match&quot; : {
+	&quot;query&quot;: {
+				&quot;multi_match&quot; : {
 					&quot;query&quot; : &quot;Nanette Dale Virginia Owens&quot;,
 					&quot;type&quot;: &quot;best_fields&quot;,
-					&quot;fields&quot;: [ &quot;lastname&quot;, &quot;firstname&quot; ] ,
+					&quot;fields&quot;: [ &quot;lastname&quot;, &quot;firstname&quot; ],
 					&quot;operator&quot; : &quot;or&quot;
-					}
-					}
-					}
-				</elasticsearch:json-text>
+				}
+	}
+}
+			</elasticsearch:json-text>
 			</elasticsearch:search-using-json-data>
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that doc:name="Assert that"
 				doc:id="2c305d33-8832-4704-8077-1fa85e99b5d0" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="clearScrollFlowTest" description="Test"
+		doc:id="7ce6f1e3-c06b-46ef-b8ef-d5ed35d83c79">
+		<munit:execution>
+			<elasticsearch:create-index doc:name="Index - Create"
+				doc:id="e6438bba-d2c9-44c8-8100-1d859a1642b3" config-ref="Elasticsearch_HTTP_Config6"
+				index="search_index_1">
+			</elasticsearch:create-index>
+
+			<elasticsearch:search config-ref="Elasticsearch_HTTP_Config6"
+				searchType="DFS_QUERY_THEN_FETCH" scrollIntervalTime="${searchScroll.timeInterval}"
+				doc:name="Search">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-all-query
+						doc:name="Search scroll match all" doc:id="c40ff0a7-8c13-43fb-af13-250ae6bec2ef" />
+				</elasticsearch:query-configuration>
+				<elasticsearch:indices>
+					<elasticsearch:index value="search_index_1" />
+				</elasticsearch:indices>
+			</elasticsearch:search>
+
+			<logger level="INFO" doc:name="Logger"
+				doc:id="13912a16-ba0d-42b4-a228-72e8ef90dbce" message="#[payload.scrollId]" />
+
+			<elasticsearch:clear-scroll doc:name="Search - Clear Scroll"
+				doc:id="ad12ffda-3080-4a60-af19-957bca6d989d" config-ref="Elasticsearch_HTTP_Config6">
+				<elasticsearch:scroll-ids>
+					<elasticsearch:scroll-id value="#[payload.scrollId]" />
+				</elasticsearch:scroll-ids>
+			</elasticsearch:clear-scroll>
+
+			<logger level="INFO" doc:name="Logger"
+				doc:id="8bfbf7cc-c02f-4606-81b2-da518363e6c1" message="#[payload]" />
+				
+			<elasticsearch:delete-index doc:name="Index - Delete"
+				doc:id="3ae3c4bb-5f60-42c4-b1d6-a74a1b1aef5f" config-ref="Elasticsearch_HTTP_Config6"
+				index="search_index_1" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="b81c16ee-5d61-4bc9-9031-6ab968eb1950" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="scrollFlowTest" description="Test"
+		doc:id="d6d416be-ef92-4cef-8591-2b8dee7ec157">
+		<munit:execution>
+			<elasticsearch:create-index doc:name="Index - Create" doc:id="ef9a053e-40cc-4ba7-bcb2-1b34b52382f1" config-ref="Elasticsearch_HTTP_Config6" index="search_index_2">
+			</elasticsearch:create-index>
+			
+			<elasticsearch:search config-ref="Elasticsearch_HTTP_Config6"
+				searchType="DFS_QUERY_THEN_FETCH" scrollIntervalTime="${searchScroll.timeInterval}"
+				doc:name="Search">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-all-query
+						doc:name="Search scroll match all" doc:id="88fdd329-4e67-429b-b877-4bb8d65ade28" />
+				</elasticsearch:query-configuration>
+				<elasticsearch:indices>
+					<elasticsearch:index value="search_index_2" />
+				</elasticsearch:indices>
+			</elasticsearch:search>
+
+			<logger level="INFO" doc:name="Logger"
+				doc:id="b3a0b8a4-efa6-418a-8326-ac6154b72f4f" message="#[payload.scrollId]" />
+	
+			<elasticsearch:search-scroll doc:name="Search - Scroll" doc:id="b7ef9fc5-8e19-4348-83d6-699485da3419" config-ref="Elasticsearch_HTTP_Config6" scrollId="#[payload.scrollId]" timeValue="20"/>
+	
+			<logger level="INFO" doc:name="Logger"
+				doc:id="54cd0ee2-dfa1-4037-9e24-12ac6bb7c8cd" message="#[payload]" />
+				
+			<elasticsearch:delete-index doc:name="Index - Delete"
+					doc:id="a466f964-2a7e-435d-bbdc-d99855791436" config-ref="Elasticsearch_HTTP_Config6"
+					index="search_index_2" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="b792959b-357f-4661-abce-a1858523bb18" is="#[MunitTools::notNullValue()]"
 				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>

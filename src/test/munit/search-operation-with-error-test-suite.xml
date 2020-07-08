@@ -22,23 +22,54 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			port="${elastic.port}" />
 	</elasticsearch:config>
 
-	<munit:test name="jsonQuerySearchWithErrorFlowTest" description="Test"
-		doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62" expectedErrorType="ELASTICSEARCH:OPERATION_FAILED">
+	<munit:test name="jsonQuerySearchWithErrorFlowTest"
+		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62"
+		expectedErrorType="ELASTICSEARCH:OPERATION_FAILED">
 		<munit:execution>
-			<elasticsearch:search-using-json-data doc:name="Search - JSON Query" doc:id="9c334c53-7940-470d-a9dd-8bd615047a64" config-ref="Elasticsearch_HTTP_Config7" index="dummy_search_index">
-				<elasticsearch:json-text >{
-    &quot;query&quot;: {
-        &quot;multi_match&quot; : {
-                &quot;query&quot; : &quot;Nanette Dale Virginia Owens&quot;,
-                &quot;type&quot;:       &quot;best_fields&quot;,
-                &quot;fields&quot;: [ &quot;lastname&quot;, &quot;firstname&quot; ] ,
-                &quot;operator&quot; : &quot;or&quot;
-        }
-    }
-}</elasticsearch:json-text>
+			<elasticsearch:search-using-json-data
+				doc:name="Search - JSON Query" doc:id="9c334c53-7940-470d-a9dd-8bd615047a64"
+				config-ref="Elasticsearch_HTTP_Config7" index="dummy_search_index">
+				<elasticsearch:json-text>{
+					&quot;query&quot;: {
+					&quot;multi_match&quot; : {
+					&quot;query&quot; : &quot;Nanette Dale
+					Virginia Owens&quot;,
+					&quot;type&quot;: &quot;best_fields&quot;,
+					&quot;fields&quot;: [ &quot;lastname&quot;, &quot;firstname&quot; ]
+					,
+					&quot;operator&quot; : &quot;or&quot;
+					}
+					}
+					}
+				</elasticsearch:json-text>
 			</elasticsearch:search-using-json-data>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="ScrollWithErrorFlowTest" description="Test"
+		doc:id="ef2a6a3e-930d-4466-a485-0902f5c39af5" expectedErrorType="ELASTICSEARCH:OPERATION_FAILED">
+		<munit:execution>
+			<elasticsearch:search-scroll doc:name="Search - Scroll"
+				doc:id="e50fd203-c7a9-4f53-a036-210e1274dc07" config-ref="Elasticsearch_HTTP_Config7"
+				timeValue="10" scrollId="aaa" />
+			<logger level="INFO" doc:name="Logger"
+				doc:id="7cffd551-90c2-4626-be7e-93789c027df4" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="clearScrollWithErrorFlowTest" description="Test"
+		doc:id="6cb15d7a-232f-4cba-9de7-ce1a591a27d6" expectedErrorType="ELASTICSEARCH:OPERATION_FAILED">
+		<munit:execution>
+			<elasticsearch:clear-scroll doc:name="Search - Clear Scroll"
+				doc:id="333cae56-72c8-485d-9c09-18f0f25a9bab" config-ref="Elasticsearch_HTTP_Config7">
+				<elasticsearch:scroll-ids>
+					<elasticsearch:scroll-id value="aaa" />
+				</elasticsearch:scroll-ids>
+			</elasticsearch:clear-scroll>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="a263e525-71d3-4d6f-8fb0-c439f905ba41" message="#[payload]" />
 		</munit:execution>
 	</munit:test>
 </mule>
