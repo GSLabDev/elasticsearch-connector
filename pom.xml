@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -24,12 +25,41 @@
 		<httpConnectorVersion>1.2.0</httpConnectorVersion>
 		<socketsConnectorVersion>1.1.1</socketsConnectorVersion>
 		<jackson.databind.version>2.10.2</jackson.databind.version>
-		
-		<munit.extensions.maven.plugin.version>1.0.0-BETA4</munit.extensions.maven.plugin.version>
-		<jacoco.version>0.8.4</jacoco.version>
+
+		<munit.extensions.maven.plugin.version>1.0.0-BETA2</munit.extensions.maven.plugin.version>
+		<jacoco.version>0.7.2.201409121644</jacoco.version>
 		<munit.input.directory>src/test/munit</munit.input.directory>
 		<munit.output.directory>${basedir}/target/test-mule/munit</munit.output.directory>
 		<mavenResourcesVersion>3.0.2</mavenResourcesVersion>
+
+		<sonar.coverage.exclusions>
+**com/mulesoft/connectors/elasticsearch/api/DocumentFetchSourceOptions.java,
+**com/mulesoft/connectors/elasticsearch/api/ElasticsearchRefreshPolicy.java,
+**com/mulesoft/connectors/elasticsearch/api/ElasticsearchVersionType.java,
+**com/mulesoft/connectors/elasticsearch/api/IndexDocumentOptions.java,
+**com/mulesoft/connectors/elasticsearch/api/IndexOptions.java,
+**com/mulesoft/connectors/elasticsearch/api/JsonData.java,
+**com/mulesoft/connectors/elasticsearch/api/OperationType.java,
+**com/mulesoft/connectors/elasticsearch/api/SearchRequestConfiguration.java,
+**com/mulesoft/connectors/elasticsearch/api/SearchRequestOptionalConfiguration.java,
+**com/mulesoft/connectors/elasticsearch/api/SearchSourceConfiguration.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/BaseMatchPhraseQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/BaseMatchQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/BaseQueryString.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/CommonTermsQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/MatchAllQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/MatchPhrasePrefixQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/MatchPhraseQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/MatchQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/MultiMatchQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/Query.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/QueryOperator.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/QueryStringQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/SimpleQueryString.java,
+**com/mulesoft/connectors/elasticsearch/api/querytype/ZeroTermsQuery.java,
+**com/mulesoft/connectors/elasticsearch/api/response/ElasticsearchGetResponse.java,
+**com/mulesoft/connectors/elasticsearch/api/response/ElasticsearchResponse.java
+		</sonar.coverage.exclusions>
 	</properties>
 
 	<dependencies>
@@ -103,20 +133,20 @@
 			<classifier>mule-plugin</classifier>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.databind.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
 	</dependencies>
-	
+
 	<build>
 		<pluginManagement>
 			<plugins>
@@ -157,12 +187,33 @@
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
 				<version>${jacoco.version}</version>
+				<configuration>
+					<destFile>${sonar.jacoco.reportPath}</destFile>
+				</configuration>
 				<executions>
 					<execution>
 						<id>prepare-agent</id>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
+					</execution>
+					<execution>
+						<id>merge</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>merge</goal>
+						</goals>
+						<configuration>
+							<destFile>${sonar.jacoco.reportPath}</destFile>
+							<fileSets>
+								<fileSet>
+									<directory>${project.build.directory}</directory>
+									<includes>
+										<include>*.exec</include>
+									</includes>
+								</fileSet>
+							</fileSets>
+						</configuration>
 					</execution>
 					<execution>
 						<id>report</id>
@@ -173,7 +224,7 @@
 					</execution>
 					<execution>
 						<id>post-unit-test</id>
-						<phase>test</phase>
+						<phase>post-integration-test</phase>
 						<goals>
 							<goal>report</goal>
 						</goals>
@@ -182,15 +233,10 @@
 
 							<dataFile>target/jacoco.exec</dataFile>
 							<!-- Sets the output directory for the code coverage report. -->
-							<outputDirectory>target/my-reports</outputDirectory>
+							<outputDirectory>target/munit-reports</outputDirectory>
 						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-					<systemPropertyVariables>
-						<jacoco-agent.destfile>target/jacoco.exec</jacoco-agent.destfile>
-					</systemPropertyVariables>
-				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-resources-plugin</artifactId>
@@ -230,50 +276,59 @@
 				<configuration>
 					<argLines>
 						<argLine>
-							-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco-munit.exec
+							-javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${session.executionRootDirectory}/target/jacoco.exec
 						</argLine>
 					</argLines>
 					<runtimeVersion>4.2.1</runtimeVersion>
+					<runtimeConfiguration>
+						<discoverRuntimes>
+							<product>EE</product>
+							<includeSnapshots>true</includeSnapshots>
+						</discoverRuntimes>
+					</runtimeConfiguration>
 				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>com.mulesoft.munit</groupId>
 						<artifactId>munit-runner</artifactId>
-						<version>2.1.5</version>
+						<version>2.2.4</version>
 						<classifier>mule-plugin</classifier>
 					</dependency>
 					<dependency>
 						<groupId>com.mulesoft.munit</groupId>
 						<artifactId>munit-tools</artifactId>
-						<version>2.1.5</version>
+						<version>2.2.4</version>
+						<classifier>mule-plugin</classifier>
+					</dependency>
+					<dependency>
+						<groupId>org.mule.connectors</groupId>
+						<artifactId>mule-objectstore-connector</artifactId>
+						<version>1.1.1</version>
+						<classifier>mule-plugin</classifier>
+					</dependency>
+					<dependency>
+						<groupId>com.mulesoft.munit</groupId>
+						<artifactId>mtf-tools</artifactId>
+						<version>1.0.0</version>
 						<classifier>mule-plugin</classifier>
 					</dependency>
 				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
-	
 
 	<repositories>
 		<repository>
-			<id>mule-deps</id>
-			<name>Mule Dependencies</name>
-			<url>http://dist.codehaus.org/mule/dependencies/maven2</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>mulesoft-public</id>
-			<name>Mulesoft dependencies repository</name>
-			<url>https://repository.mulesoft.org/nexus/content/repositories/public/</url>
+			<id>mule-releases</id>
+			<name>Nexus Public Releases</name>
+			<url>https://repository-master.mulesoft.org/nexus/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 
- 	<scm>
+	<scm>
 		<connection>scm:git@github.com:GSLabDev/elasticsearch-connector.git</connection>
 		<developerConnection>scm:git:git@github.com:GSLabDev/elasticsearch-connector.git</developerConnection>
-		<url>https://github.com/GSLabDev/elasticsearch-connector</url>
+		<url>https://github.com/GSLabDev/elasticsearch-connector.git</url>
 		<tag>HEAD</tag>
 	</scm>
 
