@@ -21,7 +21,6 @@ public class SearchRequestConfiguration {
      * Search query method types
      */
     public enum SearchType {
-        DEFAULT,
         DFS_QUERY_THEN_FETCH,
         QUERY_THEN_FETCH;
     }

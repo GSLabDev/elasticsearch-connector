@@ -36,7 +36,9 @@ public class BaseSearchOperation extends ElasticsearchOperations {
             searchRequest.indices(searchRequestConfig.getIndices().toArray(new String[0]));
         }
 
-        searchRequest.searchType(searchRequestConfig.getSearchType() != null ? SearchType.valueOf(searchRequestConfig.getSearchType().name()) : SearchType.DEFAULT);
+        if(searchRequestConfig.getSearchType() != null) {
+            searchRequest.searchType(SearchType.valueOf(searchRequestConfig.getSearchType().name()));
+        }
 
         if (searchRequestConfig.getRouting() != null) {
             // Set a routing parameter
