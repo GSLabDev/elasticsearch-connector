@@ -46,17 +46,15 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:name="Search - JSON Query" doc:id="85e2e967-c75b-4f8b-866a-f268cc18d6ff"
 				config-ref="Elasticsearch_HTTP_Config6">
 				<elasticsearch:json-text>{
-					&quot;query&quot;: {
-					&quot;multi_match&quot; : {
+	&quot;query&quot;: {
+				&quot;multi_match&quot; : {
 					&quot;query&quot; : &quot;Nanette Dale Virginia Owens&quot;,
 					&quot;type&quot;: &quot;best_fields&quot;,
-					&quot;fields&quot;: [
-					&quot;lastname&quot;, &quot;firstname&quot; ],
-					&quot;operator&quot;
-					: &quot;or&quot;
-					}
-					}
-					}
+					&quot;fields&quot;: [ &quot;lastname&quot;, &quot;firstname&quot; ],
+					&quot;operator&quot; : &quot;or&quot;
+				}
+	}
+}
 				</elasticsearch:json-text>
 			</elasticsearch:search-using-json-data>
 		</munit:execution>
@@ -192,9 +190,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>
-	
-	<munit:test name="searchWithScrollIntervalTimeFlowTest" description="Test"
-		doc:id="a9956983-4bcd-4e32-9a02-3055e4ce3457">
+
+	<munit:test name="searchWithScrollIntervalTimeFlowTest"
+		description="Test" doc:id="a9956983-4bcd-4e32-9a02-3055e4ce3457">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query"
 				doc:id="a37e31fd-6cf7-4517-a6b5-829ff2a04fbc" config-ref="Elasticsearch_HTTP_Config6"
@@ -209,6 +207,161 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:validation>
 			<munit-tools:assert-that doc:name="Assert that"
 				doc:id="bbd0ce1c-2c82-4846-9ba0-c21b94d422f8" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="searchMatchPhrasePrefixQueryFlowTest"
+		description="Test" doc:id="46557d13-f89a-476e-85fb-34b956aad3eb">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query"
+				doc:id="2751639b-d0a9-4d7e-9a52-69a9a9aa0d62" config-ref="Elasticsearch_HTTP_Config6"
+				scrollIntervalTime="10">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-phrase-prefix-query
+						field="${searchMatchPhrasePrefix.field}" queryString="${searchMatchPhrasePrefix.query}"
+						analyzer="standard" maxExpansions="${searchMatchPhrasePrefix.maxExpansion}"
+						boost="${searchMatchPhrasePrefix.boost}" />
+				</elasticsearch:query-configuration>
+			</elasticsearch:search>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="9ddcc13b-1211-4587-b964-080c79965d6a" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="searchMatchPhraseQueryFlowTest"
+		description="Test" doc:id="a451904f-9278-44a8-8f9e-8c207193a1a2">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query"
+				doc:id="f83dee24-f84b-4ef1-9ba1-89226970ff9c" config-ref="Elasticsearch_HTTP_Config6"
+				scrollIntervalTime="10">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-phrase-query
+						queryString="${searchMatchPhrase.query}" analyzer="standard"
+						boost="${searchMatchPhrase.boost}" field="${searchMatchPhrase.field}"
+						zeroTermsQuery="ALL" />
+				</elasticsearch:query-configuration>
+			</elasticsearch:search>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="734cfc44-8cbd-45a0-b0b4-469d3d7390b3" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="searchMatchQueryFlowTest" description="Test"
+		doc:id="bc569702-4a08-42ff-8aa1-4f9122cf6f5b">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query"
+				doc:id="a9f7fead-0c82-4a14-9681-4d313db47475" config-ref="Elasticsearch_HTTP_Config6"
+				scrollIntervalTime="10">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-query searchString="${searchMatch.searchString}"
+						field="${searchMatch.field}" autoGenerateSynonymsPhraseQuery="true"
+						zeroTermsQuery="ALL" operator="OR" fuzzyTranspositions="false"
+						lenient="true" minimumShouldMatch="1">
+					</elasticsearch:match-query>
+				</elasticsearch:query-configuration>
+			</elasticsearch:search>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="7c97424b-e362-4d44-98c8-54e5f39564e1" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="searchMultiMatchQueryFlowTest"
+		description="Test" doc:id="ca29f350-7f6d-49d5-99de-4fb3bf35b2ec">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query"
+				doc:id="f02b7db6-75ff-4b11-b8d3-f069ec683b4e" config-ref="Elasticsearch_HTTP_Config6"
+				scrollIntervalTime="10">
+				<elasticsearch:query-configuration>
+					<elasticsearch:multi-match-query
+						autoGenerateSynonymsPhraseQuery="true" tieBreaker="${multiMatchQuery.tieBreaker}"
+						minimumShouldMatch="${multiMatchQuery.minimumShouldMatch}"
+						searchString="${multiMatchQuery.searchString}" zeroTermsQuery="ALL"
+						operator="OR" type="BEST_FIELDS">
+						<elasticsearch:fields>
+							<elasticsearch:field value="gender" />
+							<elasticsearch:field value="lastname" />
+							<elasticsearch:field value="address" />
+						</elasticsearch:fields>
+					</elasticsearch:multi-match-query>
+				</elasticsearch:query-configuration>
+			</elasticsearch:search>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="56e67eae-37bc-4b44-b109-83fe9aebab5b" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="searchQueryStringQueryFlowTest"
+		description="Test" doc:id="a443e01c-47a4-49cc-a65b-aa3019cee61f">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query" doc:id="0b2229d9-f504-4fab-8c7f-494d4a5ce031" config-ref="Elasticsearch_HTTP_Config6" scrollIntervalTime="10">
+			<elasticsearch:query-configuration>
+				<elasticsearch:query-string-query
+					allowLeadingWildcard="true" enablePositionIncrements="true"
+					queryString="${searchQueryString.queryString}" analyzeWildcard="true"
+					autoGenerateSynonymsPhraseQuery="true" fuzzyTranspositions="true"
+					lenient="true" phraseSlop="${searchQueryString.phraseSlop}"
+					tieBreaker="${searchQueryString.tieBreaker}" boost="3"
+					fuzzyMaxExpansions="10" fuzzyPrefixLength="0"
+					minimumShouldMatch="${searchQueryString.minShouldMatch}"
+					defaultOperator="OR">
+					<elasticsearch:fields-and-boosts>
+						<elasticsearch:fields-and-boost
+							key="firstname" value="4" />
+						<elasticsearch:fields-and-boost
+							key="lastname" value="2" />
+						<elasticsearch:fields-and-boost
+							key="address" value="1" />
+					</elasticsearch:fields-and-boosts>
+				</elasticsearch:query-string-query>
+			</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="73a068cb-ff8e-442c-b35f-e397672d363b" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="searchSimpleQueryStringFlowTest"
+		description="Test" doc:id="2b553dec-0726-4aa8-a771-877252d4c882">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query" doc:id="342a4bd4-1e85-4322-9a75-07c546e393a4" config-ref="Elasticsearch_HTTP_Config6" scrollIntervalTime="10">
+			<elasticsearch:query-configuration>
+				<elasticsearch:simple-query-string
+					queryString="${searchSimpleQueryString.queryString}"
+					analyzeWildcard="true" analyzer="standard"
+					autoGenerateSynonymsPhraseQuery="true" fuzzyTranspositions="true"
+					lenient="true" minimumShouldMatch="${searchSimpleQueryString.minShouldMatch}"
+					simpleQueryStringFlag="ALL" defaultOperator="OR">
+					<elasticsearch:fields-and-boosts>
+						<elasticsearch:fields-and-boost
+							key="firstname" value="4" />
+						<elasticsearch:fields-and-boost
+							key="lastname" value="2" />
+						<elasticsearch:fields-and-boost
+							key="address" value="1" />
+					</elasticsearch:fields-and-boosts>
+				</elasticsearch:simple-query-string>
+			</elasticsearch:query-configuration>
+		</elasticsearch:search>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="720df0af-e9a1-40f8-9ae4-b1e6daca9a6f" is="#[MunitTools::notNullValue()]"
 				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>
