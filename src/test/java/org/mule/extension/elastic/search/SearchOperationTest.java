@@ -65,14 +65,6 @@ public class SearchOperationTest extends MuleArtifactFunctionalTestCase {
     }
 
     @Test
-    public void executSearchCommomTermsOperation() throws Exception {
-        String payloadValue = (String) flowRunner("testSearchCommomTermsFlow").run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue);
-
-        assertNotNull(payloadValue);
-    }
-
-    @Test
     public void executSearchQueryStringOperation() throws Exception {
         String payloadValue = (String) flowRunner("testSearchQueryStringFlow").run().getMessage().getPayload().getValue();
         LOGGER.info(payloadValue);
@@ -120,13 +112,6 @@ public class SearchOperationTest extends MuleArtifactFunctionalTestCase {
     @Test
     public void executSearchWithoutIndexOperation() throws Exception {
         String payloadValue = (String) flowRunner("testSearchWithoutIndexFlow").run().getMessage().getPayload().getValue();
-        LOGGER.info(payloadValue);
-        assertNotNull(payloadValue);
-    }
-
-    @Test
-    public void executSearchCommomTermsWithDefaultOperation() throws Exception {
-        String payloadValue = (String) flowRunner("SearchCommomTermsWithDefaultFlow").run().getMessage().getPayload().getValue();
         LOGGER.info(payloadValue);
         assertNotNull(payloadValue);
     }

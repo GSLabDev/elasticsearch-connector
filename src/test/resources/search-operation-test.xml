@@ -200,40 +200,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<logger level="INFO" doc:name="Logger"
 			doc:id="2d764269-ea4b-48e1-afc3-a847c75ef69f" message="#[payload]" />
 	</flow>
-	<flow name="testSearchCommomTermsFlow" doc:id="58656a76-c951-4453-a53b-806c4f51f387">
-		<elasticsearch:search doc:name="Search common terms"
-			doc:id="7a4e2b98-1c06-412e-a109-fed27686e290" config-ref="${elastic.config}"
-			searchType="DFS_QUERY_THEN_FETCH">
-			<elasticsearch:query-configuration>
-				<elasticsearch:common-terms-query
-					fieldName="${searchCommonTerms.field}" highFreqMinimumShouldMatch="${searchCommonTerms.highFrequencyMinMatch}"
-					lowFreqMinimumShouldMatch="${searchCommonTerms.lowFrequencyMinMatch}"
-					queryString="${searchCommonTerms.query}" cutoffFrequency="${searchCommonTerms.cutoffFrequency}"
-					boost="${searchCommonTerms.boost}" highFreqOperator="OR"
-					lowFreqOperator="OR" />
-			</elasticsearch:query-configuration>
-			<elasticsearch:search-source-configuration
-				from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC"
-				terminateAfter="${searchSource.terminateAfter}" timeout="${searchSource.timeout}"
-				sortByFieldName="${searchSource.sortBy}">
-				<elasticsearch:include-fields>
-					<elasticsearch:include-field value="account_number" />
-					<elasticsearch:include-field value="balance" />
-					<elasticsearch:include-field value="firstname" />
-				</elasticsearch:include-fields>
-				<elasticsearch:exclude-fields>
-					<elasticsearch:exclude-field value="lastname" />
-					<elasticsearch:exclude-field value="gender" />
-					<elasticsearch:exclude-field value="employer" />
-				</elasticsearch:exclude-fields>
-			</elasticsearch:search-source-configuration>
-			<elasticsearch:indices>
-				<elasticsearch:index value="${search.index}" />
-			</elasticsearch:indices>
-		</elasticsearch:search>
-		<logger level="INFO" doc:name="Logger"
-			doc:id="2331ea82-598b-426f-9095-51cb08b18240" message="#[payload]" />
-	</flow>
+	
 	<flow name="testSearchQueryStringFlow" doc:id="db931aec-50c0-4f11-9a94-bc6c746b676d">
 		<elasticsearch:search doc:name="Search query string"
 			doc:id="d23ef24f-179c-40d5-8672-1aa63db4837c" config-ref="${elastic.config}"
@@ -433,19 +400,6 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		</elasticsearch:search>
 		<logger level="INFO" doc:name="Logger"
 			doc:id="2fb72491-0752-4f31-bbd1-382d6be4d2f2" message="#[payload]" />
-	</flow>
-
-	<flow name="SearchCommomTermsWithDefaultFlow" doc:id="58656a76-c951-4453-a53b-806c4f51f387">
-		<elasticsearch:search doc:name="Search common terms"
-			doc:id="7a4e2b98-1c06-412e-a109-fed27686e290" config-ref="${elastic.config}"
-			searchType="DFS_QUERY_THEN_FETCH">
-			<elasticsearch:query-configuration>
-				<elasticsearch:common-terms-query
-					fieldName="${searchCommonTerms.field}" queryString="${searchCommonTerms.query}" />
-			</elasticsearch:query-configuration>
-		</elasticsearch:search>
-		<logger level="INFO" doc:name="Logger"
-			doc:id="2331ea82-598b-426f-9095-51cb08b18240" message="#[payload]" />
 	</flow>
 
 	<flow name="testSearchMatchWithDefaultFlow" doc:id="85c7b7ae-dcba-43cb-964e-7d52af0777e3">
