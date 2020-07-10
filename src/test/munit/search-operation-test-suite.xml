@@ -46,16 +46,18 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:name="Search - JSON Query" doc:id="85e2e967-c75b-4f8b-866a-f268cc18d6ff"
 				config-ref="Elasticsearch_HTTP_Config6">
 				<elasticsearch:json-text>{
-	&quot;query&quot;: {
-				&quot;multi_match&quot; : {
+					&quot;query&quot;: {
+					&quot;multi_match&quot; : {
 					&quot;query&quot; : &quot;Nanette Dale Virginia Owens&quot;,
 					&quot;type&quot;: &quot;best_fields&quot;,
-					&quot;fields&quot;: [ &quot;lastname&quot;, &quot;firstname&quot; ],
-					&quot;operator&quot; : &quot;or&quot;
-				}
-	}
-}
-			</elasticsearch:json-text>
+					&quot;fields&quot;: [
+					&quot;lastname&quot;, &quot;firstname&quot; ],
+					&quot;operator&quot;
+					: &quot;or&quot;
+					}
+					}
+					}
+				</elasticsearch:json-text>
 			</elasticsearch:search-using-json-data>
 		</munit:execution>
 		<munit:validation>
@@ -97,7 +99,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 
 			<logger level="INFO" doc:name="Logger"
 				doc:id="8bfbf7cc-c02f-4606-81b2-da518363e6c1" message="#[payload]" />
-				
+
 			<elasticsearch:delete-index doc:name="Index - Delete"
 				doc:id="3ae3c4bb-5f60-42c4-b1d6-a74a1b1aef5f" config-ref="Elasticsearch_HTTP_Config6"
 				index="search_index_1" />
@@ -108,13 +110,15 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>
-	
+
 	<munit:test name="scrollFlowTest" description="Test"
 		doc:id="d6d416be-ef92-4cef-8591-2b8dee7ec157">
 		<munit:execution>
-			<elasticsearch:create-index doc:name="Index - Create" doc:id="ef9a053e-40cc-4ba7-bcb2-1b34b52382f1" config-ref="Elasticsearch_HTTP_Config6" index="search_index_2">
+			<elasticsearch:create-index doc:name="Index - Create"
+				doc:id="ef9a053e-40cc-4ba7-bcb2-1b34b52382f1" config-ref="Elasticsearch_HTTP_Config6"
+				index="search_index_2">
 			</elasticsearch:create-index>
-			
+
 			<elasticsearch:search config-ref="Elasticsearch_HTTP_Config6"
 				searchType="DFS_QUERY_THEN_FETCH" scrollIntervalTime="${searchScroll.timeInterval}"
 				doc:name="Search">
@@ -129,19 +133,82 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 
 			<logger level="INFO" doc:name="Logger"
 				doc:id="b3a0b8a4-efa6-418a-8326-ac6154b72f4f" message="#[payload.scrollId]" />
-	
-			<elasticsearch:search-scroll doc:name="Search - Scroll" doc:id="b7ef9fc5-8e19-4348-83d6-699485da3419" config-ref="Elasticsearch_HTTP_Config6" scrollId="#[payload.scrollId]" timeValue="20"/>
-	
+
+			<elasticsearch:search-scroll doc:name="Search - Scroll"
+				doc:id="b7ef9fc5-8e19-4348-83d6-699485da3419" config-ref="Elasticsearch_HTTP_Config6"
+				scrollId="#[payload.scrollId]" timeValue="20" />
+
 			<logger level="INFO" doc:name="Logger"
 				doc:id="54cd0ee2-dfa1-4037-9e24-12ac6bb7c8cd" message="#[payload]" />
-				
+
 			<elasticsearch:delete-index doc:name="Index - Delete"
-					doc:id="a466f964-2a7e-435d-bbdc-d99855791436" config-ref="Elasticsearch_HTTP_Config6"
-					index="search_index_2" />
+				doc:id="a466f964-2a7e-435d-bbdc-d99855791436" config-ref="Elasticsearch_HTTP_Config6"
+				index="search_index_2" />
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that doc:name="Assert that"
 				doc:id="b792959b-357f-4661-abce-a1858523bb18" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+
+	<munit:test name="searchMatchAllQueryFlowTest" description="Test"
+		doc:id="21507211-31da-426f-b3af-4b7fb65c5069">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query"
+				doc:id="9a4480e0-2908-4d9c-bf53-e7c291a682f0" config-ref="Elasticsearch_HTTP_Config6"
+				searchType="DFS_QUERY_THEN_FETCH" routing="1" preference="1">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-all-query boost="2.0" />
+				</elasticsearch:query-configuration>
+				<elasticsearch:search-source-configuration
+					size="9" sortOrder="ASC" fetchSource="false" profile="true"
+					explain="true" trackScores="true" trackTotalHits="true" version="true"
+					seqNoAndPrimaryTerm="true" sortByFieldName="c" from="1" timeout="10"
+					minimumScore="1" terminateAfter="1" trackTotalHitsUpTo="1">
+					<elasticsearch:include-fields>
+						<elasticsearch:include-field value="a" />
+					</elasticsearch:include-fields>
+					<elasticsearch:exclude-fields>
+						<elasticsearch:exclude-field value="b" />
+					</elasticsearch:exclude-fields>
+				</elasticsearch:search-source-configuration>
+				<elasticsearch:search-request-optional-configuration
+					allowPartialSearchResults="true" requestCache="true"
+					batchedReduceSize="3" ccsMinimizeRoundtrips="true"
+					maxConcurrentShardRequests="2" preFilterShardSize="2" />
+				<elasticsearch:indices>
+					<elasticsearch:index value="index10" />
+				</elasticsearch:indices>
+				<elasticsearch:indices-options
+					ignoreUnavailable="true" allowNoIndices="true" expandWildcardsOpen="true"
+					expandWildcardsClosed="true" allowAliasesToMultipleIndices="true"
+					forbidClosedIndices="true" ignoreAliases="true" ignoreThrottled="true" />
+			</elasticsearch:search>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="b4364669-9880-458e-9751-64b40a073aa6" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	
+	<munit:test name="searchWithScrollIntervalTimeFlowTest" description="Test"
+		doc:id="a9956983-4bcd-4e32-9a02-3055e4ce3457">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query"
+				doc:id="a37e31fd-6cf7-4517-a6b5-829ff2a04fbc" config-ref="Elasticsearch_HTTP_Config6"
+				searchType="QUERY_THEN_FETCH" scrollIntervalTime="10">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-all-query />
+				</elasticsearch:query-configuration>
+			</elasticsearch:search>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="d9ef41bc-a260-4da4-9d82-3a4433c2e16a" message="#[payload]" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="bbd0ce1c-2c82-4846-9ba0-c21b94d422f8" is="#[MunitTools::notNullValue()]"
 				expression="#[payload]" />
 		</munit:validation>
 	</munit:test>

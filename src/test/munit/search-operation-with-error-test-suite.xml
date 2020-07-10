@@ -72,4 +72,43 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:id="a263e525-71d3-4d6f-8fb0-c439f905ba41" message="#[payload]" />
 		</munit:execution>
 	</munit:test>
+
+	<munit:test name="searchQueryWithErrorFlowTest" description="Test"
+		doc:id="6350c30a-d4c7-4ba3-b0c7-45d1a5846c5f" expectedErrorType="ELASTICSEARCH:OPERATION_FAILED">
+		<munit:execution>
+			<elasticsearch:search doc:name="Search - Query"
+				doc:id="9f125340-bf7a-460c-9117-6349c351f65e" config-ref="Elasticsearch_HTTP_Config7"
+				searchType="DFS_QUERY_THEN_FETCH" routing="1" preference="1"
+				scrollIntervalTime="1">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-all-query boost="2.0" />
+				</elasticsearch:query-configuration>
+				<elasticsearch:search-source-configuration
+					from="1" size="9" timeout="10" sortOrder="ASC" fetchSource="false"
+					profile="true" explain="true" trackScores="true" trackTotalHits="true"
+					version="true" seqNoAndPrimaryTerm="true" sortByFieldName="c"
+					terminateAfter="10" minimumScore="1">
+					<elasticsearch:include-fields>
+						<elasticsearch:include-field value="a" />
+					</elasticsearch:include-fields>
+					<elasticsearch:exclude-fields>
+						<elasticsearch:exclude-field value="b" />
+					</elasticsearch:exclude-fields>
+				</elasticsearch:search-source-configuration>
+				<elasticsearch:search-request-optional-configuration
+					allowPartialSearchResults="true" requestCache="true"
+					batchedReduceSize="3" ccsMinimizeRoundtrips="true"
+					maxConcurrentShardRequests="2" preFilterShardSize="2" />
+				<elasticsearch:indices>
+					<elasticsearch:index value="index10" />
+				</elasticsearch:indices>
+				<elasticsearch:indices-options
+					ignoreUnavailable="true" allowNoIndices="true" expandWildcardsOpen="true"
+					expandWildcardsClosed="true" allowAliasesToMultipleIndices="true"
+					forbidClosedIndices="true" ignoreAliases="true" ignoreThrottled="true" />
+			</elasticsearch:search>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="9260d577-f89a-419c-ad88-3b7ea9ecf426" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
 </mule>
