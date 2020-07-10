@@ -13,7 +13,6 @@ import org.mule.runtime.extension.api.annotation.error.ErrorTypes;
 import org.mule.runtime.extension.api.annotation.error.Throws;
 import org.mule.runtime.extension.api.annotation.license.RequiresEnterpriseLicense;
 
-import com.mulesoft.connectors.elasticsearch.api.querytype.CommonTermsQuery;
 import com.mulesoft.connectors.elasticsearch.api.querytype.MatchAllQuery;
 import com.mulesoft.connectors.elasticsearch.api.querytype.MatchPhrasePrefixQuery;
 import com.mulesoft.connectors.elasticsearch.api.querytype.MatchPhraseQuery;
@@ -47,7 +46,6 @@ import com.mulesoft.connectors.elasticsearch.internal.operations.SearchOperation
     MatchAllQuery.class,
     MatchPhraseQuery.class,
     MatchPhrasePrefixQuery.class,
-    CommonTermsQuery.class,
     QueryStringQuery.class,
     SimpleQueryString.class
 })
