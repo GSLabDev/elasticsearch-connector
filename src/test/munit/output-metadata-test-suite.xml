@@ -4,8 +4,9 @@
 	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
 	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
 	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:mtf="http://www.mulesoft.org/schema/mule/mtf"
+	xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns:mtf="http://www.mulesoft.org/schema/mule/mtf"
 	xsi:schemaLocation="
 		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
@@ -15,7 +16,7 @@
 		http://www.mulesoft.org/schema/mule/mtf  http://www.mulesoft.org/schema/mule/mtf/current/mule-mtf.xsd">
 
 	<munit:config name="output-metadata-test-suite.xml" />
-	
+
 	<configuration-properties file="mule-application.properties" />
 
 	<elasticsearch:config name="Elasticsearch_HTTP_Config_Metadata"
@@ -23,95 +24,393 @@
 		<elasticsearch:http-connection host="${elastic.host}"
 			port="${elastic.port}" />
 	</elasticsearch:config>
-	
-	<munit:before-test name="suiteBefore_Test" description="Before tests actions" doc:id="66d5978d-3478-4fbc-b6b3-c4ebc3446918">
-        <set-variable value="#[['clusterName', 'clusterUuid', 'nodeName', 'tagline', 'version'] orderBy $]"  variableName="infoOutputFields"/>
-        <set-variable value="#[['acknowledged','shardsAcknowledged'] orderBy $]"  variableName="createAndOpenIndexOutputFields"/>
-        <set-variable value="#[['acknowledged'] orderBy $]"  variableName="deleteIndexOutputFields"/>
-        <set-variable value="#[['acknowledged','indices','shardsAcknowledged'] orderBy $]"  variableName="closeIndexOutputFields"/>
-    </munit:before-test>
 
-    <mtf:tooling-test ignore="false" name="infoMetadataTests">
-        <mtf:get-output-metadata >
-            <elasticsearch:info doc:name="Elasticsearch - Info" doc:id="b1b92747-2226-49ef-a983-a47993c70a13" config-ref="Elasticsearch_HTTP_Config_Metadata"/>
-        </mtf:get-output-metadata>
-        <mtf:validation>
-        	<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]" expected="#[sizeOf(vars.infoOutputFields)]" />
-			<set-variable value='#[%dw 2.0
+	<munit:before-test name="suiteBefore_Test"
+		description="Before tests actions" doc:id="66d5978d-3478-4fbc-b6b3-c4ebc3446918">
+		<set-variable
+			value="#[['clusterName', 'clusterUuid', 'nodeName', 'tagline', 'version'] orderBy $]"
+			variableName="infoOutputFields" />
+		<set-variable value="#[['acknowledged','shardsAcknowledged'] orderBy $]"
+			variableName="createAndOpenIndexOutputFields" />
+		<set-variable value="#[['acknowledged'] orderBy $]"
+			variableName="deleteIndexOutputFields" />
+		<set-variable
+			value="#[['acknowledged','indices','shardsAcknowledged'] orderBy $]"
+			variableName="closeIndexOutputFields" />
+		<set-variable
+			value="#[['forcedRefresh','id', 'index', 'primaryTerm', 'result', 'seqNo', 'shardId', 'shardInfo', 'type', 'version'] orderBy $]"
+			variableName="indexAndDeleteDocumentOutputFields" />
+		<set-variable
+			value="#[['id', 'index', 'primaryTerm', 'seqNo', 'sourceAsString', 'type', 'version', 'found']]"
+			variableName="getDocumentOutputFields" />
+		<set-variable
+			value="#[['forcedRefresh','id', 'index', 'primaryTerm', 'result', 'seqNo', 'shardId', 'shardInfo', 'type', 'version', 'getResult']]"
+			variableName="updateDocumentOutputFields" />
+		<set-variable
+			value="#[['headers', 'entity', 'host', 'requestLine', 'statusLine', 'warnings']]"
+			variableName="bulkDocumentAndJsonQueryOutputFields" />
+		<set-variable
+			value="#[['aggregations', 'clusters', 'failedShards', 'hits', 'numReducePhases', 'profileResults', 'scrollId', 'shardFailures', 'skippedShards', 'successfulShards', 'suggest', 'timedOut', 'took', 'totalShards']]"
+			variableName="searchAndScrollOutputFields" />
+		<set-variable value="#[['numFreed', 'succeeded']]"
+			variableName="clearScrollOutputFields" />
+	</munit:before-test>
+
+	<mtf:tooling-test ignore="false" name="infoMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:info doc:name="Elasticsearch - Info"
+				doc:id="b1b92747-2226-49ef-a983-a47993c70a13" config-ref="Elasticsearch_HTTP_Config_Metadata" />
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.infoOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
 			output application/json
 			---
 			payload.fields map ((value, index) -> value.key.name)
-			]' doc:name="Set Variable" doc:id="8e92da4f-c9de-4c80-bfc9-8c05cea0bb8d" variableName="result"/>
-			
-        	<munit-tools:assert-equals actual="#[vars.result]" expected="#[vars.infoOutputFields]" /> 
-        </mtf:validation>
-    </mtf:tooling-test>
-    
-    <mtf:tooling-test ignore="false" name="createIndexMetadataTests">
-        <mtf:get-output-metadata >
-			<elasticsearch:create-index doc:name="Index - Create" doc:id="c0194e81-d641-498f-89ec-fd1891c08b19" config-ref="Elasticsearch_HTTP_Config_Metadata" index="create_index_metadata_index">
+			]'
+				doc:name="Set Variable" doc:id="8e92da4f-c9de-4c80-bfc9-8c05cea0bb8d"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.infoOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="createIndexMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:create-index doc:name="Index - Create"
+				doc:id="c0194e81-d641-498f-89ec-fd1891c08b19" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				index="create_index_metadata_index">
 			</elasticsearch:create-index>
 		</mtf:get-output-metadata>
-        <mtf:validation>
-        	<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]" expected="#[sizeOf(vars.createAndOpenIndexOutputFields)]" />
-			<set-variable value='#[%dw 2.0
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.createAndOpenIndexOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
 			output application/json
 			---
 			payload.fields map ((value, index) -> value.key.name)
-			]' doc:name="Set Variable" doc:id="3cbe2075-6fd5-48cf-b980-fde499f87852" variableName="result"/>
-			
-        	<munit-tools:assert-equals actual="#[vars.result]" expected="#[vars.createAndOpenIndexOutputFields]" /> 
-        </mtf:validation>
-    </mtf:tooling-test>
-    
-    <mtf:tooling-test ignore="false" name="deleteIndexMetadataTests">
-        <mtf:get-output-metadata >
-			<elasticsearch:delete-index doc:name="Index - Delete" doc:id="ad6fc6fa-c16f-47e4-a718-20f6ddb522a1" config-ref="Elasticsearch_HTTP_Config_Metadata" index="delete_index_metadata">
+			]'
+				doc:name="Set Variable" doc:id="3cbe2075-6fd5-48cf-b980-fde499f87852"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.createAndOpenIndexOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="deleteIndexMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:delete-index doc:name="Index - Delete"
+				doc:id="ad6fc6fa-c16f-47e4-a718-20f6ddb522a1" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				index="delete_index_metadata">
 			</elasticsearch:delete-index>
 		</mtf:get-output-metadata>
-        <mtf:validation>
-        	<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]" expected="#[sizeOf(vars.deleteIndexOutputFields)]" />
-			<set-variable value='#[%dw 2.0
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.deleteIndexOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
 			output application/json
 			---
 			payload.fields map ((value, index) -> value.key.name)
-			]' doc:name="Set Variable" doc:id="4e0f3a35-0792-404e-8a0f-c98a3825c68f" variableName="result"/>
-			
-			<munit-tools:assert-equals actual="#[vars.result]" expected="#[vars.deleteIndexOutputFields]" /> 
-        </mtf:validation>
-    </mtf:tooling-test>
-    
-    <mtf:tooling-test ignore="false" name="openIndexMetadataTests">
-        <mtf:get-output-metadata >
-			<elasticsearch:open-index doc:name="Index - Open" doc:id="4b6ff4c2-a521-432c-8071-df033723d883" config-ref="Elasticsearch_HTTP_Config_Metadata" index="dummy_index_metadata">
+			]'
+				doc:name="Set Variable" doc:id="4e0f3a35-0792-404e-8a0f-c98a3825c68f"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.deleteIndexOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="openIndexMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:open-index doc:name="Index - Open"
+				doc:id="4b6ff4c2-a521-432c-8071-df033723d883" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				index="dummy_index_metadata">
 			</elasticsearch:open-index>
 		</mtf:get-output-metadata>
-        <mtf:validation>
-        	<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]" expected="#[sizeOf(vars.createAndOpenIndexOutputFields)]" />
-			<set-variable value='#[%dw 2.0
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.createAndOpenIndexOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
 			output application/json
 			---
 			payload.fields map ((value, index) -> value.key.name)
-			]' doc:name="Set Variable" doc:id="8160dbfa-5039-40bf-85fe-b214e80f5508" variableName="result"/>
-			
-			<munit-tools:assert-equals actual="#[vars.result]" expected="#[vars.createAndOpenIndexOutputFields]" /> 
-        </mtf:validation>
-    </mtf:tooling-test>
-    
-    <mtf:tooling-test ignore="false" name="closeIndexMetadataTests">
-        <mtf:get-output-metadata >
-			<elasticsearch:close-index doc:name="Index - Close" doc:id="cd65bf91-e8fe-4bd8-b03d-b9d408fda337" config-ref="Elasticsearch_HTTP_Config_Metadata" index="dummy_index_metadata">
+			]'
+				doc:name="Set Variable" doc:id="8160dbfa-5039-40bf-85fe-b214e80f5508"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.createAndOpenIndexOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="closeIndexMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:close-index doc:name="Index - Close"
+				doc:id="cd65bf91-e8fe-4bd8-b03d-b9d408fda337" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				index="dummy_index_metadata">
 			</elasticsearch:close-index>
 		</mtf:get-output-metadata>
-        <mtf:validation>
-        	<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]" expected="#[sizeOf(vars.closeIndexOutputFields)]" />
-			<set-variable value='#[%dw 2.0
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.closeIndexOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
 			output application/json
 			---
 			payload.fields map ((value, index) -> value.key.name)
-			]' doc:name="Set Variable" doc:id="eeb71798-babd-446f-bd28-8e072509f856" variableName="result"/>
-			
-			<munit-tools:assert-equals actual="#[vars.result]" expected="#[vars.closeIndexOutputFields]" /> 
-        </mtf:validation>
-    </mtf:tooling-test>
+			]'
+				doc:name="Set Variable" doc:id="eeb71798-babd-446f-bd28-8e072509f856"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.closeIndexOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="indexDocumentMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="3c0c3155-61cf-40f1-900d-c10d3f6800a8" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				index="test_index_2" documentId="test_doc_id_2" routing="routing"
+				timeoutInSec="5" refreshPolicy="WAIT_UNTIL" version="10"
+				versionType="EXTERNAL_GTE" operationType="INDEX" jsonInputPath="${index.jsoninputpath}" />
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.indexAndDeleteDocumentOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="cc241c25-53ad-4d78-aacf-9f9378fb357a"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.indexAndDeleteDocumentOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="getDocumentMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:get-document doc:name="Document - Get"
+				doc:id="7fd24603-ae62-463a-963c-c2afd1e872e7" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				index="get_doc_index" documentId="get_doc_id" routing="routing"
+				preference="preference" realtime="false" refresh="true" version="1"
+				versionType="EXTERNAL_GTE">
+				<elasticsearch:fetch-source-context
+					fetchSource="false">
+					<elasticsearch:include-fields>
+						<elasticsearch:include-field value="key1" />
+					</elasticsearch:include-fields>
+					<elasticsearch:exclude-fields>
+						<elasticsearch:exclude-field value="key2" />
+					</elasticsearch:exclude-fields>
+				</elasticsearch:fetch-source-context>
+			</elasticsearch:get-document>
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.getDocumentOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="3fb6d042-534c-4b7f-b651-5b76d154af5d"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.getDocumentOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="deleteDocumentMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="106d7a41-87fb-48b6-a633-0eac83e444bd"
+				config-ref="Elasticsearch_HTTP_Config_Metadata" index="dummy_index_doc"
+				documentId="dummy_doc_id" routing="routing" timeoutInSec="6"
+				refreshPolicy="IMMEDIATE" version="11" versionType="EXTERNAL" />
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.indexAndDeleteDocumentOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="fed47d6f-075e-4e5a-a731-bb2964e9212f"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.indexAndDeleteDocumentOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="updateDocumentMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:update-document
+				doc:name="Document - Update" doc:id="5aa83bbc-d24d-4cbd-9633-550667df1722"
+				config-ref="Elasticsearch_HTTP_Config_Metadata" index="update_doc_index_1"
+				documentId="update_doc_id_1" routing="routing" timeoutInSec="6"
+				refreshPolicy="WAIT_UNTIL" retryOnConflict="1" fetchSource="true"
+				jsonInputPath="${index.jsoninputpath}" detectNoop="false"
+				scriptedUpsert="true" docAsUpsert="true">
+			</elasticsearch:update-document>
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.updateDocumentOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="dbc82602-e0aa-4cdc-b768-0f0b7dbc4398"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.updateDocumentOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="bulkDocumentMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:bulk-operation doc:name="Document - Bulk"
+				doc:id="9585305a-dce9-4bab-a1bd-c9d9494ed6a2" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				jsonfile="${bulk.jsoninputpath}">
+			</elasticsearch:bulk-operation>
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.bulkDocumentAndJsonQueryOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="01454dd1-ad28-4944-b0c6-f532dbc6448c"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.bulkDocumentAndJsonQueryOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="searchQueryMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:search doc:name="Search - Query"
+				doc:id="4de3b273-f3d4-4575-a635-1a16271b1cb3" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				searchType="QUERY_THEN_FETCH" scrollIntervalTime="10">
+				<elasticsearch:query-configuration>
+					<elasticsearch:match-all-query />
+				</elasticsearch:query-configuration>
+			</elasticsearch:search>
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.searchAndScrollOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="18f35ae6-4d56-4451-8dbd-d4921d178c04"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.searchAndScrollOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false"
+		name="searchJsonQueryMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:search-using-json-data
+				doc:name="Search - JSON Query" doc:id="735e280f-9344-40a5-861c-31c022c882ba"
+				config-ref="Elasticsearch_HTTP_Config_Metadata" jsonfile="input/match-all-query.json">
+			</elasticsearch:search-using-json-data>
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.bulkDocumentAndJsonQueryOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="0a915e40-f007-4f76-ba25-2205bd37fd8a"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.bulkDocumentAndJsonQueryOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false" name="searchScrollMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:search-scroll doc:name="Search - Scroll"
+				doc:id="b4038b14-61a6-42bd-b6f6-7534929fdba9" config-ref="Elasticsearch_HTTP_Config_Metadata"
+				scrollId="aaa" timeValue="20" />
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.searchAndScrollOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="2006f5ec-2e8f-4039-8808-765164753bc1"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.searchAndScrollOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
+	<mtf:tooling-test ignore="false"
+		name="searchClearScrollMetadataTests">
+		<mtf:get-output-metadata>
+			<elasticsearch:clear-scroll doc:name="Search - Clear Scroll"
+				doc:id="d355656b-2094-47b5-ae9a-883e53fec625" config-ref="Elasticsearch_HTTP_Config_Metadata">
+				<elasticsearch:scroll-ids>
+					<elasticsearch:scroll-id value="aaa" />
+				</elasticsearch:scroll-ids>
+			</elasticsearch:clear-scroll>
+		</mtf:get-output-metadata>
+		<mtf:validation>
+			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"
+				expected="#[sizeOf(vars.clearScrollOutputFields)]" />
+			<set-variable
+				value='#[%dw 2.0
+			output application/json
+			---
+			payload.fields map ((value, index) -> value.key.name)
+			]'
+				doc:name="Set Variable" doc:id="b5f0c9f2-46df-4774-9961-0f664b959f76"
+				variableName="result" />
+
+			<munit-tools:assert-equals actual="#[vars.result]"
+				expected="#[vars.clearScrollOutputFields]" />
+		</mtf:validation>
+	</mtf:tooling-test>
+
 </mule>
