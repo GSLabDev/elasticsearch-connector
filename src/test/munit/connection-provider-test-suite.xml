@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:elasticsearch="http://www.mulesoft.org/schema/mule/elasticsearch"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:mtf="http://www.mulesoft.org/schema/mule/mtf"
+	xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.mulesoft.org/schema/mule/munit-tools http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema/mule/elasticsearch/current/mule-elasticsearch.xsd
+http://www.mulesoft.org/schema/mule/mtf  http://www.mulesoft.org/schema/mule/mtf/current/mule-mtf.xsd">
+	<munit:config name="connection-provider-test-suite.xml" />
+
+	<configuration-properties file="mule-application.properties" />
+
+	<elasticsearch:config name="Elasticsearch_Config_HTTP"
+		doc:name="Elasticsearch Config" doc:id="fc4726b8-b407-4d8d-83a4-3284ea3e672e">
+		<elasticsearch:http-connection host="localhost1" />
+	</elasticsearch:config>
+
+	<elasticsearch:config name="Elasticsearch_Config_HTTPS"
+		doc:name="Elasticsearch Config" doc:id="2810410c-032b-4574-8d0c-7fa76b287f94">
+		<elasticsearch:https-connection host="localhost"
+			userName="elastic" password="elastic"
+			trustStorePath="C:\Users\GS-2237\Documents\MuleSoft\ElasticSearch\elasticsearch-7.6.0/elastic-stack-ca.p12"
+			trustStorePassword="elastic" trustStoreType="PKCS12" />
+	</elasticsearch:config>
+
+	<elasticsearch:config name="Elasticsearch_HTTP_Config8"
+		doc:name="Elasticsearch Config" doc:id="a6360bf6-0ece-4a34-bb6b-a61d154d9361">
+		<elasticsearch:http-connection host="${elastic.host}"
+			port="${elastic.port}" />
+	</elasticsearch:config>
+
+	<munit:test name="http-connection-test" description="Test"
+		doc:id="a55600c2-b685-4eb5-b46f-c45b5f20abba" expectedErrorType="ELASTICSEARCH:OPERATION_FAILED">
+		<munit:execution>
+			<elasticsearch:info doc:name="Elasticsearch - Info"
+				doc:id="4698fdd9-6fe6-4138-a94a-9bbbfce10192" config-ref="Elasticsearch_Config_HTTP" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="https-connection-test" description="Test"
+		doc:id="0832fa26-e234-4c56-a5b3-57d483b5b84c" expectedErrorType="ELASTICSEARCH:CONNECTIVITY">
+		<munit:execution>
+			<elasticsearch:info doc:name="Elasticsearch - Info"
+				doc:id="b7425f1c-e7b3-48fe-a50b-9f01a2608ee9" config-ref="Elasticsearch_Config_HTTPS" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="invalidHostConnectionTest"
+		expectedErrorType="MULE:UNKNOWN">
+		<munit:execution>
+			<mtf:test-connectivity config-ref="Elasticsearch_Config_HTTP" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="invalidHTTPSConnectionTest"
+		expectedErrorType="ELASTICSEARCH:CONNECTIVITY">
+		<munit:execution>
+			<mtf:test-connectivity config-ref="Elasticsearch_Config_HTTPS" />
+		</munit:execution>
+	</munit:test>
+
+	<munit:test name="reconnection-flow-Test" description="Test"
+		doc:id="593ecfe6-a913-4c81-a786-72629a05e54f">
+		<munit:execution>
+			<try>
+				<elasticsearch:info doc:name="Elasticsearch - Info"
+					doc:id="f49a558b-9c37-448c-b32a-d9fa5e859655" config-ref="Elasticsearch_Config_HTTPS" />
+				<logger level="INFO" doc:name="Logger"
+					doc:id="09bf8cb7-0738-4413-8c7d-85833ea0c17a" message="#[payload]" />
+				<error-handler>
+					<on-error-continue type="ELASTICSEARCH:CONNECTIVITY">
+						<elasticsearch:info doc:name="Elasticsearch - Info"
+							doc:id="014079d2-b758-49b9-aa93-21af7bafad0e" config-ref="Elasticsearch_HTTP_Config8" />
+						<logger level="INFO" doc:name="Logger"
+							doc:id="3af4130c-da36-490a-8966-0e682bdc894c" message="#[payload]" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that"
+				doc:id="4a3b53ab-e26a-4100-b81f-0215f01675f4" is="#[MunitTools::notNullValue()]"
+				expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+</mule>

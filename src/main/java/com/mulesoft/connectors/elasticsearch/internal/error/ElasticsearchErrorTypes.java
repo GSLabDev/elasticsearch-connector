@@ -3,8 +3,6 @@
  */
 package com.mulesoft.connectors.elasticsearch.internal.error;
 
-import static org.mule.runtime.extension.api.error.MuleErrors.CONNECTIVITY;
-
 import java.util.Optional;
 
 import org.mule.runtime.extension.api.error.ErrorTypeDefinition;
@@ -16,7 +14,7 @@ public enum ElasticsearchErrorTypes implements ErrorTypeDefinition<Elasticsearch
     
     EXECUTION,
     OPERATION_FAILED(EXECUTION),
-    CONNECTION_FAILED(CONNECTIVITY);
+    CONNECTIVITY;
     
     private ErrorTypeDefinition<? extends Enum<?>> parent;
 

@@ -23,7 +23,7 @@ public abstract class ElasticsearchErrorTypesProvider implements ErrorTypeProvid
         HashSet<ErrorTypeDefinition> errors = new HashSet<>();
         errors.add(ElasticsearchErrorTypes.EXECUTION);
         errors.add(ElasticsearchErrorTypes.OPERATION_FAILED);
-        errors.add(ElasticsearchErrorTypes.CONNECTION_FAILED);
+        errors.add(ElasticsearchErrorTypes.CONNECTIVITY);
         return errors;
     }
 }

@@ -83,7 +83,7 @@ public final class ElasticsearchConnection {
 
             this.client = new RestHighLevelClient(builder);
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchErrorTypes.CONNECTION_FAILED, e);
+            throw new ElasticsearchException(ElasticsearchErrorTypes.CONNECTIVITY, e);
         }
     }
 

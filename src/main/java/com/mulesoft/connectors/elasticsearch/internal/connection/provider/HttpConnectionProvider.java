@@ -35,8 +35,7 @@ public class HttpConnectionProvider extends ElasticsearchBaseConnectionProvider 
                 return new ElasticsearchConnection(getHost(), getPort());
             }
         } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchErrorTypes.CONNECTION_FAILED, e);
-
+            throw new ElasticsearchException(ElasticsearchErrorTypes.CONNECTIVITY, e);
         }
 
     }
