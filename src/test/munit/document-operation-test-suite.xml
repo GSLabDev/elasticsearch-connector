@@ -243,6 +243,16 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 { &quot;delete&quot; : {&quot;_id&quot; : &quot;5&quot;,  &quot;_index&quot; : &quot;accounts123&quot;} }
 </elasticsearch:json-text>
 		</elasticsearch:bulk-operation>
+		
+		<elasticsearch:delete-index doc:name="Delete index"
+				doc:id="0a95fba3-3683-464f-85c1-6ee8806ebac8" config-ref="Elasticsearch_HTTP_Config3"
+				index="${elasticsearch.index}" timeoutInSec="15"
+				masterNodeTimeoutInSec="10">
+				<elasticsearch:indices-opts
+					ignoreUnavailable="true" allowNoIndices="true" expandWildcardsOpen="true"
+					expandWildcardsClosed="true" allowAliasesToMultipleIndices="true"
+					forbidClosedIndices="true" ignoreAliases="true" />
+			</elasticsearch:delete-index>
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that doc:name="Assert that"
@@ -258,6 +268,16 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:id="99129fb1-e202-44c7-a46b-afba6202c16a" config-ref="Elasticsearch_HTTP_Config3"
 				jsonfile="${bulk.jsoninputpath}">
 			</elasticsearch:bulk-operation>
+			
+			<elasticsearch:delete-index doc:name="Delete index"
+				doc:id="0a95fba3-3683-464f-85c1-6ee8806ebac8" config-ref="Elasticsearch_HTTP_Config3"
+				index="${elasticsearch.index}" timeoutInSec="15"
+				masterNodeTimeoutInSec="10">
+				<elasticsearch:indices-opts
+					ignoreUnavailable="true" allowNoIndices="true" expandWildcardsOpen="true"
+					expandWildcardsClosed="true" allowAliasesToMultipleIndices="true"
+					forbidClosedIndices="true" ignoreAliases="true" />
+			</elasticsearch:delete-index>
 		</munit:execution>
 		<munit:validation>
 			<munit-tools:assert-that doc:name="Assert that"
