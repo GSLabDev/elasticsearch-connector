@@ -5,6 +5,7 @@ package com.mulesoft.connectors.elasticsearch.api;
 
 import java.util.List;
 
+import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
@@ -22,6 +23,7 @@ public class DocumentFetchSourceOptions {
      */
     @Parameter
     @Optional
+    @NullSafe
     private List<String> includeFields;
 
     /**
@@ -29,6 +31,7 @@ public class DocumentFetchSourceOptions {
      */
     @Parameter
     @Optional
+    @NullSafe
     private List<String> excludeFields;
     
     public DocumentFetchSourceOptions() {

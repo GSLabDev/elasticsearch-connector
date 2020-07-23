@@ -6,6 +6,7 @@ package com.mulesoft.connectors.elasticsearch.api;
 import java.util.Map;
 
 import org.mule.runtime.extension.api.annotation.param.ExclusiveOptionals;
+import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
@@ -33,6 +34,7 @@ public class IndexDocumentOptions {
     @Parameter
     @Optional
     @DisplayName("Document Source")
+    @NullSafe
     private Map<String, Object> documentSource;
 
     public IndexDocumentOptions() {

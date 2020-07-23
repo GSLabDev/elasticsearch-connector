@@ -5,6 +5,7 @@ package com.mulesoft.connectors.elasticsearch.api.querytype;
 
 import java.util.Map;
 
+import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
@@ -26,6 +27,7 @@ public class BaseQueryString {
      */
     @Parameter
     @Optional
+    @NullSafe
     private Map<String, Float> fieldsAndBoost;
 
     /**

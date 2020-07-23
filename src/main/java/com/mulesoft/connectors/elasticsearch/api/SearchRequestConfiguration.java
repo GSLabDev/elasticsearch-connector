@@ -5,6 +5,7 @@ package com.mulesoft.connectors.elasticsearch.api;
 
 import java.util.List;
 
+import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
@@ -30,6 +31,7 @@ public class SearchRequestConfiguration {
      */
     @Parameter
     @Optional
+    @NullSafe
     private List<String> indices;
 
     /**

@@ -5,8 +5,6 @@ package com.mulesoft.connectors.elasticsearch.internal.connection.provider;
 
 import java.io.IOException;
 
-import org.apache.http.HttpHeaders;
-import org.apache.http.message.BasicHeader;
 import org.mule.runtime.api.connection.CachedConnectionProvider;
 import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.param.Optional;
