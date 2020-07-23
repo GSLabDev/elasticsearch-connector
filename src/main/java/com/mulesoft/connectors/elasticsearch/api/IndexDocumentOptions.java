@@ -35,6 +35,10 @@ public class IndexDocumentOptions {
     @DisplayName("Document Source")
     private Map<String, Object> documentSource;
 
+    public IndexDocumentOptions() {
+        // This default constructor makes the class DataWeave compatible.
+    }
+    
     public String getJsonInputPath() {
         return jsonInputPath;
     }

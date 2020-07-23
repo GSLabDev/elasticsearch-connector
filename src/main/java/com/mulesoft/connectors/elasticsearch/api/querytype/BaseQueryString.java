@@ -104,6 +104,10 @@ public class BaseQueryString {
     @Parameter
     @Optional
     private String quoteFieldSuffix;
+    
+    public BaseQueryString() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public String getQueryString() {
         return queryString;

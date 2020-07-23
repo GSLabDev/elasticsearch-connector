@@ -19,6 +19,10 @@ public class MatchAllQuery implements Query {
     @Parameter
     @Optional(defaultValue = "1.0")
     private float boost;
+    
+    public MatchAllQuery() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public float getBoost() {
         return boost;

@@ -63,6 +63,10 @@ public class MultiMatchQuery extends BaseMatchQuery implements Query {
     @Parameter
     @Optional(defaultValue = "0.0")
     private float tieBreaker;
+    
+    public MultiMatchQuery() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public List<String> getFields() {
         return fields;

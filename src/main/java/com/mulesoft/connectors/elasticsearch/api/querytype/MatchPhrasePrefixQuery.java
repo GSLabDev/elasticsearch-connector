@@ -19,6 +19,10 @@ public class MatchPhrasePrefixQuery extends BaseMatchPhraseQuery implements Quer
     @Parameter
     @Optional(defaultValue = "50")
     private int maxExpansions;
+    
+    public MatchPhrasePrefixQuery() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public int getMaxExpansions() {
         return maxExpansions;

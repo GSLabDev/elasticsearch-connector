@@ -51,6 +51,7 @@ public class ElasticsearchResponse implements Serializable{
     private List<String> warnings;
     
     public ElasticsearchResponse() {
+        // This default constructor makes the class DataWeave compatible.
     }
 
     public ElasticsearchResponse(Response response) {

@@ -40,6 +40,10 @@ public class JsonData {
     @DisplayName("Text")
     @Summary("Provide the JSON string. Either of the fields JSON file path or JSON text must be set.")
     private String jsonText;
+    
+    public JsonData() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public String getJsonfile() {
         return jsonfile;

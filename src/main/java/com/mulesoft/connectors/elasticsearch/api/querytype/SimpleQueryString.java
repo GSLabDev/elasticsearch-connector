@@ -42,7 +42,11 @@ public class SimpleQueryString extends BaseQueryString implements Query {
      */
     @Parameter
     @Optional
-    SimpleQueryFlag simpleQueryStringFlag;
+    private SimpleQueryFlag simpleQueryStringFlag;
+    
+    public SimpleQueryString() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public SimpleQueryFlag getSimpleQueryStringFlag() {
         return simpleQueryStringFlag;

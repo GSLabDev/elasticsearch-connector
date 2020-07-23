@@ -30,6 +30,10 @@ public class DocumentFetchSourceOptions {
     @Parameter
     @Optional
     private List<String> excludeFields;
+    
+    public DocumentFetchSourceOptions() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public boolean isFetchSource() {
         return fetchSource;

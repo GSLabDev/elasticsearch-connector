@@ -46,6 +46,10 @@ public class BaseMatchPhraseQuery {
     @Parameter
     @Optional
     private int slop;
+    
+    public BaseMatchPhraseQuery() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public String getField() {
         return field;

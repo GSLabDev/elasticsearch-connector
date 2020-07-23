@@ -19,6 +19,10 @@ public class MatchPhraseQuery extends BaseMatchPhraseQuery implements Query {
     @Parameter
     @Optional
     private ZeroTermsQuery zeroTermsQuery;
+    
+    public MatchPhraseQuery() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public ZeroTermsQuery getZeroTermsQuery() {
         return zeroTermsQuery;

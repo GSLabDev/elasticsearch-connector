@@ -47,6 +47,10 @@ public class SearchRequestOptionalConfiguration {
     @Parameter
     @Optional(defaultValue="1")
     private int preFilterShardSize;
+    
+    public SearchRequestOptionalConfiguration() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public boolean isAllowPartialSearchResults() {
         return allowPartialSearchResults;

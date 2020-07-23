@@ -103,6 +103,10 @@ public class BaseMatchQuery {
     @Parameter
     @Optional
     private String minimumShouldMatch;
+    
+    public BaseMatchQuery() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public String getSearchString() {
         return searchString;

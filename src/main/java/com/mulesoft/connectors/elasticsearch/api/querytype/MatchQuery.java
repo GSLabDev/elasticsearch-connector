@@ -21,6 +21,10 @@ public class MatchQuery extends BaseMatchQuery implements Query {
     @Parameter
     @Placement(order = 2)
     private String field;
+    
+    public MatchQuery() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public String getField() {
         return field;

@@ -92,6 +92,10 @@ public class QueryStringQuery extends BaseQueryString implements Query {
     @Parameter
     @Optional
     private String timeZone;
+    
+    public QueryStringQuery() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public boolean isAllowLeadingWildcard() {
         return allowLeadingWildcard;

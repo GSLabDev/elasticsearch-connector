@@ -141,6 +141,10 @@ public class SearchSourceConfiguration {
     @Parameter
     @Optional
     private boolean seqNoAndPrimaryTerm;
+    
+    public SearchSourceConfiguration() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public int getFrom() {
         return from;

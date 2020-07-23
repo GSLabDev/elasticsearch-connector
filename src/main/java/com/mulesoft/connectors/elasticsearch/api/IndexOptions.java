@@ -67,6 +67,10 @@ public class IndexOptions {
     @Parameter
     @Summary("Whether indices that are marked as throttled should be ignored.")
     private boolean ignoreThrottled;
+    
+    public IndexOptions() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public boolean isIgnoreUnavailable() {
         return ignoreUnavailable;

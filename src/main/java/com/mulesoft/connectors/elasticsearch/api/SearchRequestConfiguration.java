@@ -67,6 +67,10 @@ public class SearchRequestConfiguration {
     @Parameter
     @Optional
     private IndexOptions indicesOptions;
+    
+    public SearchRequestConfiguration() {
+        // This default constructor makes the class DataWeave compatible.
+    }
 
     public List<String> getIndices() {
         return indices;
