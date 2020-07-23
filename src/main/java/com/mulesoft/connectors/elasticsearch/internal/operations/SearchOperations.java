@@ -21,6 +21,9 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.extension.api.annotation.Expression;
+import org.mule.runtime.extension.api.annotation.dsl.xml.ParameterDsl;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -35,7 +38,7 @@ import com.mulesoft.connectors.elasticsearch.api.JsonData;
 import com.mulesoft.connectors.elasticsearch.api.SearchRequestConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchRequestOptionalConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchSourceConfiguration;
-import com.mulesoft.connectors.elasticsearch.api.querytype.Query;
+import com.mulesoft.connectors.elasticsearch.api.querytype.QueryConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
@@ -62,7 +65,7 @@ public class SearchOperations extends BaseSearchOperation {
      * @param searchRequestConfiguration
      *            Search request configuration
      * @param queryConfiguration
-     *            Different types of Elasticsearch query configuration
+     *            Elasticsearch query configuration
      * @param searchSourceConfiguration
      *            Search source configuration to control the search behavior.
      * @param searchRequestOptionalConfiguration
@@ -73,13 +76,13 @@ public class SearchOperations extends BaseSearchOperation {
     @DisplayName("Search - Query")
     @OutputResolver(output = SearchResponseOutputMetadataResolver.class)
     public String search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
-            @DisplayName("Query Type") @Placement(order = 1, tab = "Query") Query queryConfiguration,
+            @Placement(order = 1, tab = "Query") @Expression(ExpressionSupport.NOT_SUPPORTED) @ParameterDsl(allowInlineDefinition = true, allowReferences = false) QueryConfiguration queryConfiguration,
             @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration,
             @DisplayName("Search Config") @Placement(order = 3, tab = "Search Optional Parameters") @Optional SearchRequestOptionalConfiguration searchRequestOptionalConfiguration) {
 
         String result = null;
         SearchSourceBuilder searchSourceBuilder = searchSourceConfiguration != null ? getSearchSourceBuilderOptions(searchSourceConfiguration) : new SearchSourceBuilder();
-        searchSourceBuilder.query(queryConfiguration.getQuery());
+        searchSourceBuilder.query(queryConfiguration.getQueryType().getQuery());
         SearchRequest searchRequest = getSearchRequest(searchRequestConfiguration, searchRequestOptionalConfiguration);
         searchRequest.source(searchSourceBuilder);
 

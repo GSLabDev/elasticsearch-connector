@@ -38,7 +38,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			config-ref="${elastic.config}">
 
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-all-query />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 
 			<elasticsearch:search-source-configuration
@@ -70,11 +72,13 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="ea8f39ce-b076-44f5-8593-b3e79b8b9c1f" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-query searchString="${searchMatch.searchString}"
 					field="${searchMatch.field}" fuzzyTranspositions="true"
 					autoGenerateSynonymsPhraseQuery="true" zeroTermsQuery="ALL"
 					operator="OR">
 				</elasticsearch:match-query>
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:search-source-configuration
 				from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC"
@@ -103,6 +107,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="dbc9f544-10d2-406d-afc2-a444cddd6e4b" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:multi-match-query
 					autoGenerateSynonymsPhraseQuery="true" tieBreaker="${multiMatchQuery.tieBreaker}"
 					minimumShouldMatch="${multiMatchQuery.minimumShouldMatch}"
@@ -114,6 +119,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 						<elasticsearch:field value="address" />
 					</elasticsearch:fields>
 				</elasticsearch:multi-match-query>
+				</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:search-source-configuration
 				from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC"
@@ -142,9 +148,11 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="1a77185d-8262-46e6-84fe-e44c722a50f3" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-phrase-query
 					queryString="${searchMatchPhrase.query}" analyzer="standard"
 					boost="${searchMatchPhrase.boost}" field="${searchMatchPhrase.field}" />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:search-source-configuration
 				from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC"
@@ -173,10 +181,12 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="6ddabb4c-00d5-4baa-ac24-36a302ab1e45" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-phrase-prefix-query
 					field="${searchMatchPhrasePrefix.field}" queryString="${searchMatchPhrasePrefix.query}"
 					analyzer="standard" maxExpansions="${searchMatchPhrasePrefix.maxExpansion}"
 					boost="${searchMatchPhrasePrefix.boost}" />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:search-source-configuration
 				from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC"
@@ -206,6 +216,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="d23ef24f-179c-40d5-8672-1aa63db4837c" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:query-string-query
 					allowLeadingWildcard="true" enablePositionIncrements="true"
 					queryString="${searchQueryString.queryString}" analyzeWildcard="true"
@@ -224,6 +235,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							key="address" value="1" />
 					</elasticsearch:fields-and-boosts>
 				</elasticsearch:query-string-query>
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:search-source-configuration
 				from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC"
@@ -252,6 +264,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="21a6e1de-49e9-4c2e-8d61-799fcdfa4e50" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:simple-query-string
 					queryString="${searchSimpleQueryString.queryString}"
 					analyzeWildcard="true" analyzer="standard"
@@ -267,6 +280,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							key="address" value="1" />
 					</elasticsearch:fields-and-boosts>
 				</elasticsearch:simple-query-string>
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:search-source-configuration
 				from="${searchSource.from}" size="${searchSource.size}" sortOrder="ASC"
@@ -320,8 +334,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			searchType="DFS_QUERY_THEN_FETCH" scrollIntervalTime="${searchScroll.timeInterval}"
 			doc:name="Search">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-all-query
 					doc:name="Search scroll match all" doc:id="59de7c93-353c-4598-b44c-955c4b81f84d" />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:indices>
 				<elasticsearch:index value="${search.index}" />
@@ -336,8 +352,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			scrollIntervalTime="${searchScroll.timeInterval}" doc:name="Search"
 			config-ref="${elastic.config}">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-all-query
 					doc:name="Search scroll match all" doc:id="20a5fe63-daca-48cf-a6fd-8b0badc8c13e" />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 		</elasticsearch:search>
 
@@ -365,8 +383,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			searchType="DFS_QUERY_THEN_FETCH" scrollIntervalTime="${searchScroll.timeInterval}"
 			doc:name="Search">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-all-query
 					doc:name="Search scroll match all" doc:id="d382d988-6cad-41bd-988d-6ec72044c42a" />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:indices>
 				<elasticsearch:index value="${search.index}" />
@@ -392,7 +412,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="11f17840-9eeb-4980-bcf2-6412fdfc0b46" config-ref="${elastic.config}"
 			searchType="QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-all-query />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:search-source-configuration
 				from="10" sortOrder="ASC" fetchSource="false">
@@ -407,9 +429,11 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="ea8f39ce-b076-44f5-8593-b3e79b8b9c1f" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-query field="${searchMatch.field}"
 					searchString="${searchMatch.searchString}"
 					autoGenerateSynonymsPhraseQuery="true" />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:indices>
 				<elasticsearch:index value="${search.index}" />
@@ -424,8 +448,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="1a77185d-8262-46e6-84fe-e44c722a50f3" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-phrase-query
 					field="${searchMatchPhrase.field}" queryString="${searchMatchPhrase.query}" />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:indices>
 				<elasticsearch:index value="${search.index}" />
@@ -435,8 +461,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="6ddabb4c-00d5-4baa-ac24-36a302ab1e45" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:match-phrase-prefix-query
 					field="${searchMatchPhrasePrefix.field}" queryString="${searchMatchPhrasePrefix.query}" />
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:indices>
 				<elasticsearch:index value="${search.index}" />
@@ -451,6 +479,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="dbc9f544-10d2-406d-afc2-a444cddd6e4b" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:multi-match-query
 					tieBreaker="${multiMatchQuery.tieBreaker}" searchString="${multiMatchQuery.searchString}">
 					<elasticsearch:fields>
@@ -459,6 +488,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 						<elasticsearch:field value="address" />
 					</elasticsearch:fields>
 				</elasticsearch:multi-match-query>
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 			<elasticsearch:search-source-configuration
 				from="${searchSource.from}" size="${searchSource.size}" timeout="${searchSource.timeout}"
@@ -488,9 +518,11 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="21a6e1de-49e9-4c2e-8d61-799fcdfa4e50" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:simple-query-string
 					queryString="${searchSimpleQueryString.queryString}" lenient="true">
 				</elasticsearch:simple-query-string>
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 		</elasticsearch:search>
 		<logger level="INFO" doc:name="Logger"
@@ -502,10 +534,12 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			doc:id="d23ef24f-179c-40d5-8672-1aa63db4837c" config-ref="${elastic.config}"
 			searchType="DFS_QUERY_THEN_FETCH">
 			<elasticsearch:query-configuration>
+			<elasticsearch:query-type >
 				<elasticsearch:query-string-query
 					queryString="${searchQueryString.queryString}" analyzer="standard"
 					fuzzyMaxExpansions="10" defaultField="firstname">
 				</elasticsearch:query-string-query>
+			</elasticsearch:query-type>
 			</elasticsearch:query-configuration>
 		</elasticsearch:search>
 		<logger level="INFO" doc:name="Logger"

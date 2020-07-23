@@ -81,7 +81,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				searchType="DFS_QUERY_THEN_FETCH" routing="1" preference="1"
 				scrollIntervalTime="1">
 				<elasticsearch:query-configuration>
+				<elasticsearch:query-type >
 					<elasticsearch:match-all-query boost="2.0" />
+				</elasticsearch:query-type>
 				</elasticsearch:query-configuration>
 				<elasticsearch:search-source-configuration
 					from="1" size="9" timeout="10" sortOrder="ASC" fetchSource="false"
