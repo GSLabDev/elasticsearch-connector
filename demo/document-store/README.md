@@ -20,12 +20,10 @@ elastic.port=9200
 
 #Document store
 bulk.index=shakespeare
-bulk.type=doc
 bulk.dataset=shakespeare_6.0.json
 
 #Get Document
 get.index=shakespeare
-get.type=doc
 get.id=6678
 ```
 
@@ -41,6 +39,6 @@ elastic.port      | Port on which Elasticsearch is running
 5. Once the Mule App is deployed, hit <http://localhost:8081/documentstore>.
   
 ### How it works:
-- ***Bulk Operation***: Uploads the dataset to ElasticSearch
+- ***Bulk Operation***: Perform many create, index, delete and update operations in a single API call. Here it uploads the dataset to ElasticSearch.
 - ***Get Document***: Retrieves the document with provided document id from Elasticsearch
 
