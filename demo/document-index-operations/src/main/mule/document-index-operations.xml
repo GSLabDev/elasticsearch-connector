@@ -12,26 +12,28 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="85a8f372-7f62-4473-ba31-5912cc3625bf" >
 		<http:listener-connection host="0.0.0.0" port="8081" />
 	</http:listener-config>
+
 	<elasticsearch:config name="Elasticsearch_Config" doc:name="Elasticsearch Config" doc:id="78723584-fcbc-465d-9e82-96acb083e67f" >
 		<elasticsearch:http-connection host="${elastic.host}" />
 	</elasticsearch:config>
+
 	<configuration-properties doc:name="Configuration properties" doc:id="9ea50978-2158-4586-979a-00b81adc6a67" file="mule-application.properties" />
 	<sub-flow name="create-index-insert-document" doc:id="0b419864-7083-424a-9ce0-63436d4d58d6" >
 		<elasticsearch:create-index doc:name="Index - Create" doc:id="73671bca-6fa3-4683-bbcf-145d98339176" config-ref="Elasticsearch_Config" index="${index}" />
 		<logger level="INFO" doc:name="Logger" doc:id="419aad71-2c33-4985-abd8-d99d372971f2" message="Create Index Response  #[payload]" />
-		<elasticsearch:index-document doc:name="Document - Index" doc:id="4ec79fa7-b351-447b-803e-8a925d28774e" config-ref="Elasticsearch_Config" index="${index}" type="${document.type}" documentId="${document.id}" jsonInputPath="${document.path}">
+		<elasticsearch:index-document doc:name="Document - Index" doc:id="4ec79fa7-b351-447b-803e-8a925d28774e" config-ref="Elasticsearch_Config" index="${index}" documentId="${document.id}" jsonInputPath="${document.path}">
 		</elasticsearch:index-document>
 	</sub-flow>
 	<sub-flow name="update-document" doc:id="51692ac6-445e-4dfe-acf0-0100c2be8c7e">
-		<elasticsearch:get-document doc:name="Document - Get" doc:id="99fbbc75-cd3d-423b-8bf2-92f35a823d7e" config-ref="Elasticsearch_Config" documentId="${document.id}" index="${index}" type="${document.type}" />
+		<elasticsearch:get-document doc:name="Document - Get" doc:id="99fbbc75-cd3d-423b-8bf2-92f35a823d7e" config-ref="Elasticsearch_Config" documentId="${document.id}" index="${index}" />
 		<logger level="INFO" doc:name="Logger" doc:id="ece75717-1861-4b26-9fa4-d7f9cacb8d43" message="Get Document Reponse #[payload]" />
-		<elasticsearch:update-document doc:name="Document - Update" doc:id="a20a2f93-d72f-48e2-a0de-00b638347b4d" config-ref="Elasticsearch_Config" index="${index}" type="${document.type}" documentId="${document.id}" jsonInputPath="${document.updatepath}" />
+		<elasticsearch:update-document doc:name="Document - Update" doc:id="a20a2f93-d72f-48e2-a0de-00b638347b4d" config-ref="Elasticsearch_Config" index="${index}" documentId="${document.id}" jsonInputPath="${document.updatepath}" />
 		<logger level="INFO" doc:name="Logger" doc:id="34a992e6-0b92-4e56-9cfc-10d90963afb8" message="Update document response #[payload]" />
 	</sub-flow>
 	<sub-flow name="delete-index-document" doc:id="226f2972-4601-45c7-99d7-d4ed155a0f9b">
-		<elasticsearch:get-document doc:name="Document - Get" doc:id="4fd897e5-a722-4b88-8a0a-48f3895a6e52" config-ref="Elasticsearch_Config" index="${index}" type="${document.type}" documentId="${document.id}" />
+		<elasticsearch:get-document doc:name="Document - Get" doc:id="4fd897e5-a722-4b88-8a0a-48f3895a6e52" config-ref="Elasticsearch_Config" index="${index}" documentId="${document.id}" />
 		<logger level="INFO" doc:name="Logger" doc:id="06fa49e5-ccff-4a51-baac-c1b4459fd283" message="Response of Get Document #[payload] " />
-		<elasticsearch:delete-document doc:name="Document - Delete" doc:id="50ecd94a-bf19-4bae-95a6-6068f8e132dd" config-ref="Elasticsearch_Config" index="${index}" type="${document.type}" documentId="${document.id}" />
+		<elasticsearch:delete-document doc:name="Document - Delete" doc:id="50ecd94a-bf19-4bae-95a6-6068f8e132dd" config-ref="Elasticsearch_Config" index="${index}" documentId="${document.id}" />
 		<logger level="INFO" doc:name="Logger" doc:id="033d96d0-9ab7-482b-8a9b-b7eda4003273" message="Delete Document Response #[payload]" />
 		<elasticsearch:delete-index doc:name="Index - Delete" doc:id="a012e6cf-7b73-4cf7-935f-95f4862cf214" config-ref="Elasticsearch_Config" index="${index}" />
 		<ee:transform doc:name="Transform Message" doc:id="4184eb1f-6b76-4bab-bbb2-24ff22f1b915">
@@ -55,6 +57,4 @@ payload]]></ee:set-payload>
 		<logger level="INFO" doc:name="Logger"
 			doc:id="4f400a6e-32b8-4822-900e-a0297050b3d9" message="Delete Index Response #[payload]" />
 	</flow>
-	
-	
-	</mule>
+</mule>

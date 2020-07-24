@@ -27,7 +27,6 @@ elastic.port=9200
 index=applicationd1
 
 #Document Parameters
-document.type=_doc
 document.id=1
 document.path= indexDocument.json
 document.updatepath= UpdateIndexDocument.json
@@ -40,14 +39,14 @@ Field Name        | Value
 elastic.host 	  | Host name or IP of Elasticsearch
 elastic.port      | Port on which Elasticsearch server is running
 
-4. In ***Anypoint Studio***, Right click in the ***project folder → Run As → Mule Application***
+4. In ***Anypoint Studio***, Right click on the ***project folder → Run As → Mule Application***
 
 5. Once the Mule App is deployed, hit <http://localhost:8081/documentIndicesOperations>.
   
 ### How it works:
 - ***Create Index***: Create index operation instantiate an index
 - ***Index Document***: Index document operation adds a typed JSON document in a specific index, making it searchable
-- ***Get Document***: Get operation retrieves a typed JSON document from the index based on its id
-- ***Update Document***: Update operation updates a typed JSON document in a specific index, making it searchable
-- ***Delete Document***: Delete operation deletes a typed JSON document from a specific index based on its id
+- ***Get Document***: Get document operation retrieves a typed JSON document from the index based on its id
+- ***Update Document***: Update document operation updates a typed JSON document in a specific index, making it searchable
+- ***Delete Document***: Delete document operation deletes a typed JSON document from a specific index based on its id
 - ***Delete Index***: Delete index operation delete an existing index
