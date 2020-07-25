@@ -26,18 +26,20 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<when expression="#[vars.searchQuery=='multimatch']">
 				<elasticsearch:search doc:name="Multi Match"
 					doc:id="d45b3b45-f5e8-4509-bac9-e7554f1f1d91" config-ref="Elasticsearch_Config"
-					index="${search.index}" searchType="DFS_QUERY_THEN_FETCH">
+					searchType="DFS_QUERY_THEN_FETCH">
 					<elasticsearch:query-configuration>
-						<elasticsearch:multi-match-query
-							minimumShouldMatch="10%" searchString="${searchMultiMatch.searchString}"
-							operator="OR" autoGenerateSynonymsPhraseQuery="true" type="BEST_FIELDS"
-							tieBreaker="1.0" zeroTermsQuery="ALL">
-							<elasticsearch:fields>
-								<elasticsearch:field value="${searchMultiMatch.fieldA}" />
-								<elasticsearch:field value="${searchMultiMatch.fieldB}" />
-								<elasticsearch:field value="${searchMultiMatch.fieldC}" />
-							</elasticsearch:fields>
-						</elasticsearch:multi-match-query>
+						<elasticsearch:query-type >
+							<elasticsearch:multi-match-query
+								minimumShouldMatch="10%" searchString="${searchMultiMatch.searchString}"
+								operator="OR" autoGenerateSynonymsPhraseQuery="true" type="BEST_FIELDS"
+								tieBreaker="1.0" zeroTermsQuery="ALL">
+								<elasticsearch:fields>
+									<elasticsearch:field value="${searchMultiMatch.fieldA}" />
+									<elasticsearch:field value="${searchMultiMatch.fieldB}" />
+									<elasticsearch:field value="${searchMultiMatch.fieldC}" />
+								</elasticsearch:fields>
+							</elasticsearch:multi-match-query>
+						</elasticsearch:query-type>
 					</elasticsearch:query-configuration>
 					<elasticsearch:search-source-configuration
 						size="${searchSource.size}" timeout="${searchSource.timeout}" sortOrder="ASC" from="${searchSource.from}">
@@ -45,6 +47,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							<elasticsearch:include-field value="${searchMultiMatch.includeField}" />
 						</elasticsearch:include-fields>
 					</elasticsearch:search-source-configuration>
+					<elasticsearch:indices>
+						<elasticsearch:index value="${search.index}" />
+					</elasticsearch:indices>
 				</elasticsearch:search>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="3d69a761-c71e-4948-b98d-2490af08ebb3" message="#[payload]" />
@@ -53,11 +58,13 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<when expression="#[vars.searchQuery=='matchquery']">
 				<elasticsearch:search doc:name="Match Query"
 					doc:id="f072cb50-cd00-44b5-b6b3-f7a8cd28e969" config-ref="Elasticsearch_Config"
-					index="${search.index}" searchType="DFS_QUERY_THEN_FETCH">
+					searchType="DFS_QUERY_THEN_FETCH">
 					<elasticsearch:query-configuration>
-						<elasticsearch:match-query field="${searchMatchQuery.field}"
-							searchString="${searchMatchQuery.searchString}" zeroTermsQuery="ALL"
-							autoGenerateSynonymsPhraseQuery="true" />
+						<elasticsearch:query-type >
+							<elasticsearch:match-query field="${searchMatchQuery.field}"
+								searchString="${searchMatchQuery.searchString}" zeroTermsQuery="ALL"
+								autoGenerateSynonymsPhraseQuery="true" />
+						</elasticsearch:query-type>
 					</elasticsearch:query-configuration>
 					<elasticsearch:search-source-configuration
 						size="${searchSource.size}" timeout="${searchSource.timeout}" from="${searchSource.from}">
@@ -71,6 +78,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							<elasticsearch:exclude-field value="${searchMatchQuery.excludeFieldD}" />
 						</elasticsearch:exclude-fields>
 					</elasticsearch:search-source-configuration>
+					<elasticsearch:indices>
+						<elasticsearch:index value="${search.index}" />
+					</elasticsearch:indices>
 				</elasticsearch:search>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="b4522649-745c-4a32-b6c2-1efd94f03021" message="#[payload]" />
@@ -78,10 +88,12 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<when expression="#[vars.searchQuery=='matchphrase']">
 				<elasticsearch:search doc:name="Match Phrase"
 					doc:id="ddf3528b-59f0-40df-a763-b2e2d92eca22" config-ref="Elasticsearch_Config"
-					index="${search.index}" searchType="DFS_QUERY_THEN_FETCH">
+					searchType="DFS_QUERY_THEN_FETCH">
 					<elasticsearch:query-configuration>
-						<elasticsearch:match-phrase-query
-							field="${searchMatchPhrase.field}" queryString="${searchMatchPhrase.queryString}" />
+						<elasticsearch:query-type >
+							<elasticsearch:match-phrase-query
+								field="${searchMatchPhrase.field}" queryString="${searchMatchPhrase.queryString}" />
+						</elasticsearch:query-type>
 					</elasticsearch:query-configuration>
 					<elasticsearch:search-source-configuration
 						size="${searchSource.size}" timeout="${searchSource.timeout}" sortOrder="ASC" sortByFieldName="${searchMatchPhrase.sortBy}" from="${searchSource.from}">
@@ -89,6 +101,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							<elasticsearch:include-field value="${searchMatchPhrase.fieldA}" />
 						</elasticsearch:include-fields>
 					</elasticsearch:search-source-configuration>
+					<elasticsearch:indices>
+						<elasticsearch:index value="${search.index}" />
+					</elasticsearch:indices>
 				</elasticsearch:search>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="e58a0d5e-2bba-4fe4-8cdf-3f134013d0a9" message="#[payload]" />
@@ -96,9 +111,11 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<otherwise>
 				<elasticsearch:search doc:name="Match All Query"
 					doc:id="de99202c-3df7-4b17-b882-f29cf47e6d91" config-ref="Elasticsearch_Config"
-					index="${search.index}" searchType="QUERY_THEN_FETCH">
+					searchType="QUERY_THEN_FETCH">
 					<elasticsearch:query-configuration>
-						<elasticsearch:match-all-query />
+						<elasticsearch:query-type >
+							<elasticsearch:match-all-query />
+						</elasticsearch:query-type>
 					</elasticsearch:query-configuration>
 					<elasticsearch:search-source-configuration
 						size="${searchSource.size}" timeout="${searchSource.timeout}" from="${searchSource.from}">
@@ -107,12 +124,13 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							<elasticsearch:include-field value="${searchMatchAll.fieldA}" />
 						</elasticsearch:include-fields>
 					</elasticsearch:search-source-configuration>
+					<elasticsearch:indices>
+						<elasticsearch:index value="${search.index}" />
+					</elasticsearch:indices>
 				</elasticsearch:search>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="70571ee6-9112-4e32-b45b-45bf5b90c2ca" message="#[payload]" />
-
 			</otherwise>
-
 		</choice>
 	</flow>
 </mule>

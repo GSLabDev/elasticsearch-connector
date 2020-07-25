@@ -3,7 +3,7 @@
 ### Introduction
 Elasticsearch is preferred when there is a need of doing a lot of text search, where traditional RDBMS databases are not performing really well (poor configuration, acts as a black-box, poor performance). Elasticsearch is highly customizable, extendable through plugins. 
 
-Please refer the use case: ***Elasticsearch as a Document Store*** to insert the dataset in Elasticsearch using bulk operation if the dataset is not available on Elasticsearch. This usecase uses different queries like multi-query, multi-match-query, match-phrase-query and match-all-query of search operation available in Elasticsearch connector for searching.
+Please refer the use case: ***Elasticsearch as a Document Store*** to insert the dataset in Elasticsearch using bulk operation if the dataset is not available on Elasticsearch. This usecase uses different queries like match-query, multi-match-query, match-phrase-query and match-all-query of search operation available in Elasticsearch connector for searching.
 
 Different search type options like 'Query and Fetch', 'DFS query then Fetch' and 'Query then Fetch' are also used in this demo. 
 Use the Choice connector to switch between the different query types depending on the condition variable value in the set variable component.
@@ -65,8 +65,8 @@ elastic.port      | Port on which Elasticsearch is running
 4. In ***Anypoint Studio***, Right click on the ***project folder → Run As → Mule Application***
 
 5. Once the Mule App is deployed, hit <http://localhost:8081/searchOperation?querytype=matchphrase>.
-	The query type can be changed to multimatch, matchquery otherwise Match All Query will be executed by default
+	The query type can be changed to multimatch, matchquery otherwise 'Match All Query' will be executed by default
   
 ### How it works:
-- ***Search***: Search for phrase/text depending on the configuration of query type
+- ***Search***: Search for phrase/text depending on the configuration of query type.
 
