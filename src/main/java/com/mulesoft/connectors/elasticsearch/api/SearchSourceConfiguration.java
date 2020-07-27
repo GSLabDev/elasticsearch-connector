@@ -3,9 +3,6 @@
  */
 package com.mulesoft.connectors.elasticsearch.api;
 
-import java.util.List;
-
-import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 
@@ -14,7 +11,7 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
  * 
  *         Search source request configuration parameters
  */
-public class SearchSourceConfiguration {
+public class SearchSourceConfiguration extends DocumentFetchSourceOptions{
 
     /**
      * Search sorting types
@@ -58,29 +55,6 @@ public class SearchSourceConfiguration {
     @Parameter
     @Optional
     private String sortByFieldName;
-
-    /**
-     * Fetch the source of the search document
-     */
-    @Parameter
-    @Optional(defaultValue = "true")
-    private boolean fetchSource;
-
-    /**
-     * List of the field that are included into the document source
-     */
-    @Parameter
-    @Optional
-    @NullSafe
-    private List<String> includeFields;
-
-    /**
-     * List of the field that are excluded from the document source
-     */
-    @Parameter
-    @Optional
-    @NullSafe
-    private List<String> excludeFields;
 
     /**
      * Enable the profiling to the execution of search queries
@@ -167,18 +141,6 @@ public class SearchSourceConfiguration {
 
     public String getSortByFieldName() {
         return sortByFieldName;
-    }
-
-    public boolean isFetchSource() {
-        return fetchSource;
-    }
-
-    public List<String> getIncludeFields() {
-        return includeFields;
-    }
-
-    public List<String> getExcludeFields() {
-        return excludeFields;
     }
 
     public boolean isProfile() {

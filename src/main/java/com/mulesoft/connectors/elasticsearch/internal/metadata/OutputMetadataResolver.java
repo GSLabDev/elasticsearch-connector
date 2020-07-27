@@ -3,6 +3,9 @@ package com.mulesoft.connectors.elasticsearch.internal.metadata;
 import org.mule.metadata.api.builder.ObjectTypeBuilder;
 
 public class OutputMetadataResolver {
+    
+    private OutputMetadataResolver() {
+    }
 
     public static void getResponseStaticMetadata(ObjectTypeBuilder objectBuilder) {
         objectBuilder.addField().key("forcedRefresh").value().booleanType();

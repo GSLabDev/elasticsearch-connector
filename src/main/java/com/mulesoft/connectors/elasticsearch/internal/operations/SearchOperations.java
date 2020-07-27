@@ -136,7 +136,7 @@ public class SearchOperations extends BaseSearchOperation {
             response = new ElasticsearchResponse(esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request));
 
             logger.debug("RequestLine:" + response.getRequestLine());
-            logger.info("Search response : " + response);
+            logger.info("Search using JSON query response : " + response);
             
             result = getJsonResponse(response);
         } catch (Exception e) {
@@ -171,7 +171,7 @@ public class SearchOperations extends BaseSearchOperation {
         SearchResponse searchResponse;
         try {
             searchResponse = esConnection.getElasticsearchConnection().scroll(scrollRequest, RequestOptions.DEFAULT);
-            logger.info("Search response : " + searchResponse);
+            logger.info("Search - Scroll response : " + searchResponse);
 
             response = getJsonResponse(searchResponse);
         } catch (Exception e) {

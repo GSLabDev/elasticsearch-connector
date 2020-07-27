@@ -13,14 +13,14 @@ import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTy
 
 public abstract class ElasticsearchErrorTypesProvider implements ErrorTypeProvider {
 
-	public abstract void addErrors(Set<ErrorTypeDefinition> errors);
-	
+    public abstract void addErrors(Set<ErrorTypeDefinition> errors);
+
     /**
      * Custom Error providers
      */
     @Override
     public Set<ErrorTypeDefinition> getErrorTypes() {
-        HashSet<ErrorTypeDefinition> errors = new HashSet<>();
+        Set<ErrorTypeDefinition> errors = new HashSet<>();
         errors.add(ElasticsearchErrorTypes.EXECUTION);
         errors.add(ElasticsearchErrorTypes.OPERATION_FAILED);
         errors.add(ElasticsearchErrorTypes.CONNECTIVITY);
