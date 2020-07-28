@@ -38,7 +38,8 @@ import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
 import com.mulesoft.connectors.elasticsearch.api.ElasticsearchRefreshPolicy;
 import com.mulesoft.connectors.elasticsearch.api.ElasticsearchVersionType;
 import com.mulesoft.connectors.elasticsearch.api.OperationType;
-import com.mulesoft.connectors.elasticsearch.api.IndexDocumentOptions;
+import com.mulesoft.connectors.elasticsearch.api.document.DeleteDocumentConfiguration;
+import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentOptions;
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchGetResponse;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
@@ -50,6 +51,7 @@ import com.mulesoft.connectors.elasticsearch.internal.metadata.GetResponseOutput
 import com.mulesoft.connectors.elasticsearch.internal.metadata.IndexResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.ResponseOutputMetadataResolver;
 import com.mulesoft.connectors.elasticsearch.internal.metadata.UpdateResponseOutputMetadataResolver;
+import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchDocumentUtils;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 /**
@@ -233,20 +235,8 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Name of the index
      * @param documentId
      *            ID of the document
-     * @param routing
-     *            Routing is used to determine in which shard the document will reside in
-     * @param timeoutInSec
-     *            Time in seconds to wait for primary shard to become available
-     * @param refreshPolicy
-     *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
-     *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a
-     *            refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request
-     *            returns.
-     * @param version
-     *            Version number of the indexed document
-     * @param versionType
-     *            Version type: internal, external, external_gte
+     * @param deleteDocumentConfiguration
+     *            Delete document configuration
      * @return DeleteResponse as JSON String
      */
     @MediaType(MediaType.APPLICATION_JSON)
@@ -254,27 +244,16 @@ public class DocumentOperations extends ElasticsearchOperations {
     @OutputResolver(output = DeleteResponseOutputMetadataResolver.class)
     public String deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
-            @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing value") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional ElasticsearchRefreshPolicy refreshPolicy,
-            @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional long version,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional ElasticsearchVersionType versionType) {
+            @Placement(tab = "Optional Arguments", order = 1) @Optional DeleteDocumentConfiguration deleteDocumentConfiguration ) {
         String response = null;
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
-        if (timeoutInSec != 0) {
-            deleteRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
-        }
-        if (version != 0) {
-            deleteRequest.version(version);
-        }
-
-        ifPresent(routing, routingValue -> deleteRequest.routing(routingValue));
-        ifPresent(refreshPolicy, refreshPolicyValue -> deleteRequest.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
-        ifPresent(versionType, versionTypeValue -> deleteRequest.versionType(versionTypeValue.getVersionType()));
-
         DeleteResponse deleteResp;
         try {
+            if(deleteDocumentConfiguration != null) {
+                ElasticsearchDocumentUtils.configureDeleteDocumentReq(deleteRequest, deleteDocumentConfiguration);
+            }
+            
             deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Delete document response : " + deleteResp);
             response = getJsonResponse(deleteResp);

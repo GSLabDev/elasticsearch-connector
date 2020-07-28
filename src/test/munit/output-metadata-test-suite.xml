@@ -239,8 +239,10 @@
 			<elasticsearch:delete-document
 				doc:name="Document - Delete" doc:id="106d7a41-87fb-48b6-a633-0eac83e444bd"
 				config-ref="Elasticsearch_HTTP_Config_Metadata" index="dummy_index_doc"
-				documentId="dummy_doc_id" routing="routing" timeoutInSec="6"
-				refreshPolicy="IMMEDIATE" version="11" versionType="EXTERNAL" />
+				documentId="dummy_doc_id">
+				<elasticsearch:delete-document-configuration routing="routing" timeoutInSec="6"
+					refreshPolicy="IMMEDIATE" version="11" versionType="EXTERNAL" />
+			</elasticsearch:delete-document>
 		</mtf:get-output-metadata>
 		<mtf:validation>
 			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"

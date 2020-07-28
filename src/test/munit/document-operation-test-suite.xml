@@ -133,9 +133,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<elasticsearch:delete-document
 				doc:name="Document - Delete" doc:id="dc4277e8-6123-446b-b277-caef7b503178"
 				config-ref="Elasticsearch_HTTP_Config3" index="dummy_index_doc"
-				documentId="dummy_doc_id" routing="routing" timeoutInSec="6"
+				documentId="dummy_doc_id">
+				<elasticsearch:delete-document-configuration routing="routing" timeoutInSec="6"
 				refreshPolicy="IMMEDIATE" version="11" versionType="EXTERNAL" />
-
+			</elasticsearch:delete-document>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="bb1339fc-2083-42eb-a088-28819c0c3f0b" message="#[payload]" />
 		</munit:execution>

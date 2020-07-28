@@ -72,7 +72,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/deleteDocuemntIndex" />
 		<elasticsearch:delete-document doc:name="Delete document"
 			doc:id="eeaae69c-675d-4427-9238-95f5835d10c7" config-ref="${elastic.config}"
-			index="${elasticsearch.index}" documentId="1" routing="routing" timeoutInSec="10" refreshPolicy="WAIT_UNTIL" version="4" versionType="EXTERNAL_GTE"/>
+			index="${elasticsearch.index}" documentId="1">
+			<elasticsearch:delete-document-configuration routing="routing" timeoutInSec="10" refreshPolicy="WAIT_UNTIL" version="4" versionType="EXTERNAL_GTE" />
+		</elasticsearch:delete-document>
 		<logger level="INFO" doc:name="Logger" message="#[payload]" />
 	</flow>
 
