@@ -178,9 +178,9 @@
 		<mtf:get-output-metadata>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="3c0c3155-61cf-40f1-900d-c10d3f6800a8" config-ref="Elasticsearch_HTTP_Config_Metadata"
-				index="test_index_2" documentId="test_doc_id_2" routing="routing"
-				timeoutInSec="5" refreshPolicy="WAIT_UNTIL" version="10"
-				versionType="EXTERNAL_GTE" operationType="INDEX" jsonInputPath="${index.jsoninputpath}" />
+				index="test_index_2" documentId="test_doc_id_2" jsonInputPath="${index.jsoninputpath}">
+				<elasticsearch:index-document-configuration operationType="INDEX" routing="routing" timeoutInSec="5" refreshPolicy="WAIT_UNTIL" version="10" versionType="EXTERNAL_GTE" />
+			</elasticsearch:index-document>
 		</mtf:get-output-metadata>
 		<mtf:validation>
 			<munit-tools:assert-equals actual="#[sizeOf(payload.fields)]"

@@ -82,7 +82,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<http:listener doc:name="Listener" config-ref="HTTP_Listener_config"
 			path="/indexDoc" />
 		<elasticsearch:index-document doc:name="Index document"
-			config-ref="${elastic.config}" index="${elasticsearch.index}" documentId="1" routing="routing" timeoutInSec="10" refreshPolicy="NONE" version="4" versionType="EXTERNAL" operationType="INDEX">
+			config-ref="${elastic.config}" index="${elasticsearch.index}" documentId="1" >
+			<elasticsearch:index-document-configuration operationType="INDEX" routing="routing" timeoutInSec="10" refreshPolicy="NONE" version="4" versionType="EXTERNAL" />
 			<elasticsearch:document-sources>
 				<elasticsearch:document-source key="name"
 					value="testUser" />

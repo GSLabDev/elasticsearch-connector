@@ -27,9 +27,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="257c504b-3523-42ee-9f2a-769b7c61c07b" config-ref="Elasticsearch_HTTP_Config3"
-				index="test_index_1" documentId="test_doc_id_1" routing="routing"
-				timeoutInSec="5" refreshPolicy="IMMEDIATE" version="2" versionType="EXTERNAL"
-				operationType="INDEX">
+				index="test_index_1" documentId="test_doc_id_1">
+				<elasticsearch:index-document-configuration operationType="INDEX" routing="routing" timeoutInSec="5" refreshPolicy="IMMEDIATE" version="2" versionType="EXTERNAL" />
 				<elasticsearch:document-sources>
 					<elasticsearch:document-source key="key1"
 						value="value1" />
@@ -64,9 +63,9 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="79d62631-285b-4c03-adcf-e2628aa68deb" config-ref="Elasticsearch_HTTP_Config3"
-				index="test_index_2" documentId="test_doc_id_2" routing="routing"
-				timeoutInSec="5" refreshPolicy="WAIT_UNTIL" version="10"
-				versionType="EXTERNAL_GTE" operationType="INDEX" jsonInputPath="${index.jsoninputpath}" />
+				index="test_index_2" documentId="test_doc_id_2" jsonInputPath="${index.jsoninputpath}">
+				<elasticsearch:index-document-configuration operationType="INDEX" routing="routing" timeoutInSec="5" refreshPolicy="WAIT_UNTIL" version="10" versionType="EXTERNAL_GTE" />
+			</elasticsearch:index-document>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="cc63295c-6708-4c00-8cd2-6596a333058a" message="#[payload]" />
 			<elasticsearch:delete-document

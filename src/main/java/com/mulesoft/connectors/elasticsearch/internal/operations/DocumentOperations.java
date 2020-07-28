@@ -37,8 +37,8 @@ import org.apache.log4j.Logger;
 import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
 import com.mulesoft.connectors.elasticsearch.api.ElasticsearchRefreshPolicy;
 import com.mulesoft.connectors.elasticsearch.api.ElasticsearchVersionType;
-import com.mulesoft.connectors.elasticsearch.api.OperationType;
-import com.mulesoft.connectors.elasticsearch.api.document.DeleteDocumentConfiguration;
+import com.mulesoft.connectors.elasticsearch.api.document.DocumentConfiguration;
+import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentOptions;
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchGetResponse;
@@ -76,24 +76,8 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            ID of the document
      * @param inputSource
      *            Get the JSON input file path or index mapping.
-     * @param routing
-     *            Routing is used to determine in which shard the document will reside in
-     * @param timeoutInSec
-     *            Timeout in seconds to wait for primary shard to become available
-     * @param refreshPolicy
-     *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
-     *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a
-     *            refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request
-     *            returns.
-     * @param version
-     *            Version number of the indexed document. It will control the version of the document the operation is intended to be executed against.
-     * @param versionType
-     *            Version type: internal, external, external_gte
-     * @param operationType
-     *            Type of the operation. When create type is used, the index operation will fail if a document by that id already exists in the index.
-     * @param pipeline
-     *            Name of the ingest pipeline to be executed before indexing the document
+     * @param indexDocumentConfiguration
+     *            Index Document Configuration
      * @return IndexResponse as JSON String
      */
     @MediaType(MediaType.APPLICATION_JSON)
@@ -101,13 +85,7 @@ public class DocumentOperations extends ElasticsearchOperations {
     @OutputResolver(output = IndexResponseOutputMetadataResolver.class)
     public String indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
-            @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional ElasticsearchRefreshPolicy refreshPolicy,
-            @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Version") @Optional long version,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Version Type") @Optional ElasticsearchVersionType versionType,
-            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Operation type") @Optional OperationType operationType,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Pipeline") @Optional @Summary("The name of the ingest pipeline to be executed before indexing the document") String pipeline) {
+            @Placement(tab = "Optional Arguments") @Optional IndexDocumentConfiguration indexDocumentConfiguration) {
 
         IndexRequest indexRequest;
         String response = null;
@@ -118,19 +96,10 @@ public class DocumentOperations extends ElasticsearchOperations {
                 indexRequest = new IndexRequest(index).id(documentId).source(inputSource.getDocumentSource());
             }
 
-            if (timeoutInSec != 0) {
-                indexRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
+            if(indexDocumentConfiguration != null) {
+                ElasticsearchDocumentUtils.configureIndexReq(indexRequest, indexDocumentConfiguration);
             }
-
-            ifPresent(routing, routingValue -> indexRequest.routing(routingValue));
-            ifPresent(refreshPolicy, refreshPolicyValue -> indexRequest.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
-            if(version != 0) {
-                indexRequest.version(version);
-            }
-            ifPresent(versionType, versionTypeValue -> indexRequest.versionType(versionTypeValue.getVersionType()));
-            ifPresent(operationType, operationTypeValue -> indexRequest.opType(operationTypeValue.getOpType()));
-            ifPresent(pipeline, pipelineValue -> indexRequest.setPipeline(pipelineValue));
-
+            
             IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
 
             logger.info("Index Document operation Status : " + indexResp.status());
@@ -244,7 +213,7 @@ public class DocumentOperations extends ElasticsearchOperations {
     @OutputResolver(output = DeleteResponseOutputMetadataResolver.class)
     public String deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
-            @Placement(tab = "Optional Arguments", order = 1) @Optional DeleteDocumentConfiguration deleteDocumentConfiguration ) {
+            @Placement(tab = "Optional Arguments", order = 1) @Optional DocumentConfiguration deleteDocumentConfiguration ) {
         String response = null;
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
