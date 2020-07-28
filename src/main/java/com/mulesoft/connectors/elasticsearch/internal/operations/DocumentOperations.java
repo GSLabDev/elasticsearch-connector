@@ -38,6 +38,7 @@ import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
 import com.mulesoft.connectors.elasticsearch.api.ElasticsearchRefreshPolicy;
 import com.mulesoft.connectors.elasticsearch.api.ElasticsearchVersionType;
 import com.mulesoft.connectors.elasticsearch.api.document.DocumentConfiguration;
+import com.mulesoft.connectors.elasticsearch.api.document.GetDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentOptions;
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
@@ -123,20 +124,8 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Name of the index
      * @param documentId
      *            ID of the document
-     * @param fetchSourceContext
-     *            Enable or disable source retrieval
-     * @param realtime
-     *            Set realtime flag
-     * @param routing
-     *            Routing is used to determine in which shard the document will reside in
-     * @param preference
-     *            Preference value
-     * @param refresh
-     *            Perform a refresh before retrieving the document
-     * @param version
-     *            Version number of the indexed document
-     * @param versionType
-     *            Version type: internal, external, external_gte,
+     * @param getDocumentConfiguration
+     *            Get Document configuration
      * @return GetResponse as JSON String
      */
     @MediaType(MediaType.APPLICATION_JSON)
@@ -144,44 +133,16 @@ public class DocumentOperations extends ElasticsearchOperations {
     @OutputResolver(output = GetResponseOutputMetadataResolver.class)
     public String getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
-            @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Source retrieval") @Optional DocumentFetchSourceOptions fetchSourceContext,
-            @Placement(tab = "Optional Arguments", order = 2) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Preference value") @Optional String preference,
-            @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Set realtime flag") @Optional(defaultValue = "true") boolean realtime,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Refresh") @Summary("Perform a refresh before retrieving the document") @Optional(defaultValue = "false") boolean refresh,
-            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("Version") @Optional long version,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Version Type") @Optional ElasticsearchVersionType versionType) {
+            @Placement(tab = "Optional Arguments") @Optional GetDocumentConfiguration getDocumentConfiguration) {
 
         GetRequest getRequest = new GetRequest(index, documentId);
         String response = null;
 
-        if (fetchSourceContext != null && fetchSourceContext.isFetchSource()) {
-            String[] includes = Strings.EMPTY_ARRAY, excludes = Strings.EMPTY_ARRAY;
-
-            if (fetchSourceContext.getIncludeFields() != null) {
-                includes = fetchSourceContext.getIncludeFields().toArray(new String[0]);
-            }
-
-            if (fetchSourceContext.getExcludeFields() != null) {
-                excludes = fetchSourceContext.getExcludeFields().toArray(new String[0]);
-            }
-
-            FetchSourceContext fetchSource = new FetchSourceContext(true, includes, excludes);
-            getRequest.fetchSourceContext(fetchSource);
-        } else {
-            getRequest.fetchSourceContext(FetchSourceContext.DO_NOT_FETCH_SOURCE);
-        }
-
-        ifPresent(routing, routingValue -> getRequest.routing(routingValue));
-        ifPresent(preference, preferenceValue -> getRequest.preference(preferenceValue));
-        if(version != 0) {
-            getRequest.version(version);
-        }
-        ifPresent(versionType, versionTypeValue -> getRequest.versionType(versionTypeValue.getVersionType()));
-
-        getRequest.realtime(realtime);
-        getRequest.refresh(refresh);
         try {
+            if(getDocumentConfiguration != null) {
+                ElasticsearchDocumentUtils.configureGetReq(getRequest, getDocumentConfiguration);
+            }
+            
             ElasticsearchGetResponse getResponse = new ElasticsearchGetResponse(esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption()));
             logger.info("Get Response : " + getResponse);
             response = getJsonResponse(getResponse);

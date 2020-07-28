@@ -156,16 +156,18 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	
 	<flow name="testGetDocumentFlow" doc:id="88b1f314-3c8e-4d22-b000-ea4acd0ab149" >
 		<http:listener doc:name="Listener" doc:id="005f789f-35c5-4c2c-9b51-da0a367a5b0f" config-ref="HTTP_Listener_config" path="/getOperation"/>
-		<elasticsearch:get-document doc:name="Get document" doc:id="a3099447-8c03-4321-95f0-b0f2bd9c0e01" index="${elasticsearch.index}" documentId="1" config-ref="${elastic.config}" routing="routing" preference="preference" version="4" versionType="EXTERNAL" realtime="false" refresh="true">
-		<elasticsearch:fetch-source-context >
-				<elasticsearch:include-fields >
-					<elasticsearch:include-field value="message" />
-				</elasticsearch:include-fields>
-				<elasticsearch:exclude-fields >
-					<elasticsearch:exclude-field value="date" />
-				</elasticsearch:exclude-fields>
-			</elasticsearch:fetch-source-context>
-			</elasticsearch:get-document>
+		<elasticsearch:get-document doc:name="Get document" doc:id="a3099447-8c03-4321-95f0-b0f2bd9c0e01" index="${elasticsearch.index}" documentId="1" config-ref="${elastic.config}">
+			<elasticsearch:get-document-configuration routing="routing" preference="preference" version="4" versionType="EXTERNAL" realtime="false" refresh="true">
+				<elasticsearch:fetch-source-context >
+					<elasticsearch:include-fields >
+						<elasticsearch:include-field value="message" />
+					</elasticsearch:include-fields>
+					<elasticsearch:exclude-fields >
+						<elasticsearch:exclude-field value="date" />
+					</elasticsearch:exclude-fields>
+				</elasticsearch:fetch-source-context>
+			</elasticsearch:get-document-configuration>
+		</elasticsearch:get-document>
 		<logger level="INFO" doc:name="Logger" doc:id="72dac3a8-831e-428e-b380-af9711bac5c8" message="#[payload]"/>
 	</flow>
 

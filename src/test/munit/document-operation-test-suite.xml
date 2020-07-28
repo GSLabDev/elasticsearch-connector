@@ -98,18 +98,20 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			</elasticsearch:index-document>
 			<elasticsearch:get-document doc:name="Document - Get"
 				doc:id="36b58af6-cd5c-4f67-819f-bdf4edb2b0db" config-ref="Elasticsearch_HTTP_Config3"
-				index="get_doc_index" documentId="get_doc_id" routing="routing"
+				index="get_doc_index" documentId="get_doc_id">
+				<elasticsearch:get-document-configuration  routing="routing"
 				preference="preference" realtime="false" refresh="true" version="1"
 				versionType="EXTERNAL_GTE">
-				<elasticsearch:fetch-source-context
-					fetchSource="false">
-					<elasticsearch:include-fields>
-						<elasticsearch:include-field value="key1" />
-					</elasticsearch:include-fields>
-					<elasticsearch:exclude-fields>
-						<elasticsearch:exclude-field value="key2" />
-					</elasticsearch:exclude-fields>
-				</elasticsearch:fetch-source-context>
+					<elasticsearch:fetch-source-context
+						fetchSource="false">
+						<elasticsearch:include-fields>
+							<elasticsearch:include-field value="key1" />
+						</elasticsearch:include-fields>
+						<elasticsearch:exclude-fields>
+							<elasticsearch:exclude-field value="key2" />
+						</elasticsearch:exclude-fields>
+					</elasticsearch:fetch-source-context>
+				</elasticsearch:get-document-configuration>
 			</elasticsearch:get-document>
 			<elasticsearch:delete-document
 				doc:name="Document - Delete" doc:id="7361df69-0e06-4a91-82ac-3f8b6f9ecbe0"

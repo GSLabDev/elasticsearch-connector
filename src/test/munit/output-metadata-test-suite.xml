@@ -203,18 +203,19 @@
 		<mtf:get-output-metadata>
 			<elasticsearch:get-document doc:name="Document - Get"
 				doc:id="7fd24603-ae62-463a-963c-c2afd1e872e7" config-ref="Elasticsearch_HTTP_Config_Metadata"
-				index="get_doc_index" documentId="get_doc_id" routing="routing"
-				preference="preference" realtime="false" refresh="true" version="1"
-				versionType="EXTERNAL_GTE">
-				<elasticsearch:fetch-source-context
-					fetchSource="false">
-					<elasticsearch:include-fields>
-						<elasticsearch:include-field value="key1" />
-					</elasticsearch:include-fields>
-					<elasticsearch:exclude-fields>
-						<elasticsearch:exclude-field value="key2" />
-					</elasticsearch:exclude-fields>
-				</elasticsearch:fetch-source-context>
+				index="get_doc_index" documentId="get_doc_id">
+				<elasticsearch:get-document-configuration routing="routing"
+					preference="preference" realtime="false" refresh="true" version="1"
+					versionType="EXTERNAL_GTE">
+					<elasticsearch:fetch-source-context fetchSource="false">
+						<elasticsearch:include-fields>
+							<elasticsearch:include-field value="key1" />
+						</elasticsearch:include-fields>
+						<elasticsearch:exclude-fields>
+							<elasticsearch:exclude-field value="key2" />
+						</elasticsearch:exclude-fields>
+					</elasticsearch:fetch-source-context>
+				</elasticsearch:get-document-configuration>
 			</elasticsearch:get-document>
 		</mtf:get-output-metadata>
 		<mtf:validation>

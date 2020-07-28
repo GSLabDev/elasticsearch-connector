@@ -11,10 +11,20 @@ import static com.mulesoft.connectors.elasticsearch.internal.utils.Elasticsearch
 import java.io.IOException;
 import org.apache.log4j.Logger;
 import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.unit.TimeValue;
+import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
+import org.mule.runtime.extension.api.annotation.param.Optional;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
+import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
+import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
+import com.mulesoft.connectors.elasticsearch.api.ElasticsearchVersionType;
 import com.mulesoft.connectors.elasticsearch.api.document.DocumentConfiguration;
+import com.mulesoft.connectors.elasticsearch.api.document.GetDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentConfiguration;
 
 public class ElasticsearchDocumentUtils {
@@ -61,5 +71,38 @@ public class ElasticsearchDocumentUtils {
         ifPresent(indexDocumentConfiguration.getPipeline(), pipelineValue -> indexReq.setPipeline(pipelineValue));
 
         logger.debug("Index request : " + indexReq);
+    }
+    
+    public static void configureGetReq(GetRequest getReq, GetDocumentConfiguration getDocumentConfiguration) throws IOException {
+
+        DocumentFetchSourceOptions fetchSourceContext = getDocumentConfiguration.getFetchSourceContext();
+        if (fetchSourceContext != null && fetchSourceContext.isFetchSource()) {
+            String[] includes = Strings.EMPTY_ARRAY, excludes = Strings.EMPTY_ARRAY;
+
+            if (fetchSourceContext.getIncludeFields() != null) {
+                includes = fetchSourceContext.getIncludeFields().toArray(new String[0]);
+            }
+
+            if (fetchSourceContext.getExcludeFields() != null) {
+                excludes = fetchSourceContext.getExcludeFields().toArray(new String[0]);
+            }
+
+            FetchSourceContext fetchSource = new FetchSourceContext(true, includes, excludes);
+            getReq.fetchSourceContext(fetchSource);
+        } else {
+            getReq.fetchSourceContext(FetchSourceContext.DO_NOT_FETCH_SOURCE);
+        }
+
+        ifPresent(getDocumentConfiguration.getRouting(), routingValue -> getReq.routing(routingValue));
+        ifPresent(getDocumentConfiguration.getPreference(), preferenceValue -> getReq.preference(preferenceValue));
+        if(getDocumentConfiguration.getVersion() != 0) {
+            getReq.version(getDocumentConfiguration.getVersion());
+        }
+        ifPresent(getDocumentConfiguration.getVersionType(), versionTypeValue -> getReq.versionType(versionTypeValue.getVersionType()));
+
+        getReq.realtime(getDocumentConfiguration.isRealtime());
+        getReq.refresh(getDocumentConfiguration.isRefresh());
+
+        logger.debug("Get request : " + getReq);
     }
 }
