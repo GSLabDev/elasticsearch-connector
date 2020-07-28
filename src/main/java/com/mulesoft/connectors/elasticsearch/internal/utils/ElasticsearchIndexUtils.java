@@ -31,12 +31,7 @@ public class ElasticsearchIndexUtils {
     private ElasticsearchIndexUtils() {
     }
 
-    public static CreateIndexRequest getCreateIndexReq(String index, IndexConfiguration indexConfiguration) throws IOException {
-        CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
-
-        if(indexConfiguration == null) {
-            return createIndexReq;
-        }
+    public static void configureCreateIndexReq(CreateIndexRequest createIndexReq, IndexConfiguration indexConfiguration) throws IOException {
         
         if (indexConfiguration.getIndexSettings() != null) {
             final Builder settingsBuilder = Settings.builder();
@@ -68,6 +63,5 @@ public class ElasticsearchIndexUtils {
         }
         
         logger.debug("Create index request : " + createIndexReq);
-        return createIndexReq;
     }
 }

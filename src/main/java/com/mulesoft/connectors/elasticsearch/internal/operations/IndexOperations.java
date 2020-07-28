@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.elasticsearch.client.indices.CloseIndexRequest;
 import org.elasticsearch.client.indices.CloseIndexResponse;
+import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
@@ -64,7 +65,12 @@ public class IndexOperations extends ElasticsearchOperations {
             @Placement(tab = "Optional Arguments") @Optional IndexConfiguration indexConfiguration) {
         String response = null;
         try {
-            CreateIndexResponse createIndexResp = esConnection.getElasticsearchConnection().indices().create(ElasticsearchIndexUtils.getCreateIndexReq(index, indexConfiguration), ElasticsearchUtils.getContentTypeJsonRequestOption());
+            CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
+            if(indexConfiguration != null) {
+                ElasticsearchIndexUtils.configureCreateIndexReq(createIndexReq, indexConfiguration);
+            }
+
+            CreateIndexResponse createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Create index acknowledged : " + createIndexResp.isAcknowledged());
             response = getJsonResponse(createIndexResp);
         } catch (IOException e) {
