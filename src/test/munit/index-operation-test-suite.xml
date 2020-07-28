@@ -27,15 +27,20 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:create-index doc:name="Index - Create"
 				doc:id="710e782b-d8df-4a63-9911-d4f2a623034d" config-ref="Elasticsearch_HTTP_Config1"
-				index="create1" indexAlias="twitter_alias1" timeoutInSec="5"
-				masterNodeTimeoutInSec="5" waitForActiveShards="2"
-				indexMappingsJSONFile="munit/createIndexMapping.json">
-				<elasticsearch:index-settings>
-					<elasticsearch:index-setting key="index.number_of_shards"
-						value="4" />
-					<elasticsearch:index-setting key="index.number_of_replicas"
-						value="5" />
-				</elasticsearch:index-settings>
+				index="create1">
+
+				<elasticsearch:index-configuration
+					indexAlias="twitter_alias1" timeoutInSec="5"
+					masterNodeTimeoutInSec="5" waitForActiveShards="2"
+					indexMappingsJSONFile="munit/createIndexMapping.json">
+					<elasticsearch:index-settings>
+						<elasticsearch:index-setting key="index.number_of_shards"
+							value="4" />
+						<elasticsearch:index-setting key="index.number_of_replicas"
+							value="5" />
+					</elasticsearch:index-settings>
+				</elasticsearch:index-configuration>
+
 			</elasticsearch:create-index>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
@@ -55,9 +60,12 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:create-index doc:name="Index - Create"
 				doc:id="4888a71e-db8a-4bf2-80ff-9ac77b946577" config-ref="Elasticsearch_HTTP_Config1"
-				index="create2" indexAlias="twitter_alias_new" timeoutInSec="5"
-				masterNodeTimeoutInSec="5" waitForActiveShards="2"
-				indexSettingsJSONFile="munit/createIndexSetting.json">
+				index="create2">
+				<elasticsearch:index-configuration
+					indexAlias="twitter_alias_new" timeoutInSec="5"
+					masterNodeTimeoutInSec="5" waitForActiveShards="2"
+					indexSettingsJSONFile="munit/createIndexSetting.json">
+				</elasticsearch:index-configuration>
 			</elasticsearch:create-index>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="1b4e28ea-cf94-49b3-bebe-81b5b52fad1b" message="#[payload]" />
@@ -77,8 +85,11 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:create-index doc:name="Index - Create"
 				doc:id="456b84d5-2b7a-4f5f-bd07-a3076c54fccb" config-ref="Elasticsearch_HTTP_Config1"
-				index="create3" timeoutInSec="5" masterNodeTimeoutInSec="5"
-				waitForActiveShards="2" sourceJSONFile="munit/createIndexSource.json">
+				index="create3">
+				<elasticsearch:index-configuration
+					timeoutInSec="5" masterNodeTimeoutInSec="5" waitForActiveShards="2"
+					sourceJSONFile="munit/createIndexSource.json">
+				</elasticsearch:index-configuration>
 			</elasticsearch:create-index>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="92ddfba1-a43b-4b5a-9b5b-0d4beca4b3c8" message="#[payload]" />

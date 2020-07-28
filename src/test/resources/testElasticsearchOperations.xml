@@ -29,11 +29,13 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/createIndex" />
 		<elasticsearch:create-index doc:name="Create index"
 			doc:id="6c3c411e-1113-4d1b-8df8-e74b37022c40" config-ref="${elastic.config}"
-			index="${elasticsearch.index}" indexAlias="bankIndex" timeoutInSec="15" masterNodeTimeoutInSec="10" waitForActiveShards="1">
-			<elasticsearch:index-settings >
+			index="${elasticsearch.index}">
+			<elasticsearch:index-configuration indexAlias="bankIndex" timeoutInSec="15" masterNodeTimeoutInSec="10" waitForActiveShards="1">
+				<elasticsearch:index-settings >
 				<elasticsearch:index-setting key="index.number_of_shards" value="3" />
 				<elasticsearch:index-setting key="index.number_of_replicas" value="2" />
 			</elasticsearch:index-settings>
+			</elasticsearch:index-configuration>
 		</elasticsearch:create-index>
 		<logger level="INFO" doc:name="Logger"
 			doc:id="72dac3a8-831e-428e-b380-af9711bac5c8" message="#[payload]" />
