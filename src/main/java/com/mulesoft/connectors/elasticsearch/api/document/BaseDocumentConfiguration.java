@@ -36,6 +36,7 @@ public class BaseDocumentConfiguration {
     @Parameter
     @Optional
     @DisplayName("Refresh policy")
+    @Summary("Refresh policy is used to control when changes made by the requests are made visible to search.")
     private ElasticsearchRefreshPolicy refreshPolicy;
 
     public BaseDocumentConfiguration() {
