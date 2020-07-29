@@ -166,10 +166,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<elasticsearch:update-document
 				doc:name="Document - Update" doc:id="7ec1f6b0-0aa7-497d-94f3-5f449e3d39e1"
 				config-ref="Elasticsearch_HTTP_Config3" index="update_doc_index_1"
-				documentId="update_doc_id_1" routing="routing" timeoutInSec="6"
+				documentId="update_doc_id_1" jsonInputPath="${index.jsoninputpath}" >
+				<elasticsearch:update-document-configuration routing="routing" timeoutInSec="6"
 				refreshPolicy="WAIT_UNTIL" retryOnConflict="1" fetchSource="true"
-				jsonInputPath="${index.jsoninputpath}" detectNoop="false"
-				scriptedUpsert="true" docAsUpsert="true">
+				detectNoop="false" scriptedUpsert="true" docAsUpsert="true"/>
 			</elasticsearch:update-document>
 			<elasticsearch:delete-document
 				doc:name="Document - Delete" doc:id="5e1cfb30-20e9-4444-a446-0c5c77abc660"
@@ -202,9 +202,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<elasticsearch:update-document
 				doc:name="Document - Update" doc:id="78a82771-f2b4-45bb-9894-d101c5204492"
 				config-ref="Elasticsearch_HTTP_Config3" index="update_doc_index_2"
-				documentId="update_doc_id_2" routing="routing" timeoutInSec="6"
+				documentId="update_doc_id_2">
+				<elasticsearch:update-document-configuration routing="routing" timeoutInSec="6"
 				refreshPolicy="WAIT_UNTIL" retryOnConflict="1" fetchSource="true"
-				detectNoop="false" scriptedUpsert="true" docAsUpsert="true">
+				detectNoop="false" scriptedUpsert="true" docAsUpsert="true"/>
 				<elasticsearch:document-sources>
 					<elasticsearch:document-source key="name"
 						value="aaa" />

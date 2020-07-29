@@ -13,19 +13,16 @@ import org.apache.log4j.Logger;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.common.Strings;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
-import org.mule.runtime.extension.api.annotation.param.Optional;
-import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
-import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.mule.runtime.extension.api.annotation.param.display.Summary;
 
 import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
-import com.mulesoft.connectors.elasticsearch.api.ElasticsearchVersionType;
 import com.mulesoft.connectors.elasticsearch.api.document.DocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.GetDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentConfiguration;
+import com.mulesoft.connectors.elasticsearch.api.document.UpdateDocumentConfiguration;
 
 public class ElasticsearchDocumentUtils {
 
@@ -61,18 +58,18 @@ public class ElasticsearchDocumentUtils {
 
         ifPresent(indexDocumentConfiguration.getRouting(), routingValue -> indexReq.routing(routingValue));
         ifPresent(indexDocumentConfiguration.getRefreshPolicy(), refreshPolicyValue -> indexReq.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
-        
-        if(indexDocumentConfiguration.getVersion() != 0) {
+
+        if (indexDocumentConfiguration.getVersion() != 0) {
             indexReq.version(indexDocumentConfiguration.getVersion());
         }
-        
+
         ifPresent(indexDocumentConfiguration.getVersionType(), versionTypeValue -> indexReq.versionType(versionTypeValue.getVersionType()));
         ifPresent(indexDocumentConfiguration.getOperationType(), operationTypeValue -> indexReq.opType(operationTypeValue.getOpType()));
         ifPresent(indexDocumentConfiguration.getPipeline(), pipelineValue -> indexReq.setPipeline(pipelineValue));
 
         logger.debug("Index request : " + indexReq);
     }
-    
+
     public static void configureGetReq(GetRequest getReq, GetDocumentConfiguration getDocumentConfiguration) throws IOException {
 
         DocumentFetchSourceOptions fetchSourceContext = getDocumentConfiguration.getFetchSourceContext();
@@ -95,7 +92,7 @@ public class ElasticsearchDocumentUtils {
 
         ifPresent(getDocumentConfiguration.getRouting(), routingValue -> getReq.routing(routingValue));
         ifPresent(getDocumentConfiguration.getPreference(), preferenceValue -> getReq.preference(preferenceValue));
-        if(getDocumentConfiguration.getVersion() != 0) {
+        if (getDocumentConfiguration.getVersion() != 0) {
             getReq.version(getDocumentConfiguration.getVersion());
         }
         ifPresent(getDocumentConfiguration.getVersionType(), versionTypeValue -> getReq.versionType(versionTypeValue.getVersionType()));
@@ -104,5 +101,40 @@ public class ElasticsearchDocumentUtils {
         getReq.refresh(getDocumentConfiguration.isRefresh());
 
         logger.debug("Get request : " + getReq);
+    }
+
+    public static void configureUpdateReq(UpdateRequest updateReq, UpdateDocumentConfiguration updateDocumentConfiguration) throws IOException {
+
+        ifPresent(updateDocumentConfiguration.getRouting(), routingValue -> updateReq.routing(routingValue));
+
+        if (updateDocumentConfiguration.getTimeoutInSec() != 0) {
+            updateReq.timeout(TimeValue.timeValueSeconds(updateDocumentConfiguration.getTimeoutInSec()));
+        }
+
+        ifPresent(updateDocumentConfiguration.getRefreshPolicy(), refreshPolicyValue -> updateReq.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
+
+        if (updateDocumentConfiguration.getRetryOnConflict() != 0) {
+            updateReq.retryOnConflict(updateDocumentConfiguration.getRetryOnConflict());
+        }
+
+        updateReq.fetchSource(updateDocumentConfiguration.isFetchSource());
+
+        if (updateDocumentConfiguration.getIfSeqNo() != 0) {
+            updateReq.setIfSeqNo(updateDocumentConfiguration.getIfSeqNo());
+        }
+
+        if (updateDocumentConfiguration.getIfPrimaryTerm() != 0) {
+            updateReq.setIfPrimaryTerm(updateDocumentConfiguration.getIfPrimaryTerm());
+        }
+
+        updateReq.detectNoop(updateDocumentConfiguration.isDetectNoop());
+        updateReq.scriptedUpsert(updateDocumentConfiguration.isScriptedUpsert());
+        updateReq.docAsUpsert(updateDocumentConfiguration.isDocAsUpsert());
+
+        if (updateDocumentConfiguration.getWaitForActiveShards() != 0) {
+            updateReq.waitForActiveShards(updateDocumentConfiguration.getWaitForActiveShards());
+        }
+
+        logger.debug("Update request : " + updateReq);
     }
 }

@@ -129,7 +129,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/updateDocumentIndex" />
 		<elasticsearch:update-document doc:name="Update document"
 			config-ref="${elastic.config}" index="${elasticsearch.index}"
-			documentId="1" routing="routing" timeoutInSec="10" refreshPolicy="WAIT_UNTIL" retryOnConflict="1" docAsUpsert="true">
+			documentId="1">
+			<elasticsearch:update-document-configuration routing="routing" timeoutInSec="10" refreshPolicy="WAIT_UNTIL" retryOnConflict="1" docAsUpsert="true"/>
 			<elasticsearch:document-sources>
 				<elasticsearch:document-source key="name"
 					value="TestcaseFlowUpdate" />
@@ -143,7 +144,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			path="/updateDocumentIndexWithJSON" />
 		<elasticsearch:update-document doc:name="Update document"
 			config-ref="${elastic.config}" index="${elasticsearch.index}"
-			documentId="1" jsonInputPath="${index.jsoninputpath}" docAsUpsert="true">
+			documentId="1" jsonInputPath="${index.jsoninputpath}">
+			 <elasticsearch:update-document-configuration docAsUpsert="true"/>
 		</elasticsearch:update-document>
 		<logger level="INFO" doc:name="Logger" message="#[payload]" />
 	</flow>

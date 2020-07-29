@@ -267,10 +267,11 @@
 			<elasticsearch:update-document
 				doc:name="Document - Update" doc:id="5aa83bbc-d24d-4cbd-9633-550667df1722"
 				config-ref="Elasticsearch_HTTP_Config_Metadata" index="update_doc_index_1"
-				documentId="update_doc_id_1" routing="routing" timeoutInSec="6"
+				documentId="update_doc_id_1">
+				<elasticsearch:update-document-configuration routing="routing" timeoutInSec="6"
 				refreshPolicy="WAIT_UNTIL" retryOnConflict="1" fetchSource="true"
 				jsonInputPath="${index.jsoninputpath}" detectNoop="false"
-				scriptedUpsert="true" docAsUpsert="true">
+				scriptedUpsert="true" docAsUpsert="true"/>
 			</elasticsearch:update-document>
 		</mtf:get-output-metadata>
 		<mtf:validation>

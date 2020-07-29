@@ -3,8 +3,6 @@
  */
 package com.mulesoft.connectors.elasticsearch.internal.operations;
 
-import static com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils.ifPresent;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -20,10 +18,7 @@ import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Request;
-import org.elasticsearch.common.Strings;
-import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.elasticsearch.search.fetch.subphase.FetchSourceContext;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -31,16 +26,13 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.apache.log4j.Logger;
 
-import com.mulesoft.connectors.elasticsearch.api.DocumentFetchSourceOptions;
-import com.mulesoft.connectors.elasticsearch.api.ElasticsearchRefreshPolicy;
-import com.mulesoft.connectors.elasticsearch.api.ElasticsearchVersionType;
 import com.mulesoft.connectors.elasticsearch.api.document.DocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.GetDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentOptions;
+import com.mulesoft.connectors.elasticsearch.api.document.UpdateDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchGetResponse;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
@@ -206,35 +198,10 @@ public class DocumentOperations extends ElasticsearchOperations {
      *            Name of the index
      * @param documentId
      *            ID of the document
-     * @param routing
-     *            Routing is used to determine in which shard the document will reside in
      * @param inputSource
      *            Input document source
-     * @param timeoutInSec
-     *            Time in seconds to wait for primary shard to become available
-     * @param refreshPolicy
-     *            Refresh policy is used to control when changes made by the requests are made visible to search. Option for refresh policy A) true : Refresh the relevant primary
-     *            and replica shards (not the whole index) immediately after the operation occurs, so that the updated document appears in search results immediately. B) wait_for :
-     *            Wait for the changes made by the request to be made visible by a refresh before replying. This doesn�t force an immediate refresh, rather, it waits for a
-     *            refresh to happen. C) false (default) : Take no refresh related actions. The changes made by this request will be made visible at some point after the request
-     *            returns.
-     * @param retryOnConflict
-     *            How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update
-     *            operation
-     * @param fetchSource
-     *            Enable or disable source retrieval
-     * @param ifSeqNo        
-     *            If set, only perform this update request if the document was last modification was assigned this sequence number.
-     * @param ifPrimaryTerm           
-     *            If set, only perform this update request if the document was last modification was assigned this primary term.
-     * @param detectNoop
-     *            Enable or disable the noop detection
-     * @param scriptedUpsert
-     *            Indicate that the script must run regardless of whether the document exists or not
-     * @param docAsUpsert
-     *            Indicate that the partial document must be used as the upsert document if it does not exist yet.
-     * @param waitForActiveShards
-     *            The number of shard copies that must be active before proceeding with the update operation.
+     * @param updateDocumentConfiguration
+     *            Update document configuration
      * @return UpdateResponse as JSON String
      */
     @MediaType(MediaType.APPLICATION_JSON)
@@ -242,17 +209,7 @@ public class DocumentOperations extends ElasticsearchOperations {
     @OutputResolver(output = UpdateResponseOutputMetadataResolver.class)
     public String updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
-            @Placement(tab = "Optional Arguments", order = 1) @DisplayName("Routing") @Optional String routing,
-            @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Timeout (Seconds)") @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for primary shard") long timeoutInSec,
-            @Placement(tab = "Optional Arguments", order = 4) @DisplayName("Refresh policy") @Optional ElasticsearchRefreshPolicy refreshPolicy,
-            @Placement(tab = "Optional Arguments", order = 5) @DisplayName("Retry on Conflict") @Optional(defaultValue = "0") @Summary("How many times to retry the update operation if the document to update has been changed by another operation between the get and indexing phases of the update operation") int retryOnConflict,
-            @Placement(tab = "Optional Arguments", order = 6) @DisplayName("Fetch Source") @Optional(defaultValue = "false") boolean fetchSource,
-            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("If Seq No") @Optional long ifSeqNo,
-            @Placement(tab = "Optional Arguments", order = 7) @DisplayName("If Primary Term") @Optional long ifPrimaryTerm,
-            @Placement(tab = "Optional Arguments", order = 8) @DisplayName("Noop Detection") @Optional(defaultValue = "true") boolean detectNoop,
-            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Scripted Upsert") @Optional(defaultValue = "false") boolean scriptedUpsert,
-            @Placement(tab = "Optional Arguments", order = 10) @DisplayName("Doc Upsert") @Optional(defaultValue = "false") boolean docAsUpsert,
-            @Placement(tab = "Optional Arguments", order = 9) @DisplayName("Wait for Active Shards") @Optional int waitForActiveShards) {
+            @Placement(tab = "Optional Arguments") @Optional UpdateDocumentConfiguration updateDocumentConfiguration) {
         String response = null;
         
         try {
@@ -263,26 +220,8 @@ public class DocumentOperations extends ElasticsearchOperations {
                 updateRequest.doc(inputSource.getDocumentSource());
             }
             
-            ifPresent(routing, routingValue -> updateRequest.routing(routingValue));
-            if (timeoutInSec != 0) {
-                updateRequest.timeout(TimeValue.timeValueSeconds(timeoutInSec));
-            }
-            ifPresent(refreshPolicy, refreshPolicyValue -> updateRequest.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
-            if (retryOnConflict != 0) {
-                updateRequest.retryOnConflict(retryOnConflict);
-            }
-            updateRequest.fetchSource(fetchSource);
-            if (ifSeqNo != 0) {
-                updateRequest.setIfSeqNo(ifSeqNo);
-            }
-            if (ifPrimaryTerm != 0) {
-                updateRequest.setIfPrimaryTerm(ifPrimaryTerm); 
-            }
-            updateRequest.detectNoop(detectNoop);
-            updateRequest.scriptedUpsert(scriptedUpsert);
-            updateRequest.docAsUpsert(docAsUpsert);
-            if (waitForActiveShards != 0) {
-                updateRequest.waitForActiveShards(waitForActiveShards); 
+            if(updateDocumentConfiguration != null) {
+                ElasticsearchDocumentUtils.configureUpdateReq(updateRequest, updateDocumentConfiguration);
             }
             
             UpdateResponse updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
