@@ -3,9 +3,9 @@
  */
 package com.mulesoft.connectors.elasticsearch.api.querytype;
 
-import org.elasticsearch.common.unit.Fuzziness;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
+import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 /**
@@ -25,7 +25,8 @@ public class BaseMatchQuery {
      */
     @Parameter
     @Optional
-    private Fuzziness fuzziness;
+    @DisplayName("Fuzziness")
+    private FuzzinessEnum fuzziness;
 
     /**
      * Fuzzy Rewrite
@@ -112,7 +113,7 @@ public class BaseMatchQuery {
         return searchString;
     }
 
-    public Fuzziness getFuzziness() {
+    public FuzzinessEnum getFuzziness() {
         return fuzziness;
     }
 

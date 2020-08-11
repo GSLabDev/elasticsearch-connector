@@ -92,7 +92,7 @@ public class MultiMatchQuery extends BaseMatchQuery implements Query {
         multiMatchQueryBuilder.slop(getSlop());
 
         if (getFuzziness() != null) {
-            multiMatchQueryBuilder.fuzziness(getFuzziness());
+            multiMatchQueryBuilder.fuzziness(getFuzziness().getElasticsearchFuzziness());
         }
 
         if (getOperator() != null) {

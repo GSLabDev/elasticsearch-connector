@@ -36,7 +36,7 @@ public class MatchQuery extends BaseMatchQuery implements Query {
         matchQueryBuilder.boost(getBoost());
 
         if (getFuzziness() != null) {
-            matchQueryBuilder.fuzziness(getFuzziness());
+            matchQueryBuilder.fuzziness(getFuzziness().getElasticsearchFuzziness());
         }
 
         if (getOperator() != null) {
