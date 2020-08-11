@@ -5,6 +5,8 @@ package com.mulesoft.connectors.elasticsearch.api.document;
 
 import java.util.Map;
 
+import org.mule.runtime.api.meta.model.display.PathModel.Location;
+import org.mule.runtime.api.meta.model.display.PathModel.Type;
 import org.mule.runtime.extension.api.annotation.param.ExclusiveOptionals;
 import org.mule.runtime.extension.api.annotation.param.NullSafe;
 import org.mule.runtime.extension.api.annotation.param.Optional;
@@ -24,7 +26,7 @@ public class IndexDocumentOptions {
      */
     @Parameter
     @Optional
-    @Path(acceptedFileExtensions = "json")
+    @Path(acceptedFileExtensions="json", location = Location.ANY, type = Type.FILE)
     @DisplayName("JSON Input file path")
     private String jsonInputPath;
 
