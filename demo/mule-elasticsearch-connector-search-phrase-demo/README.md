@@ -1,13 +1,12 @@
 ﻿# Search for the text from particular dataset
 
 ### Introduction
-Elasticsearch is preferred when there is a need of doing a lot of text search, where traditional RDBMS databases are not performing really well (poor configuration, acts as a black-box, poor performance). Elasticsearch is highly customizable, extendable through plugins. 
+Elasticsearch is preferred when there is a need of doing a lot of text search, where traditional RDBMS databases are not performing well (poor configuration, acts as a black-box, poor performance). Elasticsearch is highly customizable, extendable through plugins. 
 
-Please refer the use case: ***Elasticsearch as a Document Store*** to insert the dataset in Elasticsearch using bulk operation if the dataset is not available on Elasticsearch. This usecase uses different queries like match-query, multi-match-query, match-phrase-query and match-all-query of search operation available in Elasticsearch connector for searching.
+If data is not available on Elasticsearch, please refer the use case: ***Elasticsearch as a Document Store*** to insert the data in Elasticsearch using bulk operation.
 
-Different search type options like 'Query and Fetch', 'DFS query then Fetch' and 'Query then Fetch' are also used in this demo. 
-Use the Choice connector to switch between the different query types depending on the condition variable value in the set variable component.
-The query type is sent through query parameter in URL which is captured in set variable component in the flow.
+This usecase demonstrates different search queries like match-query, multi-match-query, match-phrase-query and match-all-query of search operation available in Elasticsearch connector for searching.
+The querytype is sent through query parameter in URL which is captured in set variable component in the flow. Later based on the value of this variable/query parameter, search operation is performed with that query types.
 
 ### Pre-requisites
 1. Elasticsearch running on HTTP

@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<logger level="INFO" doc:name="Logger"
 			doc:id="96bafaeb-1fcb-4971-b06f-d06187ca240c" message="Set variable value #[vars.searchQuery]" />
 		<choice doc:name="Choice" doc:id="d1355aea-0240-4a79-aca3-db228412e8c4">
-			<when expression="#[vars.searchQuery=='multimatch']">
+			<when expression="#[vars.searchQuery=='multi-match-query']">
 				<elasticsearch:search doc:name="Multi Match"
 					doc:id="d45b3b45-f5e8-4509-bac9-e7554f1f1d91" config-ref="Elasticsearch_Config"
 					searchType="DFS_QUERY_THEN_FETCH">
@@ -55,7 +55,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 					doc:id="3d69a761-c71e-4948-b98d-2490af08ebb3" message="#[payload]" />
 
 			</when>
-			<when expression="#[vars.searchQuery=='matchquery']">
+			<when expression="#[vars.searchQuery=='match-query']">
 				<elasticsearch:search doc:name="Match Query"
 					doc:id="f072cb50-cd00-44b5-b6b3-f7a8cd28e969" config-ref="Elasticsearch_Config"
 					searchType="DFS_QUERY_THEN_FETCH">
@@ -85,7 +85,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				<logger level="INFO" doc:name="Logger"
 					doc:id="b4522649-745c-4a32-b6c2-1efd94f03021" message="#[payload]" />
 			</when>
-			<when expression="#[vars.searchQuery=='matchphrase']">
+			<when expression="#[vars.searchQuery=='match-phrase-query']">
 				<elasticsearch:search doc:name="Match Phrase"
 					doc:id="ddf3528b-59f0-40df-a763-b2e2d92eca22" config-ref="Elasticsearch_Config"
 					searchType="DFS_QUERY_THEN_FETCH">
