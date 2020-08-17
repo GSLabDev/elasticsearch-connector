@@ -7,13 +7,13 @@ The Elasticsearch connector allows you to access the Elasticsearch REST API thro
 Mule 4.2.1
 
 ## Supported Elasticsearch versions
-Elasticsearch version 6. Tested on Elasticsearch version 6.2.2
+Elasticsearch version 7. Tested on Elasticsearch version 7.6.0
 
 ## Installation 
 
 Install connector in Anypoint Studio following the instructions at [Installing Connectors from Anypoint Exchange](https://docs.mulesoft.com/anypoint-studio/v/7.1/add-modules-in-studio-to) 
 
-To configure and use the Elasticsearch connector refer [user manual](doc/user-manual.adoc) 
+To configure and use the Elasticsearch connector refer [user manual](https://opendoc.gslab.com/es_v2_user_guide.html) 
 
 ## Authentication
 * Elasticsearch host can be accessed in two different ways from a client (Mule runtime / Anypoint studio ): 
@@ -21,7 +21,7 @@ To configure and use the Elasticsearch connector refer [user manual](doc/user-ma
     - With certificate based authentication (HTTPS)
 
 ### WITHOUT AUTHENTICATION (HTTP)
-Provide Elasticsearch host and port in a global configuration of Elasticsearch connector. Without authentication use is generally recommended for internal applications or for testing purpose where Elasticsearch is running on HTTP port. 
+Provide Elasticsearch host and port in a global configuration of Elasticsearch connector. Without authentication is generally recommended for internal applications or for testing purpose where Elasticsearch is running on HTTP port. 
 
 
 ### CERTIFICATE BASED AUTHENTICATION (HTTPS)
