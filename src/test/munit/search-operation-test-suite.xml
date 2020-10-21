@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</elasticsearch:config>
 
 	<munit:test name="jsonQuerySearchWithJsonFileFlowTest"
-		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62">
+		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search-using-json-data
 				doc:name="Search - JSON Query" doc:id="473bb738-9a23-4da6-a7f5-85010de8b3d7"
@@ -40,7 +40,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="jsonQuerySearchWithTextFlowTest"
-		description="Test" doc:id="a7d26e30-e1c1-49e9-bb57-8ce05554ab70">
+		description="Test" doc:id="a7d26e30-e1c1-49e9-bb57-8ce05554ab70" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search-using-json-data
 				doc:name="Search - JSON Query" doc:id="85e2e967-c75b-4f8b-866a-f268cc18d6ff"
@@ -66,7 +66,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="clearScrollFlowTest" description="Test"
-		doc:id="7ce6f1e3-c06b-46ef-b8ef-d5ed35d83c79">
+		doc:id="7ce6f1e3-c06b-46ef-b8ef-d5ed35d83c79" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:create-index doc:name="Index - Create"
 				doc:id="e6438bba-d2c9-44c8-8100-1d859a1642b3" config-ref="Elasticsearch_HTTP_Config6"
@@ -112,7 +112,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="scrollFlowTest" description="Test"
-		doc:id="d6d416be-ef92-4cef-8591-2b8dee7ec157">
+		doc:id="d6d416be-ef92-4cef-8591-2b8dee7ec157" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:create-index doc:name="Index - Create"
 				doc:id="ef9a053e-40cc-4ba7-bcb2-1b34b52382f1" config-ref="Elasticsearch_HTTP_Config6"
@@ -155,7 +155,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="searchMatchAllQueryFlowTest" description="Test"
-		doc:id="21507211-31da-426f-b3af-4b7fb65c5069">
+		doc:id="21507211-31da-426f-b3af-4b7fb65c5069" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query"
 				doc:id="9a4480e0-2908-4d9c-bf53-e7c291a682f0" config-ref="Elasticsearch_HTTP_Config6"
@@ -198,7 +198,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="searchWithScrollIntervalTimeFlowTest"
-		description="Test" doc:id="a9956983-4bcd-4e32-9a02-3055e4ce3457">
+		description="Test" doc:id="a9956983-4bcd-4e32-9a02-3055e4ce3457" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query"
 				doc:id="a37e31fd-6cf7-4517-a6b5-829ff2a04fbc" config-ref="Elasticsearch_HTTP_Config6"
@@ -220,7 +220,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="searchMatchPhrasePrefixQueryFlowTest"
-		description="Test" doc:id="46557d13-f89a-476e-85fb-34b956aad3eb">
+		description="Test" doc:id="46557d13-f89a-476e-85fb-34b956aad3eb" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query"
 				doc:id="2751639b-d0a9-4d7e-9a52-69a9a9aa0d62" config-ref="Elasticsearch_HTTP_Config6"
@@ -243,7 +243,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="searchMatchPhraseQueryFlowTest"
-		description="Test" doc:id="a451904f-9278-44a8-8f9e-8c207193a1a2">
+		description="Test" doc:id="a451904f-9278-44a8-8f9e-8c207193a1a2" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query"
 				doc:id="f83dee24-f84b-4ef1-9ba1-89226970ff9c" config-ref="Elasticsearch_HTTP_Config6"
@@ -266,7 +266,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="searchMatchQueryFlowTest" description="Test"
-		doc:id="bc569702-4a08-42ff-8aa1-4f9122cf6f5b">
+		doc:id="bc569702-4a08-42ff-8aa1-4f9122cf6f5b" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query"
 				doc:id="a9f7fead-0c82-4a14-9681-4d313db47475" config-ref="Elasticsearch_HTTP_Config6"
@@ -290,7 +290,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="searchMultiMatchQueryFlowTest"
-		description="Test" doc:id="ca29f350-7f6d-49d5-99de-4fb3bf35b2ec">
+		description="Test" doc:id="ca29f350-7f6d-49d5-99de-4fb3bf35b2ec" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query"
 				doc:id="f02b7db6-75ff-4b11-b8d3-f069ec683b4e" config-ref="Elasticsearch_HTTP_Config6"
@@ -320,7 +320,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 	
 	<munit:test name="searchQueryStringQueryFlowTest"
-		description="Test" doc:id="a443e01c-47a4-49cc-a65b-aa3019cee61f">
+		description="Test" doc:id="a443e01c-47a4-49cc-a65b-aa3019cee61f" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query" doc:id="0b2229d9-f504-4fab-8c7f-494d4a5ce031" config-ref="Elasticsearch_HTTP_Config6" scrollIntervalTime="10">
 			<elasticsearch:query-configuration>
@@ -355,7 +355,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="searchSimpleQueryStringFlowTest"
-		description="Test" doc:id="2b553dec-0726-4aa8-a771-877252d4c882">
+		description="Test" doc:id="2b553dec-0726-4aa8-a771-877252d4c882" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:search doc:name="Search - Query" doc:id="342a4bd4-1e85-4322-9a75-07c546e393a4" config-ref="Elasticsearch_HTTP_Config6" scrollIntervalTime="10">
 			<elasticsearch:query-configuration>

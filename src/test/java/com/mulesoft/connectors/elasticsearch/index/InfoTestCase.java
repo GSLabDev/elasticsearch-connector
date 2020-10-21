@@ -6,13 +6,18 @@ package com.mulesoft.connectors.elasticsearch.index;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 /**
  * @author Great Software Laboratory Pvt. Ltd.
  *
  */
 public class InfoTestCase extends MuleArtifactFunctionalTestCase {
+    
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(600);
     
     @Override
     protected String getConfigFile() {
