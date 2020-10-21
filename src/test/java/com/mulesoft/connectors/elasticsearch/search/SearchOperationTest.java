@@ -7,13 +7,18 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SearchOperationTest extends MuleArtifactFunctionalTestCase {
 
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(900);
+    
     private static final Logger LOGGER = LoggerFactory.getLogger(SearchOperationTest.class);
 
     @Override

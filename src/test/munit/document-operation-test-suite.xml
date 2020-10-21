@@ -23,7 +23,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</elasticsearch:config>
 
 	<munit:test name="IndexDocumentWithDocumentSourcesFlowTest"
-		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62">
+		description="Test" doc:id="911bfee5-7eb6-4e2c-9bdb-1ccb793cfe62" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="257c504b-3523-42ee-9f2a-769b7c61c07b" config-ref="Elasticsearch_HTTP_Config3"
@@ -59,7 +59,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="IndexDocumentWithJSONInputFileFlowTest"
-		description="Test" doc:id="0cfd1107-8e4e-4499-8155-583d1a32239c">
+		description="Test" doc:id="0cfd1107-8e4e-4499-8155-583d1a32239c" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="79d62631-285b-4c03-adcf-e2628aa68deb" config-ref="Elasticsearch_HTTP_Config3"
@@ -84,7 +84,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="IndexGetAndDeleteDocumentFlowTest"
-		description="Test" doc:id="ab01b2fb-f0ec-4580-a3cf-d433c12312ba">
+		description="Test" doc:id="ab01b2fb-f0ec-4580-a3cf-d433c12312ba" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="a9c2fb94-a3eb-4d61-8561-31d37cea5efe" config-ref="Elasticsearch_HTTP_Config3"
@@ -129,7 +129,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="DeleteDocumentFlowTest" description="Test"
-		doc:id="aa27b7a0-1952-419a-9434-9e6bb7f7946b">
+		doc:id="aa27b7a0-1952-419a-9434-9e6bb7f7946b" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:delete-document
 				doc:name="Document - Delete" doc:id="dc4277e8-6123-446b-b277-caef7b503178"
@@ -151,7 +151,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="UpdateDocumentWithJsonFilePathFlowTest"
-		description="Test" doc:id="63ee9f02-6aba-44a1-bd6d-b5ad5017eaa3">
+		description="Test" doc:id="63ee9f02-6aba-44a1-bd6d-b5ad5017eaa3" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="b0532990-c6f1-4719-b886-3de45e91316b" config-ref="Elasticsearch_HTTP_Config3"
@@ -187,7 +187,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="UpdateDocumentWithDocumentSourcesFlowTest"
-		description="Test" doc:id="ccb85dd0-8cff-4948-8e3e-23f5559ff1e7">
+		description="Test" doc:id="ccb85dd0-8cff-4948-8e3e-23f5559ff1e7" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="adea9816-cc23-4e36-9c06-eb1024c8ea9c" config-ref="Elasticsearch_HTTP_Config3"
@@ -229,7 +229,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="BulkDocumentWithTextFlowTest" description="Test"
-		doc:id="87393dcb-e3fa-4ef5-8543-6a9055654c69">
+		doc:id="87393dcb-e3fa-4ef5-8543-6a9055654c69" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:bulk-operation doc:name="Document - Bulk"
 			doc:id="cd0d94f0-f110-4396-910a-6a2ce2784dec" config-ref="Elasticsearch_HTTP_Config3">
@@ -265,7 +265,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 
 	<munit:test name="BulkDocumentWithFileFlowTest" description="Test"
-		doc:id="99b55148-8b15-49f8-804c-819f5b375ef2">
+		doc:id="99b55148-8b15-49f8-804c-819f5b375ef2" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:bulk-operation doc:name="Document - Bulk"
 				doc:id="99129fb1-e202-44c7-a46b-afba6202c16a" config-ref="Elasticsearch_HTTP_Config3"
@@ -290,7 +290,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 	</munit:test>
 	
 	<munit:test name="BulkDocumentWithIndexFlowTest" description="Test"
-		doc:id="22a1c269-2339-4ebc-b577-33ea77bf9583">
+		doc:id="22a1c269-2339-4ebc-b577-33ea77bf9583" timeOut="600000">
 		<munit:execution>
 			<elasticsearch:bulk-operation doc:name="Document - Bulk"
 			doc:id="7d431aaf-3541-4da7-8cd3-043904755cd8" config-ref="Elasticsearch_HTTP_Config3" index="accounts123">

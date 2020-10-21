@@ -8,8 +8,8 @@ import java.util.List;
 
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
-import org.apache.http.RequestLine;
-import org.apache.http.StatusLine;
+import org.apache.http.message.BasicRequestLine;
+import org.apache.http.message.BasicStatusLine;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
 
@@ -26,7 +26,7 @@ public class ElasticsearchResponse implements Serializable{
     /**
      * The request line that generated this response
      */
-    private RequestLine requestLine;
+    private BasicRequestLine requestLine;
     
     /**
      * The response body available (as String), null otherwise
@@ -41,7 +41,7 @@ public class ElasticsearchResponse implements Serializable{
     /**
      * The status line of the current response
      */
-    private StatusLine statusLine;
+    private BasicStatusLine statusLine;
     
     /**
      * All the response headers
@@ -58,19 +58,19 @@ public class ElasticsearchResponse implements Serializable{
     }
 
     public ElasticsearchResponse(Response response) {
-        requestLine = response.getRequestLine();
+        requestLine = (BasicRequestLine) response.getRequestLine();
         try {
             entity = EntityUtils.toString(response.getEntity());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
         host = response.getHost();
-        statusLine = response.getStatusLine();
+        statusLine = (BasicStatusLine) response.getStatusLine();
         headers = response.getHeaders();
         warnings = response.getWarnings();
     }
 
-    public RequestLine getRequestLine() {
+    public BasicRequestLine getRequestLine() {
         return requestLine;
     }
     
@@ -82,7 +82,7 @@ public class ElasticsearchResponse implements Serializable{
         return host;
     }
 
-    public StatusLine getStatusLine() {
+    public BasicStatusLine getStatusLine() {
         return statusLine;
     }
     

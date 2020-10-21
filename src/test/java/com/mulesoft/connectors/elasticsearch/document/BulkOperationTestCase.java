@@ -8,7 +8,9 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
 
 /**
@@ -17,6 +19,9 @@ import org.mule.functional.junit4.MuleArtifactFunctionalTestCase;
  */
 public class BulkOperationTestCase extends MuleArtifactFunctionalTestCase {
 
+    @Rule
+    public Timeout globalTimeout = Timeout.seconds(600);
+    
     @Override
     protected String getConfigFile() {
         return "testElasticsearchOperations.xml";
