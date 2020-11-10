@@ -25,10 +25,10 @@ import com.mulesoft.connectors.elasticsearch.internal.connection.provider.HttpCo
 import com.mulesoft.connectors.elasticsearch.internal.connection.provider.HttpsConnectionProvider;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.providers.ExecutionErrorTypesProvider;
-import com.mulesoft.connectors.elasticsearch.internal.operations.DocumentOperations;
-import com.mulesoft.connectors.elasticsearch.internal.operations.IndexOperations;
-import com.mulesoft.connectors.elasticsearch.internal.operations.InfoOperation;
-import com.mulesoft.connectors.elasticsearch.internal.operations.SearchOperations;
+import com.mulesoft.connectors.elasticsearch.internal.operation.DocumentOperations;
+import com.mulesoft.connectors.elasticsearch.internal.operation.IndexOperations;
+import com.mulesoft.connectors.elasticsearch.internal.operation.InfoOperation;
+import com.mulesoft.connectors.elasticsearch.internal.operation.SearchOperations;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
