@@ -47,9 +47,6 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							<elasticsearch:include-field value="${searchMultiMatch.includeField}" />
 						</elasticsearch:include-fields>
 					</elasticsearch:search-source-configuration>
-					<elasticsearch:indices>
-						<elasticsearch:index value="${search.index}" />
-					</elasticsearch:indices>
 				</elasticsearch:search>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="3d69a761-c71e-4948-b98d-2490af08ebb3" message="#[payload]" />
@@ -78,9 +75,6 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							<elasticsearch:exclude-field value="${searchMatchQuery.excludeFieldD}" />
 						</elasticsearch:exclude-fields>
 					</elasticsearch:search-source-configuration>
-					<elasticsearch:indices>
-						<elasticsearch:index value="${search.index}" />
-					</elasticsearch:indices>
 				</elasticsearch:search>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="b4522649-745c-4a32-b6c2-1efd94f03021" message="#[payload]" />
@@ -101,9 +95,6 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							<elasticsearch:include-field value="${searchMatchPhrase.fieldA}" />
 						</elasticsearch:include-fields>
 					</elasticsearch:search-source-configuration>
-					<elasticsearch:indices>
-						<elasticsearch:index value="${search.index}" />
-					</elasticsearch:indices>
 				</elasticsearch:search>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="e58a0d5e-2bba-4fe4-8cdf-3f134013d0a9" message="#[payload]" />
@@ -124,9 +115,6 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 							<elasticsearch:include-field value="${searchMatchAll.fieldA}" />
 						</elasticsearch:include-fields>
 					</elasticsearch:search-source-configuration>
-					<elasticsearch:indices>
-						<elasticsearch:index value="${search.index}" />
-					</elasticsearch:indices>
 				</elasticsearch:search>
 				<logger level="INFO" doc:name="Logger"
 					doc:id="70571ee6-9112-4e32-b45b-45bf5b90c2ca" message="#[payload]" />
