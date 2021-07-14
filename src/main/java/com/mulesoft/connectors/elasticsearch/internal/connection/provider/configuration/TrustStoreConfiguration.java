@@ -10,6 +10,7 @@ import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
 import org.mule.runtime.extension.api.annotation.param.display.Path;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
@@ -25,6 +26,7 @@ public class TrustStoreConfiguration {
     @Parameter
     @DisplayName("Type")
     @Optional(defaultValue = "jks")
+    @Placement(tab = "Security")
     private String trustStoreType;
 
     /**
@@ -34,6 +36,7 @@ public class TrustStoreConfiguration {
     @Parameter
     @Path(type = Type.FILE, location = Location.ANY)
     @DisplayName("Path")
+    @Placement(tab = "Security")
     private String trustStorePath;
 
     /**
@@ -42,6 +45,7 @@ public class TrustStoreConfiguration {
     @Parameter
     @Password
     @DisplayName("Password")
+    @Placement(tab = "Security")
     private String trustStorePassword;
 
     public String getTrustStoreType() {

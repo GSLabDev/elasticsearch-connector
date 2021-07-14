@@ -30,7 +30,7 @@ public class HttpConnectionProvider extends ElasticsearchBaseConnectionProvider 
     public ElasticsearchConnection connect() {
         try {
             if (userConfiguration.getUserName() != null && userConfiguration.getPassword() != null) {
-                return new ElasticsearchConnection(getHost(), getPort(), userConfiguration.getUserName(), userConfiguration.getPassword());
+                return new ElasticsearchConnection(getHost(), getPort(), userConfiguration, proxyConfig);
             } else {
                 return new ElasticsearchConnection(getHost(), getPort());
             }

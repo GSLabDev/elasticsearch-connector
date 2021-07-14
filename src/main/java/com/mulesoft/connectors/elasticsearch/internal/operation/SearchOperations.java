@@ -3,6 +3,9 @@
  */
 package com.mulesoft.connectors.elasticsearch.internal.operation;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,7 @@ import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.search.Scroll;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.mule.runtime.api.meta.ExpressionSupport;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.extension.api.annotation.Expression;
 import org.mule.runtime.extension.api.annotation.dsl.xml.ParameterDsl;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
@@ -32,9 +36,11 @@ import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
+import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.api.JsonData;
+import com.mulesoft.connectors.elasticsearch.api.ResponseAttributes;
 import com.mulesoft.connectors.elasticsearch.api.SearchRequestConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchRequestOptionalConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.SearchSourceConfiguration;
@@ -56,7 +62,7 @@ import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 public class SearchOperations extends BaseSearchOperation {
 
     private static final Logger logger = Logger.getLogger(SearchOperations.class.getName());
-
+    
     /**
      * The search operation returns search hits that match the query defined in the request.
      * 
@@ -75,12 +81,14 @@ public class SearchOperations extends BaseSearchOperation {
     @MediaType(value = MediaType.APPLICATION_JSON)
     @DisplayName("Search - Query")
     @OutputResolver(output = SearchResponseOutputMetadataResolver.class)
-    public String search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
+    public Result<InputStream, ResponseAttributes> search(@Connection ElasticsearchConnection esConnection, @ParameterGroup(name = "Search") SearchRequestConfiguration searchRequestConfiguration,
             @Placement(order = 1, tab = "Query") @Expression(ExpressionSupport.NOT_SUPPORTED) @ParameterDsl(allowInlineDefinition = true, allowReferences = false) QueryConfiguration queryConfiguration,
             @DisplayName("Search Source") @Placement(order = 2, tab = "Search Source") @Optional SearchSourceConfiguration searchSourceConfiguration,
             @DisplayName("Search Config") @Placement(order = 3, tab = "Search Optional Parameters") @Optional SearchRequestOptionalConfiguration searchRequestOptionalConfiguration) {
 
         String result = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         SearchSourceBuilder searchSourceBuilder = searchSourceConfiguration != null ? getSearchSourceBuilderOptions(searchSourceConfiguration) : new SearchSourceBuilder();
         searchSourceBuilder.query(queryConfiguration.getQueryType().getQuery());
         SearchRequest searchRequest = getSearchRequest(searchRequestConfiguration, searchRequestOptionalConfiguration);
@@ -91,10 +99,15 @@ public class SearchOperations extends BaseSearchOperation {
             logger.info("Search response : " + response);
 
             result = getJsonResponse(response);
+            inputStreamResponse = new ByteArrayInputStream(result.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(response.status().getStatus(), new MultiMap<>());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        return result;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -111,8 +124,10 @@ public class SearchOperations extends BaseSearchOperation {
     @MediaType(value = MediaType.APPLICATION_JSON)
     @DisplayName("Search - JSON Query")
     @OutputResolver(output = ResponseOutputMetadataResolver.class)
-    public String searchUsingJsonData(@Connection ElasticsearchConnection esConnection, @Optional String index, @ParameterGroup(name = "JSON Query") JsonData jsonData) {
+    public Result<InputStream, ResponseAttributes> searchUsingJsonData(@Connection ElasticsearchConnection esConnection, @Optional String index, @ParameterGroup(name = "JSON Query") JsonData jsonData) {
         String result;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         String resource = index != null ? index.trim() + "/_search" : "/_search";
         String jsonContent;
 
@@ -139,10 +154,15 @@ public class SearchOperations extends BaseSearchOperation {
             logger.info("Search using JSON query response : " + response);
             
             result = getJsonResponse(response);
+            inputStreamResponse = new ByteArrayInputStream(result.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(response.getStatusLine().getStatusCode(), new MultiMap<>());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        return result;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
     
     /**
@@ -158,10 +178,12 @@ public class SearchOperations extends BaseSearchOperation {
     @MediaType(value = MediaType.APPLICATION_JSON)
     @DisplayName("Search - Scroll")
     @OutputResolver(output = SearchResponseOutputMetadataResolver.class)
-    public String searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last scroll/search request") String scrollId,
+    public Result<InputStream, ResponseAttributes> searchScroll(@Connection ElasticsearchConnection esConnection, @Summary("Scroll identifier returned in last scroll/search request") String scrollId,
             @Optional @DisplayName("Keep alive time") @Summary("Time interval (in seconds) to keep the search context alive.") long timeValue) {
 
         String response = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
         
         if(timeValue != 0) {
@@ -174,10 +196,15 @@ public class SearchOperations extends BaseSearchOperation {
             logger.info("Search - Scroll response : " + searchResponse);
 
             response = getJsonResponse(searchResponse);
+            inputStreamResponse = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(searchResponse.status().getStatus(), new MultiMap<>());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        return response;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -193,8 +220,10 @@ public class SearchOperations extends BaseSearchOperation {
     @MediaType(value = MediaType.APPLICATION_JSON)
     @DisplayName("Search - Clear Scroll")
     @OutputResolver(output = ClearScrollResponseOutputMetadataResolver.class)
-    public String clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll IDs") List<String> scrollIds) {
+    public Result<InputStream, ResponseAttributes> clearScroll(@Connection ElasticsearchConnection esConnection, @DisplayName("Scroll IDs") List<String> scrollIds) {
         String result = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         
         ClearScrollRequest clearScrollrequest = new ClearScrollRequest();
         clearScrollrequest.setScrollIds(scrollIds);
@@ -202,9 +231,14 @@ public class SearchOperations extends BaseSearchOperation {
             ClearScrollResponse response = esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest, RequestOptions.DEFAULT);
             logger.info("Clear scroll response : " + response);
             result = getJsonResponse(response);
+            inputStreamResponse = new ByteArrayInputStream(result.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(response.status().getStatus(), new MultiMap<>());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        return result;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 }

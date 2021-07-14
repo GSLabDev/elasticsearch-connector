@@ -3,13 +3,18 @@
  */
 package com.mulesoft.connectors.elasticsearch.internal.operation;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.nio.entity.NStringEntity;
+import org.apache.log4j.Logger;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.get.GetRequest;
@@ -19,6 +24,7 @@ import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -26,14 +32,15 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.ParameterGroup;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
-import org.apache.log4j.Logger;
+import org.mule.runtime.extension.api.runtime.operation.Result;
 
+import com.mulesoft.connectors.elasticsearch.api.JsonData;
+import com.mulesoft.connectors.elasticsearch.api.ResponseAttributes;
 import com.mulesoft.connectors.elasticsearch.api.document.DocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.GetDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.document.IndexDocumentOptions;
 import com.mulesoft.connectors.elasticsearch.api.document.UpdateDocumentConfiguration;
-import com.mulesoft.connectors.elasticsearch.api.JsonData;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchGetResponse;
 import com.mulesoft.connectors.elasticsearch.api.response.ElasticsearchResponse;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
@@ -58,6 +65,7 @@ public class DocumentOperations extends ElasticsearchOperations {
      */
     private static final Logger logger = Logger.getLogger(DocumentOperations.class.getName());
 
+    private final int SUCCESS_200 = 200;
     /**
      * Index Document operation adds or updates a typed JSON document in a specific index, making it searchable.
      * 
@@ -76,12 +84,14 @@ public class DocumentOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Index")
     @OutputResolver(output = IndexResponseOutputMetadataResolver.class)
-    public String indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    public Result<InputStream, ResponseAttributes> indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments") @Optional IndexDocumentConfiguration indexDocumentConfiguration) {
 
         IndexRequest indexRequest;
         String response = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         try {
             if (inputSource.getJsonInputPath() != null) {
                 indexRequest = new IndexRequest(index).id(documentId).source(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
@@ -97,6 +107,8 @@ public class DocumentOperations extends ElasticsearchOperations {
 
             logger.info("Index Document operation Status : " + indexResp.status());
             response = getJsonResponse(indexResp);
+            inputStreamResponse = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(indexResp.status().getStatus(), new MultiMap<>());
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -104,7 +116,10 @@ public class DocumentOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        return response;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -123,12 +138,14 @@ public class DocumentOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Get")
     @OutputResolver(output = GetResponseOutputMetadataResolver.class)
-    public String getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    public Result<InputStream, ResponseAttributes> getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments") @Optional GetDocumentConfiguration getDocumentConfiguration) {
 
         GetRequest getRequest = new GetRequest(index, documentId);
         String response = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
 
         try {
             if(getDocumentConfiguration != null) {
@@ -138,6 +155,8 @@ public class DocumentOperations extends ElasticsearchOperations {
             ElasticsearchGetResponse getResponse = new ElasticsearchGetResponse(esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption()));
             logger.info("Get Response : " + getResponse);
             response = getJsonResponse(getResponse);
+            inputStreamResponse = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(SUCCESS_200, new MultiMap<>());
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -145,7 +164,10 @@ public class DocumentOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        return response;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -164,13 +186,15 @@ public class DocumentOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Delete")
     @OutputResolver(output = DeleteResponseOutputMetadataResolver.class)
-    public String deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    public Result<InputStream, ResponseAttributes> deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId,
             @Placement(tab = "Optional Arguments", order = 1) @Optional DocumentConfiguration deleteDocumentConfiguration ) {
         String response = null;
         DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
         DeleteResponse deleteResp;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         try {
             if(deleteDocumentConfiguration != null) {
                 ElasticsearchDocumentUtils.configureDeleteDocumentReq(deleteRequest, deleteDocumentConfiguration);
@@ -179,6 +203,8 @@ public class DocumentOperations extends ElasticsearchOperations {
             deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Delete document response : " + deleteResp);
             response = getJsonResponse(deleteResp);
+            inputStreamResponse = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(deleteResp.status().getStatus(), new MultiMap<>());
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -186,7 +212,10 @@ public class DocumentOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        return response;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -207,10 +236,13 @@ public class DocumentOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Update")
     @OutputResolver(output = UpdateResponseOutputMetadataResolver.class)
-    public String updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
+    public Result<InputStream, ResponseAttributes> updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
             @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
             @Placement(tab = "Optional Arguments") @Optional UpdateDocumentConfiguration updateDocumentConfiguration) {
-        String response = null;
+        
+    	String response = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         
         try {
             UpdateRequest updateRequest = new UpdateRequest(index, documentId);
@@ -227,10 +259,15 @@ public class DocumentOperations extends ElasticsearchOperations {
             UpdateResponse updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Update Response : " + updateResp);
             response = getJsonResponse(updateResp);
+            inputStreamResponse = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(updateResp.status().getStatus(), new MultiMap<>());
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        return response;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -247,12 +284,14 @@ public class DocumentOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Document - Bulk")
     @OutputResolver(output = ResponseOutputMetadataResolver.class)
-    public String bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index,
+    public Result<InputStream, ResponseAttributes> bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index,
             @ParameterGroup(name = "Input data") JsonData jsonData) {
         String result = null;
         String resource = index != null ? "/" + index + "/_bulk" : "/_bulk";
         Map<String, String> params = Collections.singletonMap("pretty", "true");
         HttpEntity entity;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         try {
             if (jsonData.getJsonfile() != null) {
                 String jsonContent;
@@ -268,9 +307,18 @@ public class DocumentOperations extends ElasticsearchOperations {
             ElasticsearchResponse response = new ElasticsearchResponse(esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request));
             logger.info("Bulk operation response : " + response);
             result = getJsonResponse(response);
+            MultiMap<String, String> headers = new MultiMap<>();
+            for(Header h : response.getHeaders()) {
+            	headers.put(h.getName(), h.getValue());
+            }
+            inputStreamResponse = new ByteArrayInputStream(result.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(response.getStatusLine().getStatusCode(), headers);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
         }
-        return result;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 }

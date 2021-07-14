@@ -10,11 +10,13 @@ import org.mule.runtime.api.connection.ConnectionValidationResult;
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
+import org.mule.runtime.extension.api.annotation.param.display.Example;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mulesoft.connectors.elasticsearch.api.ProxyConfiguration;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
@@ -29,6 +31,7 @@ public abstract class ElasticsearchBaseConnectionProvider implements CachedConne
     @DisplayName("Host")
     @Placement(order = 1)
     @Summary("ElasticSearch instance host IP or DNS name")
+    @Example("host.com")
     private String host;
 
     @Parameter
@@ -38,6 +41,12 @@ public abstract class ElasticsearchBaseConnectionProvider implements CachedConne
     @Summary("ElasticSearch instance port")
     private int port;
 
+    @Parameter
+    @Optional
+    @Summary("Reusable configuration element for outbound connections through a proxy")
+    @Placement(tab = "Proxy")
+    ProxyConfiguration proxyConfig;
+    
     public String getHost() {
         return this.host;
     }

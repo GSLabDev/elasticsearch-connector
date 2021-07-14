@@ -9,11 +9,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.KeyStore;
+import java.util.concurrent.TimeUnit;
+
 import javax.net.ssl.SSLContext;
+
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.ssl.SSLContextBuilder;
@@ -24,6 +28,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mulesoft.connectors.elasticsearch.api.ProxyConfiguration;
+import com.mulesoft.connectors.elasticsearch.internal.connection.provider.configuration.UserConfiguration;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
 
@@ -36,28 +42,50 @@ public final class ElasticsearchConnection {
 
     private static final Logger logger = LoggerFactory.getLogger(ElasticsearchConnection.class);
     private RestHighLevelClient client;
+    private ProxyConfiguration proxyConfiguration;
+    private UserConfiguration configuration;
 
     public ElasticsearchConnection(String host, int port) {
         logger.info("Using host:" + host + " and port:" + port);
         this.client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port, "http")));
     }
 
-    public ElasticsearchConnection(String host, int port, String username, String password) {
+    public ElasticsearchConnection(String host, int port, UserConfiguration userConfiguration, ProxyConfiguration proxyConfig) {
+    	this.configuration = userConfiguration;
+    	String username = configuration.getUserName();
+    	String password = configuration.getPassword();
         logger.info("Using host:" + host + " port:" + port + " and user:" + username);
+        this.proxyConfiguration = proxyConfig;
         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
         RestClientBuilder builder = RestClient.builder(new HttpHost(host, port)).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
 
-            @Override
-            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-            }
-        });
+			@Override
+			public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+				httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+				if (proxyConfiguration != null) {
+					httpClientBuilder.setProxy(new HttpHost(proxyConfiguration.getHost(), proxyConfiguration.getPort(),
+							proxyConfiguration.getProtocol()));
+				}
+				return httpClientBuilder;
+			}
+		}).setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
+			@Override
+			public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
+				return requestConfigBuilder.setConnectTimeout((int) TimeUnit.MILLISECONDS.convert(configuration.getConnectTimeout(), configuration.getTimeUnit()))
+						.setSocketTimeout((int) TimeUnit.MILLISECONDS.convert(configuration.getSocketTimeout(), configuration.getTimeUnit()));
+			}
+		});
         this.client = new RestHighLevelClient(builder);
     }
 
-    public ElasticsearchConnection(String host, int port, String userName, String password, String trustStoreType, String trustStorePath, String trustStorePassword) {
-        KeyStore truststore;
+    public ElasticsearchConnection(String host, int port, UserConfiguration userConfiguration, String trustStoreType, String trustStorePath, String trustStorePassword, ProxyConfiguration proxyConfig) {
+    	this.configuration = userConfiguration;
+    	String userName = configuration.getUserName();
+    	String password = configuration.getPassword();
+    	logger.info("Using host:" + host + " port:" + port + " user:" + userName + " truststore:" + trustStorePath + " and truststore password:" + trustStorePassword);
+    	this.proxyConfiguration = proxyConfig;
+    	KeyStore truststore;
         try {
             truststore = KeyStore.getInstance(trustStoreType);
 
@@ -74,12 +102,26 @@ public final class ElasticsearchConnection {
                     if (userName != null && password != null) {
                         final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
                         credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
-                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider).setSSLContext(sslContext);
+                        httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider).setSSLContext(sslContext);
+                        if(proxyConfiguration != null) {
+                        	httpClientBuilder.setProxy(new HttpHost(proxyConfiguration.getHost(), proxyConfiguration.getPort(), proxyConfiguration.getProtocol()));
+                        }
+                        return httpClientBuilder;
                     } else {
-                        return httpClientBuilder.setSSLContext(sslContext);
+                        httpClientBuilder.setSSLContext(sslContext);
+                        if(proxyConfiguration != null) {
+                        	httpClientBuilder.setProxy(new HttpHost(proxyConfiguration.getHost(), proxyConfiguration.getPort(), proxyConfiguration.getProtocol()));
+                        }
+                        return httpClientBuilder;
                     }
                 }
-            });
+            }).setRequestConfigCallback(new RestClientBuilder.RequestConfigCallback() {
+    			@Override
+    			public RequestConfig.Builder customizeRequestConfig(RequestConfig.Builder requestConfigBuilder) {
+    				return requestConfigBuilder.setConnectTimeout((int) TimeUnit.MILLISECONDS.convert(configuration.getConnectTimeout(), configuration.getTimeUnit()))
+    						.setSocketTimeout((int) TimeUnit.MILLISECONDS.convert(configuration.getSocketTimeout(), configuration.getTimeUnit()));
+    			}
+    		});
 
             this.client = new RestHighLevelClient(builder);
         } catch (Exception e) {

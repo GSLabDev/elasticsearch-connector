@@ -3,7 +3,10 @@
  */
 package com.mulesoft.connectors.elasticsearch.internal.operation;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.Charset;
 
 import org.elasticsearch.client.indices.CloseIndexRequest;
 import org.elasticsearch.client.indices.CloseIndexResponse;
@@ -15,6 +18,7 @@ import org.elasticsearch.action.admin.indices.open.OpenIndexRequest;
 import org.elasticsearch.action.admin.indices.open.OpenIndexResponse;
 import org.elasticsearch.action.support.IndicesOptions;
 import org.elasticsearch.common.unit.TimeValue;
+import org.mule.runtime.api.util.MultiMap;
 import org.mule.runtime.extension.api.annotation.metadata.OutputResolver;
 import org.mule.runtime.extension.api.annotation.param.Connection;
 import org.mule.runtime.extension.api.annotation.param.MediaType;
@@ -22,10 +26,12 @@ import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Placement;
 import org.mule.runtime.extension.api.annotation.param.display.Summary;
+import org.mule.runtime.extension.api.runtime.operation.Result;
 import org.apache.log4j.Logger;
 
 import com.mulesoft.connectors.elasticsearch.api.IndexConfiguration;
 import com.mulesoft.connectors.elasticsearch.api.IndexOptions;
+import com.mulesoft.connectors.elasticsearch.api.ResponseAttributes;
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
 import com.mulesoft.connectors.elasticsearch.internal.error.ElasticsearchErrorTypes;
 import com.mulesoft.connectors.elasticsearch.internal.error.exception.ElasticsearchException;
@@ -47,6 +53,7 @@ public class IndexOperations extends ElasticsearchOperations {
      */
     private static final Logger logger = Logger.getLogger(IndexOperations.class.getName());
 
+    private final int SUCCESS_200 = 200;
     /**
      * The createIndex operation allows to instantiate an index.
      *
@@ -61,9 +68,11 @@ public class IndexOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Index - Create")
     @OutputResolver(output = CreateIndexResponseOutputMetadataResolver.class)
-    public String createIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to create") String index,
+    public Result<InputStream, ResponseAttributes> createIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to create") String index,
             @Placement(tab = "Optional Arguments") @Optional IndexConfiguration indexConfiguration) {
         String response = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         try {
             CreateIndexRequest createIndexReq = new CreateIndexRequest(index);
             if(indexConfiguration != null) {
@@ -73,6 +82,8 @@ public class IndexOperations extends ElasticsearchOperations {
             CreateIndexResponse createIndexResp = esConnection.getElasticsearchConnection().indices().create(createIndexReq, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Create index acknowledged : " + createIndexResp.isAcknowledged());
             response = getJsonResponse(createIndexResp);
+            inputStreamResponse = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(SUCCESS_200, new MultiMap<>());
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -80,7 +91,10 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        return response;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -101,11 +115,13 @@ public class IndexOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Index - Delete")
     @OutputResolver(output = AcknowledgedResponseOutputMetadataResolver.class)
-    public String deleteIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
+    public Result<InputStream, ResponseAttributes> deleteIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to delete") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpts) {
         String result = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         DeleteIndexRequest deleteIndexRequest = new DeleteIndexRequest(index);
 
         if (timeoutInSec != 0) {
@@ -126,6 +142,8 @@ public class IndexOperations extends ElasticsearchOperations {
             response = esConnection.getElasticsearchConnection().indices().delete(deleteIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Delete Index acknowledged : " + response.isAcknowledged());
             result = getJsonResponse(response);
+            inputStreamResponse = new ByteArrayInputStream(result.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(SUCCESS_200, new MultiMap<>());
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -133,7 +151,10 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        return result;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -157,12 +178,14 @@ public class IndexOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Index - Open")
     @OutputResolver(output = OpenIndexResponseOutputMetadataResolver.class)
-    public String openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
+    public Result<InputStream, ResponseAttributes> openIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @DisplayName("Wait for Active Shards") @Optional(defaultValue = "0") int waitForActiveShards,
             @Placement(tab = "Optional Arguments", order = 4) @Optional IndexOptions indicesOpts) {
         String response = null;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         OpenIndexRequest openIndexRequest = new OpenIndexRequest(index);
 
         if (timeoutInSec != 0) {
@@ -188,6 +211,8 @@ public class IndexOperations extends ElasticsearchOperations {
             openIndexResp = esConnection.getElasticsearchConnection().indices().open(openIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Open Index acknowledged : " + openIndexResp.isAcknowledged());
             response = getJsonResponse(openIndexResp);
+            inputStreamResponse = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(SUCCESS_200, new MultiMap<>());
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -195,7 +220,10 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        return response;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
     /**
@@ -217,11 +245,13 @@ public class IndexOperations extends ElasticsearchOperations {
     @MediaType(MediaType.APPLICATION_JSON)
     @DisplayName("Index - Close")
     @OutputResolver(output = CloseIndexResponseOutputMetadataResolver.class)
-    public String closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
+    public Result<InputStream, ResponseAttributes> closeIndex(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") @Summary("The index to open") String index,
             @Placement(tab = "Optional Arguments", order = 1) @Optional(defaultValue = "0") @Summary("Timeout in seconds to wait for the all the nodes to acknowledge the index creation") @DisplayName("Timeout (Seconds)") long timeoutInSec,
             @Placement(tab = "Optional Arguments", order = 2) @Optional(defaultValue = "0") @Summary("Timeout in seconds to connect to the master node") @DisplayName("Mater Node Timeout (Seconds)") long masterNodeTimeoutInSec,
             @Placement(tab = "Optional Arguments", order = 3) @Optional IndexOptions indicesOpt) {
         String response;
+        InputStream inputStreamResponse = null;
+        ResponseAttributes attributes = null;
         CloseIndexRequest closeIndexRequest = new CloseIndexRequest(index);
 
         if (timeoutInSec != 0) {
@@ -243,6 +273,8 @@ public class IndexOperations extends ElasticsearchOperations {
             closeIndexResp = esConnection.getElasticsearchConnection().indices().close(closeIndexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
             logger.info("Close Index acknowledged : " + closeIndexResp.isAcknowledged());
             response = getJsonResponse(closeIndexResp);
+            inputStreamResponse = new ByteArrayInputStream(response.getBytes(Charset.forName("UTF-8")));
+            attributes = new ResponseAttributes(SUCCESS_200, new MultiMap<>());
         } catch (IOException e) {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
@@ -250,7 +282,10 @@ public class IndexOperations extends ElasticsearchOperations {
             logger.error(e);
             throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
         }
-        return response;
+        return Result.<InputStream, ResponseAttributes>builder() 
+                .output(inputStreamResponse)
+                .attributes(attributes)
+                .build();
     }
 
 }

@@ -34,8 +34,8 @@ public class HttpsConnectionProvider extends ElasticsearchBaseConnectionProvider
     @Override
     public ElasticsearchConnection connect() {
         try {
-            return new ElasticsearchConnection(getHost(), getPort(), userConfiguration.getUserName(), userConfiguration.getPassword(), trustStoreconfiguration.getTrustStoreType(),
-                    trustStoreconfiguration.getTrustStorePath(), trustStoreconfiguration.getTrustStorePassword());
+            return new ElasticsearchConnection(getHost(), getPort(), userConfiguration, trustStoreconfiguration.getTrustStoreType(),
+                    trustStoreconfiguration.getTrustStorePath(), trustStoreconfiguration.getTrustStorePassword(), proxyConfig);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.CONNECTIVITY, e);
         }

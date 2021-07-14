@@ -3,10 +3,13 @@
  */
 package com.mulesoft.connectors.elasticsearch.internal.connection.provider.configuration;
 
+import java.util.concurrent.TimeUnit;
+
 import org.mule.runtime.extension.api.annotation.param.Optional;
 import org.mule.runtime.extension.api.annotation.param.Parameter;
 import org.mule.runtime.extension.api.annotation.param.display.DisplayName;
 import org.mule.runtime.extension.api.annotation.param.display.Password;
+import org.mule.runtime.extension.api.annotation.param.display.Placement;
 
 /**
  * @author Great Software Laboratory Pvt. Ltd.
@@ -32,6 +35,30 @@ public class UserConfiguration {
     @Password
     private String password;
 
+    /**
+     * Elasticsearch connect timeout
+     */
+    @DisplayName("Connect Timeout")
+    @Parameter
+    @Placement(tab = "Advanced")
+    @Optional(defaultValue = "1")
+    int connectTimeout;
+    
+    /**
+     * Elasticsearch socket timeout
+     */
+    @DisplayName("Socket Timeout")
+    @Parameter
+    @Placement(tab = "Advanced")
+    @Optional(defaultValue = "30")
+    int socketTimeout;
+    
+    @DisplayName("Time Unit")
+    @Parameter
+    @Placement(tab = "Advanced")
+    @Optional(defaultValue = "SECONDS")
+    TimeUnit timeUnit;
+    
     public String getUserName() {
         return userName;
     }
@@ -39,5 +66,17 @@ public class UserConfiguration {
     public String getPassword() {
         return password;
     }
+    
+    public int getConnectTimeout() {
+		return connectTimeout;
+	}
 
+	public int getSocketTimeout() {
+		return socketTimeout;
+	}
+
+	public TimeUnit getTimeUnit() {
+        return timeUnit;
+    }
+    
 }
