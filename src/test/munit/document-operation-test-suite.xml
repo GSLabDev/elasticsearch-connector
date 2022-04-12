@@ -28,7 +28,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="257c504b-3523-42ee-9f2a-769b7c61c07b" config-ref="Elasticsearch_HTTP_Config3"
 				index="test_index_1" documentId="test_doc_id_1">
-				<elasticsearch:index-document-configuration operationType="INDEX" routing="routing" timeoutInSec="5" refreshPolicy="IMMEDIATE" version="2" versionType="EXTERNAL" />
+				<elasticsearch:index-document-configuration   operationType="INDEX" routing="routing" timeoutInSec="5" refreshPolicy="IMMEDIATE" version="2" versionType="EXTERNAL" />
 				<elasticsearch:document-sources>
 					<elasticsearch:document-source key="key1"
 						value="value1" />
@@ -168,7 +168,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				config-ref="Elasticsearch_HTTP_Config3" index="update_doc_index_1"
 				documentId="update_doc_id_1" jsonInputPath="${index.jsoninputpath}" >
 				<elasticsearch:update-document-configuration routing="routing" timeoutInSec="6"
-				refreshPolicy="WAIT_UNTIL" retryOnConflict="1" fetchSource="true"
+				refreshPolicy="WAIT_UNTIL" retryOnConflict="1" fetchSource="true" 
 				detectNoop="false" scriptedUpsert="true" docAsUpsert="true"/>
 			</elasticsearch:update-document>
 			<elasticsearch:delete-document
@@ -203,9 +203,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:name="Document - Update" doc:id="78a82771-f2b4-45bb-9894-d101c5204492"
 				config-ref="Elasticsearch_HTTP_Config3" index="update_doc_index_2"
 				documentId="update_doc_id_2">
-				<elasticsearch:update-document-configuration routing="routing" timeoutInSec="6"
-				refreshPolicy="WAIT_UNTIL" retryOnConflict="1" fetchSource="true"
-				detectNoop="false" scriptedUpsert="true" docAsUpsert="true"/>
+				
 				<elasticsearch:document-sources>
 					<elasticsearch:document-source key="name"
 						value="aaa" />

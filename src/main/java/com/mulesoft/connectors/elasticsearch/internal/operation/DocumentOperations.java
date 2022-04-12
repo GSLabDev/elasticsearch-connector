@@ -53,224 +53,224 @@ import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
  */
 public class DocumentOperations extends ElasticsearchOperations {
 
-    /**
-     * Logging object
-     */
-    private static final Logger logger = Logger.getLogger(DocumentOperations.class.getName());
+	/**
+	 * Logging object
+	 */
+	private static final Logger LOGGER = Logger.getLogger(DocumentOperations.class.getName());
 
-    /**
-     * Index Document operation adds or updates a typed JSON document in a specific index, making it searchable.
-     * 
-     * @param esConnection
-     *            The Elasticsearch connection
-     * @param index
-     *            Name of the index
-     * @param documentId
-     *            ID of the document
-     * @param inputSource
-     *            Get the JSON input file path or index mapping.
-     * @param indexDocumentConfiguration
-     *            Index Document Configuration
-     * @return IndexResponse as JSON String
-     */
-    @MediaType(MediaType.APPLICATION_JSON)
-    @DisplayName("Document - Index")
-    @OutputResolver(output = IndexResponseOutputMetadataResolver.class)
-    public String indexDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
-            @Placement(tab = "Optional Arguments") @Optional IndexDocumentConfiguration indexDocumentConfiguration) {
+	/**
+	 * Index Document operation adds or updates a typed JSON document in a specific
+	 * index, making it searchable.
+	 * 
+	 * @param esConnection               The Elasticsearch connection
+	 * @param index                      Name of the index
+	 * @param documentId                 ID of the document
+	 * @param inputSource                Get the JSON input file path or index
+	 *                                   mapping.
+	 * @param indexDocumentConfiguration Index Document Configuration
+	 * @return IndexResponse as JSON String
+	 */
+	@MediaType(MediaType.APPLICATION_JSON)
+	@DisplayName("Document - Index")
+	@OutputResolver(output = IndexResponseOutputMetadataResolver.class)
+	public String indexDocument(@Connection ElasticsearchConnection esConnection,
+			@Placement(order = 1) @DisplayName("Index") String index,
+			@Placement(order = 2) @DisplayName("Document Id") String documentId,
+			@Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
+			@Placement(tab = "Optional Arguments") @Optional IndexDocumentConfiguration indexDocumentConfiguration) {
 
-        IndexRequest indexRequest;
-        String response = null;
-        try {
-            if (inputSource.getJsonInputPath() != null) {
-                indexRequest = new IndexRequest(index).id(documentId).source(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
-            } else {
-                indexRequest = new IndexRequest(index).id(documentId).source(inputSource.getDocumentSource());
-            }
+		IndexRequest indexRequest;
+		String response = null;
+		try {
+			if (inputSource.getJsonInputPath() != null) {
+				indexRequest = new IndexRequest(index).id(documentId)
+						.source(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
+			} else {
+				indexRequest = new IndexRequest(index).id(documentId).source(inputSource.getDocumentSource());
+			}
 
-            if(indexDocumentConfiguration != null) {
-                ElasticsearchDocumentUtils.configureIndexReq(indexRequest, indexDocumentConfiguration);
-            }
-            
-            IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
+			if (indexDocumentConfiguration != null) {
+				ElasticsearchDocumentUtils.configureIndexReq(indexRequest, indexDocumentConfiguration);
+			}
 
-            logger.info("Index Document operation Status : " + indexResp.status());
-            response = getJsonResponse(indexResp);
-        } catch (IOException e) {
-            logger.error(e);
-            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-        } catch (Exception e) {
-            logger.error(e);
-            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
-        }
-        return response;
-    }
+			IndexResponse indexResp = esConnection.getElasticsearchConnection().index(indexRequest,
+					ElasticsearchUtils.getContentTypeJsonRequestOption());
 
-    /**
-     * Get Document operation allows to get a typed JSON document from the index based on its id.
-     * 
-     * @param esConnection
-     *            The Elasticsearch connection
-     * @param index
-     *            Name of the index
-     * @param documentId
-     *            ID of the document
-     * @param getDocumentConfiguration
-     *            Get Document configuration
-     * @return GetResponse as JSON String
-     */
-    @MediaType(MediaType.APPLICATION_JSON)
-    @DisplayName("Document - Get")
-    @OutputResolver(output = GetResponseOutputMetadataResolver.class)
-    public String getDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Document Id") String documentId,
-            @Placement(tab = "Optional Arguments") @Optional GetDocumentConfiguration getDocumentConfiguration) {
+			LOGGER.info("Index Document operation Status : " + indexResp.status());
+			response = getJsonResponse(indexResp);
+		} catch (IOException e) {
+			LOGGER.error(e);
+			throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+		} catch (Exception e) {
+			LOGGER.error(e);
+			throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
+		}
+		return response;
+	}
 
-        GetRequest getRequest = new GetRequest(index, documentId);
-        String response = null;
+	/**
+	 * Get Document operation allows to get a typed JSON document from the index
+	 * based on its id.
+	 * 
+	 * @param esConnection             The Elasticsearch connection
+	 * @param index                    Name of the index
+	 * @param documentId               ID of the document
+	 * @param getDocumentConfiguration Get Document configuration
+	 * @return GetResponse as JSON String
+	 */
+	@MediaType(MediaType.APPLICATION_JSON)
+	@DisplayName("Document - Get")
+	@OutputResolver(output = GetResponseOutputMetadataResolver.class)
+	public String getDocument(@Connection ElasticsearchConnection esConnection,
+			@Placement(order = 1) @DisplayName("Index") String index,
+			@Placement(order = 2) @DisplayName("Document Id") String documentId,
+			@Placement(tab = "Optional Arguments") @Optional GetDocumentConfiguration getDocumentConfiguration) {
 
-        try {
-            if(getDocumentConfiguration != null) {
-                ElasticsearchDocumentUtils.configureGetReq(getRequest, getDocumentConfiguration);
-            }
-            
-            ElasticsearchGetResponse getResponse = new ElasticsearchGetResponse(esConnection.getElasticsearchConnection().get(getRequest, ElasticsearchUtils.getContentTypeJsonRequestOption()));
-            logger.info("Get Response : " + getResponse);
-            response = getJsonResponse(getResponse);
-        } catch (IOException e) {
-            logger.error(e);
-            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-        } catch (Exception e) {
-            logger.error(e);
-            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
-        }
-        return response;
-    }
+		GetRequest getRequest = new GetRequest(index, documentId);
+		String response = null;
 
-    /**
-     * Delete Document operation allows to delete a typed JSON document from a specific index based on its id
-     * 
-     * @param esConnection
-     *            The Elasticsearch connection
-     * @param index
-     *            Name of the index
-     * @param documentId
-     *            ID of the document
-     * @param deleteDocumentConfiguration
-     *            Delete document configuration
-     * @return DeleteResponse as JSON String
-     */
-    @MediaType(MediaType.APPLICATION_JSON)
-    @DisplayName("Document - Delete")
-    @OutputResolver(output = DeleteResponseOutputMetadataResolver.class)
-    public String deleteDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Document Id") String documentId,
-            @Placement(tab = "Optional Arguments", order = 1) @Optional DocumentConfiguration deleteDocumentConfiguration ) {
-        String response = null;
-        DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
+		try {
+			if (getDocumentConfiguration != null) {
+				ElasticsearchDocumentUtils.configureGetReq(getRequest, getDocumentConfiguration);
+			}
 
-        DeleteResponse deleteResp;
-        try {
-            if(deleteDocumentConfiguration != null) {
-                ElasticsearchDocumentUtils.configureDeleteDocumentReq(deleteRequest, deleteDocumentConfiguration);
-            }
-            
-            deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
-            logger.info("Delete document response : " + deleteResp);
-            response = getJsonResponse(deleteResp);
-        } catch (IOException e) {
-            logger.error(e);
-            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-        } catch (Exception e) {
-            logger.error(e);
-            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
-        }
-        return response;
-    }
+			ElasticsearchGetResponse getResponse = new ElasticsearchGetResponse(
+					esConnection.getElasticsearchConnection().get(getRequest,
+							ElasticsearchUtils.getContentTypeJsonRequestOption()));
+			LOGGER.info("Get Response : " + getResponse);
+			response = getJsonResponse(getResponse);
+		} catch (IOException e) {
+			LOGGER.error(e);
+			throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+		} catch (Exception e) {
+			LOGGER.error(e);
+			throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
+		}
+		return response;
+	}
 
-    /**
-     * Update Document operation allows to update a document based on a script provided.
-     * 
-     * @param esConnection
-     *            The Elasticsearch connection
-     * @param index
-     *            Name of the index
-     * @param documentId
-     *            ID of the document
-     * @param inputSource
-     *            Input document source
-     * @param updateDocumentConfiguration
-     *            Update document configuration
-     * @return UpdateResponse as JSON String
-     */
-    @MediaType(MediaType.APPLICATION_JSON)
-    @DisplayName("Document - Update")
-    @OutputResolver(output = UpdateResponseOutputMetadataResolver.class)
-    public String updateDocument(@Connection ElasticsearchConnection esConnection, @Placement(order = 1) @DisplayName("Index") String index,
-            @Placement(order = 2) @DisplayName("Document Id") String documentId, @Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
-            @Placement(tab = "Optional Arguments") @Optional UpdateDocumentConfiguration updateDocumentConfiguration) {
-        String response = null;
-        
-        try {
-            UpdateRequest updateRequest = new UpdateRequest(index, documentId);
-            if (inputSource.getJsonInputPath() != null) {
-                updateRequest.doc(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()), XContentType.JSON);
-            } else {
-                updateRequest.doc(inputSource.getDocumentSource());
-            }
-            
-            if(updateDocumentConfiguration != null) {
-                ElasticsearchDocumentUtils.configureUpdateReq(updateRequest, updateDocumentConfiguration);
-            }
-            
-            UpdateResponse updateResp = esConnection.getElasticsearchConnection().update(updateRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
-            logger.info("Update Response : " + updateResp);
-            response = getJsonResponse(updateResp);
-        } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-        }
-        return response;
-    }
+	/**
+	 * Delete Document operation allows to delete a typed JSON document from a
+	 * specific index based on its id
+	 * 
+	 * @param esConnection                The Elasticsearch connection
+	 * @param index                       Name of the index
+	 * @param documentId                  ID of the document
+	 * @param deleteDocumentConfiguration Delete document configuration
+	 * @return DeleteResponse as JSON String
+	 */
+	@MediaType(MediaType.APPLICATION_JSON)
+	@DisplayName("Document - Delete")
+	@OutputResolver(output = DeleteResponseOutputMetadataResolver.class)
+	public String deleteDocument(@Connection ElasticsearchConnection esConnection,
+			@Placement(order = 1) @DisplayName("Index") String index,
+			@Placement(order = 2) @DisplayName("Document Id") String documentId,
+			@Placement(tab = "Optional Arguments", order = 1) @Optional DocumentConfiguration deleteDocumentConfiguration) {
+		String response = null;
+		DeleteRequest deleteRequest = new DeleteRequest(index, documentId);
 
-    /**
-     * Bulk operation makes it possible to perform many create, index, delete and update operations in a single API call.
-     * 
-     * @param esConnection
-     *            The Elasticsearch connection
-     * @param index
-     *            Index name on which bulk operation performed.
-     * @param jsonData
-     *            Input file / data with list of operations to be performed like create, index, delete, update.
-     * @return Response as JSON String
-     */
-    @MediaType(MediaType.APPLICATION_JSON)
-    @DisplayName("Document - Bulk")
-    @OutputResolver(output = ResponseOutputMetadataResolver.class)
-    public String bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index,
-            @ParameterGroup(name = "Input data") JsonData jsonData) {
-        String result = null;
-        String resource = index != null ? "/" + index + "/_bulk" : "/_bulk";
-        Map<String, String> params = Collections.singletonMap("pretty", "true");
-        HttpEntity entity;
-        try {
-            if (jsonData.getJsonfile() != null) {
-                String jsonContent;
-                jsonContent = ElasticsearchUtils.readFileToString(jsonData.getJsonfile());
-                entity = new NStringEntity(jsonContent, ContentType.APPLICATION_JSON);
-            } else {
-                entity = new NStringEntity(jsonData.getJsonText(), ContentType.APPLICATION_JSON);
-            }
+		DeleteResponse deleteResp;
+		try {
+			if (deleteDocumentConfiguration != null) {
+				ElasticsearchDocumentUtils.configureDeleteDocumentReq(deleteRequest, deleteDocumentConfiguration);
+			}
 
-            Request request = new Request("POST", resource);
-            request.addParameters(params);
-            request.setEntity(entity);
-            ElasticsearchResponse response = new ElasticsearchResponse(esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request));
-            logger.info("Bulk operation response : " + response);
-            result = getJsonResponse(response);
-        } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-        }
-        return result;
-    }
+			deleteResp = esConnection.getElasticsearchConnection().delete(deleteRequest,
+					ElasticsearchUtils.getContentTypeJsonRequestOption());
+			LOGGER.info("Delete document response : " + deleteResp);
+			response = getJsonResponse(deleteResp);
+		} catch (IOException e) {
+			LOGGER.error(e);
+			throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+		} catch (Exception e) {
+			LOGGER.error(e);
+			throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
+		}
+		return response;
+	}
+
+	/**
+	 * Update Document operation allows to update a document based on a script
+	 * provided.
+	 * 
+	 * @param esConnection                The Elasticsearch connection
+	 * @param index                       Name of the index
+	 * @param documentId                  ID of the document
+	 * @param inputSource                 Input document source
+	 * @param updateDocumentConfiguration Update document configuration
+	 * @return UpdateResponse as JSON String
+	 */
+	@MediaType(MediaType.APPLICATION_JSON)
+	@DisplayName("Document - Update")
+	@OutputResolver(output = UpdateResponseOutputMetadataResolver.class)
+	public String updateDocument(@Connection ElasticsearchConnection esConnection,
+			@Placement(order = 1) @DisplayName("Index") String index,
+			@Placement(order = 2) @DisplayName("Document Id") String documentId,
+			@Placement(order = 3) @ParameterGroup(name = "Input Document") IndexDocumentOptions inputSource,
+			@Placement(tab = "Optional Arguments") @Optional UpdateDocumentConfiguration updateDocumentConfiguration) {
+		String response = null;
+
+		try {
+			UpdateRequest updateRequest = new UpdateRequest(index, documentId);
+			if (inputSource.getJsonInputPath() != null) {
+				updateRequest.doc(ElasticsearchUtils.readFileToString(inputSource.getJsonInputPath()),
+						XContentType.JSON);
+			} else {
+				updateRequest.doc(inputSource.getDocumentSource());
+			}
+
+			if (updateDocumentConfiguration != null) {
+				ElasticsearchDocumentUtils.configureUpdateReq(updateRequest, updateDocumentConfiguration);
+			}
+
+			UpdateResponse updateResp = esConnection.getElasticsearchConnection().update(updateRequest,
+					ElasticsearchUtils.getContentTypeJsonRequestOption());
+			LOGGER.info("Update Response : " + updateResp);
+			response = getJsonResponse(updateResp);
+		} catch (Exception e) {
+			throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+		}
+		return response;
+	}
+
+	/**
+	 * Bulk operation makes it possible to perform many create, index, delete and
+	 * update operations in a single API call.
+	 * 
+	 * @param esConnection The Elasticsearch connection
+	 * @param index        Index name on which bulk operation performed.
+	 * @param jsonData     Input file / data with list of operations to be performed
+	 *                     like create, index, delete, update.
+	 * @return Response as JSON String
+	 */
+	@MediaType(MediaType.APPLICATION_JSON)
+	@DisplayName("Document - Bulk")
+	@OutputResolver(output = ResponseOutputMetadataResolver.class)
+	public String bulkOperation(@Connection ElasticsearchConnection esConnection, @Optional String index,
+			@ParameterGroup(name = "Input data") JsonData jsonData) {
+		String result = null;
+		String resource = index != null ? "/" + index + "/_bulk" : "/_bulk";
+		Map<String, String> params = Collections.singletonMap("pretty", "true");
+		HttpEntity entity;
+		try {
+			if (jsonData.getJsonfile() != null) {
+				String jsonContent;
+				jsonContent = ElasticsearchUtils.readFileToString(jsonData.getJsonfile());
+				entity = new NStringEntity(jsonContent, ContentType.APPLICATION_JSON);
+			} else {
+				entity = new NStringEntity(jsonData.getJsonText(), ContentType.APPLICATION_JSON);
+			}
+
+			Request request = new Request("POST", resource);
+			request.addParameters(params);
+			request.setEntity(entity);
+			ElasticsearchResponse response = new ElasticsearchResponse(
+					esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request));
+			LOGGER.info("Bulk operation response : " + response);
+			result = getJsonResponse(response);
+		} catch (Exception e) {
+			throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+		}
+		return result;
+	}
 }

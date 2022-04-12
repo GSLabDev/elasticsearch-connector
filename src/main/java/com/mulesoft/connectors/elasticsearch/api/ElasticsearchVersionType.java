@@ -11,15 +11,16 @@ public enum ElasticsearchVersionType {
     INTERNAL;
 
     public VersionType getVersionType() {
-        switch (this) {
-            case EXTERNAL:
-                return VersionType.EXTERNAL;
-            case EXTERNAL_GTE:
-                return VersionType.EXTERNAL_GTE;
-            case INTERNAL:
-                return VersionType.INTERNAL;
-            default:
-                return null;
-        }
+    	
+    	VersionType versiontype = null;
+        
+    	if(this == EXTERNAL) {
+    		versiontype = VersionType.EXTERNAL;
+    	}else if (this == EXTERNAL_GTE) {
+    		versiontype = VersionType.EXTERNAL_GTE;
+		}else if (this == INTERNAL) {
+			versiontype = VersionType.INTERNAL;
+		}
+    	return versiontype;
     }
 }

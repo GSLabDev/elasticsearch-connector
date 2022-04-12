@@ -18,30 +18,30 @@ import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
 
 public class InfoOperation extends ElasticsearchOperations {
 
-    /**
-     * Logging object
-     */
-    private static final Logger logger = Logger.getLogger(InfoOperation.class.getName());
+	/**
+	 * Logging object
+	 */
+	private static final Logger LOGGER = Logger.getLogger(InfoOperation.class.getName());
 
-    /**
-     * Retrieves the cluster information.
-     * 
-     * @param esConnection
-     *            The Elasticsearch connection
-     * @return MainResponse as JSON String
-     */
-    @MediaType(MediaType.APPLICATION_JSON)
-    @DisplayName("Elasticsearch - Info")
-    @OutputResolver(output = MainResponseOutputMetadataResolver.class)
-    public String info(@Connection ElasticsearchConnection esConnection) {
-        String result = null;
-        try {
-            MainResponse response = esConnection.getElasticsearchConnection().info(ElasticsearchUtils.getContentTypeJsonRequestOption());
-            result = getJsonResponse(response);
-        } catch (Exception e) {
-            logger.error(e);
-            throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
-        }
-        return result;
-    }
+	/**
+	 * Retrieves the cluster information.
+	 * 
+	 * @param esConnection The Elasticsearch connection
+	 * @return MainResponse as JSON String
+	 */
+	@MediaType(MediaType.APPLICATION_JSON)
+	@DisplayName("Elasticsearch - Info")
+	@OutputResolver(output = MainResponseOutputMetadataResolver.class)
+	public String info(@Connection ElasticsearchConnection esConnection) {
+		String result = null;
+		try {
+			MainResponse response = esConnection.getElasticsearchConnection()
+					.info(ElasticsearchUtils.getContentTypeJsonRequestOption());
+			result = getJsonResponse(response);
+		} catch (Exception e) {
+			LOGGER.error(e);
+			throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);
+		}
+		return result;
+	}
 }

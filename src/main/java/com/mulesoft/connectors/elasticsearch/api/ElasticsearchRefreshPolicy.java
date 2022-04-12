@@ -11,15 +11,14 @@ public enum ElasticsearchRefreshPolicy {
     WAIT_UNTIL;
 
     public RefreshPolicy getRefreshPolicy() {
-        switch (this) {
-            case IMMEDIATE:
-                return RefreshPolicy.IMMEDIATE;
-            case NONE:
-                return RefreshPolicy.NONE;
-            case WAIT_UNTIL:
-                return RefreshPolicy.WAIT_UNTIL;
-            default:
-                return null;
-        }
+    	RefreshPolicy refreshpolicy = null;
+    	if(this == IMMEDIATE) {
+    		refreshpolicy = RefreshPolicy.IMMEDIATE;
+    	}else if (this == NONE) {
+    		refreshpolicy =  RefreshPolicy.NONE;
+		}else if(this == WAIT_UNTIL){
+			refreshpolicy = RefreshPolicy.WAIT_UNTIL;
+		}
+    	return refreshpolicy;
     }
 }

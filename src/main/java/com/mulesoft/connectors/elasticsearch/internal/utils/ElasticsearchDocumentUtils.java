@@ -29,7 +29,7 @@ public class ElasticsearchDocumentUtils {
     /**
      * Logging object
      */
-    private static final Logger logger = Logger.getLogger(ElasticsearchDocumentUtils.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ElasticsearchDocumentUtils.class.getName());
 
     private ElasticsearchDocumentUtils() {
     }
@@ -47,7 +47,7 @@ public class ElasticsearchDocumentUtils {
         ifPresent(deleteDocumentConfiguration.getRefreshPolicy(), refreshPolicyValue -> deleteReq.setRefreshPolicy(refreshPolicyValue.getRefreshPolicy()));
         ifPresent(deleteDocumentConfiguration.getVersionType(), versionTypeValue -> deleteReq.versionType(versionTypeValue.getVersionType()));
 
-        logger.debug("Delete request : " + deleteReq);
+        LOGGER.debug("Delete request : " + deleteReq);
     }
 
     public static void configureIndexReq(IndexRequest indexReq, IndexDocumentConfiguration indexDocumentConfiguration) throws IOException {
@@ -67,7 +67,7 @@ public class ElasticsearchDocumentUtils {
         ifPresent(indexDocumentConfiguration.getOperationType(), operationTypeValue -> indexReq.opType(operationTypeValue.getOpType()));
         ifPresent(indexDocumentConfiguration.getPipeline(), pipelineValue -> indexReq.setPipeline(pipelineValue));
 
-        logger.debug("Index request : " + indexReq);
+        LOGGER.debug("Index request : " + indexReq);
     }
 
     public static void configureGetReq(GetRequest getReq, GetDocumentConfiguration getDocumentConfiguration) throws IOException {
@@ -76,13 +76,10 @@ public class ElasticsearchDocumentUtils {
         if (fetchSourceContext != null && fetchSourceContext.isFetchSource()) {
             String[] includes = Strings.EMPTY_ARRAY, excludes = Strings.EMPTY_ARRAY;
 
-            if (fetchSourceContext.getIncludeFields() != null) {
-                includes = fetchSourceContext.getIncludeFields().toArray(new String[0]);
-            }
-
-            if (fetchSourceContext.getExcludeFields() != null) {
-                excludes = fetchSourceContext.getExcludeFields().toArray(new String[0]);
-            }
+            
+            includes = fetchSourceContext.getIncludeFields().toArray(new String[0]);
+            
+            excludes = fetchSourceContext.getExcludeFields().toArray(new String[0]);
 
             FetchSourceContext fetchSource = new FetchSourceContext(true, includes, excludes);
             getReq.fetchSourceContext(fetchSource);
@@ -100,7 +97,7 @@ public class ElasticsearchDocumentUtils {
         getReq.realtime(getDocumentConfiguration.isRealtime());
         getReq.refresh(getDocumentConfiguration.isRefresh());
 
-        logger.debug("Get request : " + getReq);
+        LOGGER.debug("Get request : " + getReq);
     }
 
     public static void configureUpdateReq(UpdateRequest updateReq, UpdateDocumentConfiguration updateDocumentConfiguration) throws IOException {
@@ -135,6 +132,6 @@ public class ElasticsearchDocumentUtils {
             updateReq.waitForActiveShards(updateDocumentConfiguration.getWaitForActiveShards());
         }
 
-        logger.debug("Update request : " + updateReq);
+        LOGGER.debug("Update request : " + updateReq);
     }
 }
