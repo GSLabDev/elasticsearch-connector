@@ -56,9 +56,7 @@ public class SimpleQueryString extends BaseQueryString implements Query {
     public SimpleQueryStringBuilder getQuery() {
         SimpleQueryStringBuilder simpleQueryStringBuilder = QueryBuilders.simpleQueryStringQuery(getQueryString());
 
-        if (getFieldsAndBoost() != null) {
-            simpleQueryStringBuilder.fields(getFieldsAndBoost());
-        }
+        simpleQueryStringBuilder.fields(getFieldsAndBoost());
 
         if (getSimpleQueryStringFlag() != null) {
             simpleQueryStringBuilder.flags(SimpleQueryStringFlag.valueOf(getSimpleQueryStringFlag().name()));

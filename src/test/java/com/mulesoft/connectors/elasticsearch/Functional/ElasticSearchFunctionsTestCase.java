@@ -3,7 +3,11 @@ package com.mulesoft.connectors.elasticsearch.Functional;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
+import org.mule.runtime.api.connection.ConnectionValidationResult;
+
 import com.mulesoft.connectors.elasticsearch.internal.connection.ElasticsearchConnection;
+import com.mulesoft.connectors.elasticsearch.internal.connection.provider.HttpConnectionProvider;
+
 
 public class ElasticSearchFunctionsTestCase {
 	
@@ -13,10 +17,15 @@ public class ElasticSearchFunctionsTestCase {
 		
 		ElasticsearchConnection connection1 = new ElasticsearchConnection("host", 000);
 		ElasticsearchConnection connection = new ElasticsearchConnection("host", 000, "username","password");
-//		ElasticsearchConnection connection2 = new ElasticsearchConnection("host", 00,"userName", "password", String trustStoreType,
-//				String trustStorePath, String trustStorePassword);
 		assertNotNull(connection);
 		assertNotNull(connection1);
+		
+	}
+	@Test
+	public void testElasticsearchConnectionInvalidate() {
+		ElasticsearchConnection connection = new ElasticsearchConnection("127.0.0.1", 200);
+		HttpConnectionProvider connectionProvider = new HttpConnectionProvider();
+		ConnectionValidationResult ConnectionValidationResult = connectionProvider.validate(connection);
 		
 	}
   
