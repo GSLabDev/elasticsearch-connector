@@ -26,7 +26,7 @@ public class ElasticsearchIndexUtils {
     /**
      * Logging object
      */
-    private static final Logger logger = Logger.getLogger(ElasticsearchIndexUtils.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ElasticsearchIndexUtils.class.getName());
 
     private ElasticsearchIndexUtils() {
     }
@@ -62,6 +62,6 @@ public class ElasticsearchIndexUtils {
             createIndexReq.waitForActiveShards(ActiveShardCount.from(indexConfiguration.getWaitForActiveShards()));
         }
         
-        logger.debug("Create index request : " + createIndexReq);
+        LOGGER.debug("Create index request : " + createIndexReq);
     }
 }

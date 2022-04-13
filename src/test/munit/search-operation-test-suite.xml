@@ -301,7 +301,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 						autoGenerateSynonymsPhraseQuery="true" tieBreaker="${multiMatchQuery.tieBreaker}"
 						minimumShouldMatch="${multiMatchQuery.minimumShouldMatch}"
 						searchString="${multiMatchQuery.searchString}" zeroTermsQuery="ALL"
-						operator="OR" type="BEST_FIELDS">
+						operator="OR" type="BEST_FIELDS" fuzziness="AUTO">
 						<elasticsearch:fields>
 							<elasticsearch:field value="gender" />
 							<elasticsearch:field value="lastname" />
@@ -332,8 +332,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 					lenient="true" phraseSlop="${searchQueryString.phraseSlop}"
 					tieBreaker="${searchQueryString.tieBreaker}" boost="3"
 					fuzzyMaxExpansions="10" fuzzyPrefixLength="0"
-					minimumShouldMatch="${searchQueryString.minShouldMatch}"
-					defaultOperator="OR">
+					maxDeterminizedStates="10"
+					 quoteFieldSuffix="a">
 					<elasticsearch:fields-and-boosts>
 						<elasticsearch:fields-and-boost
 							key="firstname" value="4" />
@@ -360,10 +360,10 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<elasticsearch:search doc:name="Search - Query" doc:id="342a4bd4-1e85-4322-9a75-07c546e393a4" config-ref="Elasticsearch_HTTP_Config6" scrollIntervalTime="10">
 			<elasticsearch:query-configuration>
 			<elasticsearch:query-type >
-				<elasticsearch:simple-query-string
+				<elasticsearch:simple-query-string 
 					queryString="${searchSimpleQueryString.queryString}"
-					analyzeWildcard="true" analyzer="standard"
-					autoGenerateSynonymsPhraseQuery="true" fuzzyTranspositions="true"
+					analyzeWildcard="true" analyzer="standard" 
+					autoGenerateSynonymsPhraseQuery="true" fuzzyTranspositions="true" quoteFieldSuffix="test"
 					lenient="true" minimumShouldMatch="${searchSimpleQueryString.minShouldMatch}"
 					simpleQueryStringFlag="ALL" defaultOperator="OR">
 					<elasticsearch:fields-and-boosts>

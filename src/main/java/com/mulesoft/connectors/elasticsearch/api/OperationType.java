@@ -15,17 +15,19 @@ public enum OperationType {
     UPDATE;
 
     public OpType getOpType() {
-        switch (this) {
-            case CREATE:
-                return OpType.CREATE;
-            case DELETE:
-                return OpType.DELETE;
-            case INDEX:
-                return OpType.INDEX;
-            case UPDATE:
-                return OpType.UPDATE;
-            default:
-                return null;
-        }
+    	
+    	OpType getoptype = null;
+    	
+    	if (this == CREATE) {
+    		getoptype = OpType.CREATE;
+		} else if (this == DELETE) {
+			getoptype = OpType.DELETE;
+		}else if (this == INDEX) {
+			getoptype = OpType.INDEX;
+		}else if (this == UPDATE) {
+			getoptype = OpType.UPDATE;
+		}
+    	
+    	return getoptype;
     }
 }

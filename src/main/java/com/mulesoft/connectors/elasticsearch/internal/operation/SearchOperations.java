@@ -55,7 +55,7 @@ import com.mulesoft.connectors.elasticsearch.internal.utils.ElasticsearchUtils;
  */
 public class SearchOperations extends BaseSearchOperation {
 
-    private static final Logger logger = Logger.getLogger(SearchOperations.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(SearchOperations.class.getName());
 
     /**
      * The search operation returns search hits that match the query defined in the request.
@@ -88,7 +88,7 @@ public class SearchOperations extends BaseSearchOperation {
 
         try {
             SearchResponse response = esConnection.getElasticsearchConnection().search(searchRequest, ElasticsearchUtils.getContentTypeJsonRequestOption());
-            logger.info("Search response : " + response);
+            LOGGER.info("Search response : " + response);
 
             result = getJsonResponse(response);
         } catch (Exception e) {
@@ -135,8 +135,8 @@ public class SearchOperations extends BaseSearchOperation {
             request.setEntity(entity);
             response = new ElasticsearchResponse(esConnection.getElasticsearchConnection().getLowLevelClient().performRequest(request));
 
-            logger.debug("RequestLine:" + response.getRequestLine());
-            logger.info("Search using JSON query response : " + response);
+            LOGGER.debug("RequestLine:" + response.getRequestLine());
+            LOGGER.info("Search using JSON query response : " + response);
             
             result = getJsonResponse(response);
         } catch (Exception e) {
@@ -165,13 +165,15 @@ public class SearchOperations extends BaseSearchOperation {
         SearchScrollRequest scrollRequest = new SearchScrollRequest(scrollId);
         
         if(timeValue != 0) {
+        	
             scrollRequest.scroll(new Scroll(TimeValue.timeValueSeconds(timeValue)));
+           
         }
         
         SearchResponse searchResponse;
         try {
             searchResponse = esConnection.getElasticsearchConnection().scroll(scrollRequest, RequestOptions.DEFAULT);
-            logger.info("Search - Scroll response : " + searchResponse);
+            LOGGER.info("Search - Scroll response : " + searchResponse);
 
             response = getJsonResponse(searchResponse);
         } catch (Exception e) {
@@ -200,7 +202,7 @@ public class SearchOperations extends BaseSearchOperation {
         clearScrollrequest.setScrollIds(scrollIds);
         try {
             ClearScrollResponse response = esConnection.getElasticsearchConnection().clearScroll(clearScrollrequest, RequestOptions.DEFAULT);
-            logger.info("Clear scroll response : " + response);
+            LOGGER.info("Clear scroll response : " + response);
             result = getJsonResponse(response);
         } catch (Exception e) {
             throw new ElasticsearchException(ElasticsearchErrorTypes.OPERATION_FAILED, e);

@@ -145,9 +145,7 @@ public class QueryStringQuery extends BaseQueryString implements Query {
     public QueryStringQueryBuilder getQuery() {
         QueryStringQueryBuilder queryStringQueryBuilder = QueryBuilders.queryStringQuery(getQueryString());
 
-        if (getFieldsAndBoost() != null) {
             queryStringQueryBuilder.fields(getFieldsAndBoost());
-        }
 
         if (getDefaultField() != null && getFieldsAndBoost() == null) {
             queryStringQueryBuilder.defaultField(getDefaultField());

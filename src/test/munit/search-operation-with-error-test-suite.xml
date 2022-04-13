@@ -53,7 +53,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 		<munit:execution>
 			<elasticsearch:search-scroll doc:name="Search - Scroll"
 				doc:id="e50fd203-c7a9-4f53-a036-210e1274dc07" config-ref="Elasticsearch_HTTP_Config7"
-				timeValue="10" scrollId="aaa" />
+				timeValue="0" scrollId="aaa" />
 			<logger level="INFO" doc:name="Logger"
 				doc:id="7cffd551-90c2-4626-be7e-93789c027df4" message="#[payload]" />
 		</munit:execution>
@@ -86,7 +86,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				</elasticsearch:query-type>
 				</elasticsearch:query-configuration>
 				<elasticsearch:search-source-configuration
-					from="1" size="9" timeout="10" sortOrder="ASC" fetchSource="false"
+					from="1" size="9" timeout="10"  fetchSource="false"
 					profile="true" explain="true" trackScores="true" trackTotalHits="true"
 					version="true" seqNoAndPrimaryTerm="true" sortByFieldName="c"
 					terminateAfter="10" minimumScore="1">

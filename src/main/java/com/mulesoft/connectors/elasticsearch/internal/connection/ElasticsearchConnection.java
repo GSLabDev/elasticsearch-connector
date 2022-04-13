@@ -34,65 +34,70 @@ import com.mulesoft.connectors.elasticsearch.internal.error.exception.Elasticsea
  */
 public final class ElasticsearchConnection {
 
-    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchConnection.class);
-    private RestHighLevelClient client;
+	private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchConnection.class);
+	private RestHighLevelClient client;
 
-    public ElasticsearchConnection(String host, int port) {
-        logger.info("Using host:" + host + " and port:" + port);
-        this.client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port, "http")));
-    }
+	public ElasticsearchConnection(String host, int port) {
+		LOGGER.info("Using host:" + host + " and port:" + port);
+		this.client = new RestHighLevelClient(RestClient.builder(new HttpHost(host, port, "http")));
+	}
 
-    public ElasticsearchConnection(String host, int port, String username, String password) {
-        logger.info("Using host:" + host + " port:" + port + " and user:" + username);
-        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
-        RestClientBuilder builder = RestClient.builder(new HttpHost(host, port)).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+	public ElasticsearchConnection(String host, int port, String username, String password) {
+		LOGGER.info("Using host:" + host + " port:" + port + " and user:" + username);
+		final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+		credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+		RestClientBuilder builder = RestClient.builder(new HttpHost(host, port))
+				.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
 
-            @Override
-            public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-                return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-            }
-        });
-        this.client = new RestHighLevelClient(builder);
-    }
+					@Override
+					public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+						return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+					}
+				});
+		this.client = new RestHighLevelClient(builder);
+	}
 
-    public ElasticsearchConnection(String host, int port, String userName, String password, String trustStoreType, String trustStorePath, String trustStorePassword) {
-        KeyStore truststore;
-        try {
-            truststore = KeyStore.getInstance(trustStoreType);
+	public ElasticsearchConnection(String host, int port, String userName, String password, String trustStoreType,
+			String trustStorePath, String trustStorePassword) {
+		KeyStore truststore;
+		try {
+			truststore = KeyStore.getInstance(trustStoreType);
 
-            Path keyStorePath = Paths.get(trustStorePath);
-            try (InputStream is = Files.newInputStream(keyStorePath)) {
-                truststore.load(is, trustStorePassword.toCharArray());
-            }
-            SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
-            SSLContext sslContext = sslBuilder.build();
-            RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "https")).setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+			Path keyStorePath = Paths.get(trustStorePath);
+			try (InputStream is = Files.newInputStream(keyStorePath)) {
+				truststore.load(is, trustStorePassword.toCharArray());
+			}
+			SSLContextBuilder sslBuilder = SSLContexts.custom().loadTrustMaterial(truststore, null);
+			SSLContext sslContext = sslBuilder.build();
+			RestClientBuilder builder = RestClient.builder(new HttpHost(host, port, "https"))
+					.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
 
-                @Override
-                public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
-                    if (userName != null && password != null) {
-                        final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-                        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(userName, password));
-                        return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider).setSSLContext(sslContext);
-                    } else {
-                        return httpClientBuilder.setSSLContext(sslContext);
-                    }
-                }
-            });
+						@Override
+						public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpClientBuilder) {
+							if (userName != null && password != null) {
+								final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+								credentialsProvider.setCredentials(AuthScope.ANY,
+										new UsernamePasswordCredentials(userName, password));
+								return httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider)
+										.setSSLContext(sslContext);
+							} else {
+								return httpClientBuilder.setSSLContext(sslContext);
+							}
+						}
+					});
 
-            this.client = new RestHighLevelClient(builder);
-        } catch (Exception e) {
-            throw new ElasticsearchException(ElasticsearchErrorTypes.CONNECTIVITY, e);
-        }
-    }
+			this.client = new RestHighLevelClient(builder);
+		} catch (Exception e) {
+			throw new ElasticsearchException(ElasticsearchErrorTypes.CONNECTIVITY, e);
+		}
+	}
 
-    public RestHighLevelClient getElasticsearchConnection() {
-        return this.client;
-    }
+	public RestHighLevelClient getElasticsearchConnection() {
+		return this.client;
+	}
 
-    public void invalidate() throws IOException {
-        this.client.close();
-        logger.info("Connection invalidated......!");
-    }
+	public void invalidate() throws IOException {
+		this.client.close();
+		LOGGER.info("Connection invalidated......!");
+	}
 }

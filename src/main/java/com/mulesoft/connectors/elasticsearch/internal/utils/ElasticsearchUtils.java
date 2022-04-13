@@ -22,38 +22,39 @@ import com.mulesoft.connectors.elasticsearch.internal.error.exception.Elasticsea
  *         ElasticSearch util functions
  */
 public class ElasticsearchUtils {
-    
-    /**
-     * Logging object
-     */
-    private static final Logger logger = Logger.getLogger(ElasticsearchUtils.class.getName());
 
-    private ElasticsearchUtils() {
-    }
+	/**
+	 * Logging object
+	 */
+	private static final Logger LOGGER = Logger.getLogger(ElasticsearchUtils.class.getName());
 
-    public static RequestOptions getContentTypeJsonRequestOption() {
-        RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder().addHeader("Content-Type", "application/json");
-        return builder.build();
-    }
-    
-    public static RequestOptions getAcceptJsonRequestOption() {
-        RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder().addHeader("Accept", "application/json");
-        return builder.build();
-    }
+	private ElasticsearchUtils() {
+	}
 
-    public static <T> void ifPresent(T value, Consumer<T> consumer) {
-        if (value != null) {
-            consumer.accept(value);
-        }
-    }
+	public static RequestOptions getContentTypeJsonRequestOption() {
+		RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder().addHeader("Content-Type",
+				"application/json");
+		return builder.build();
+	}
 
-    public static String readFileToString(String filePath) throws IOException {
-        try {
-            return IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath));
-        } catch (NullPointerException e) {
-            logger.error(String.format("File %s is not found.", filePath));
-            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
-        }   
-    }
+	public static RequestOptions getAcceptJsonRequestOption() {
+		RequestOptions.Builder builder = RequestOptions.DEFAULT.toBuilder().addHeader("Accept", "application/json");
+		return builder.build();
+	}
+
+	public static <T> void ifPresent(T value, Consumer<T> consumer) {
+		if (value != null) {
+			consumer.accept(value);
+		}
+	}
+
+	public static String readFileToString(String filePath) throws IOException {
+		try {
+			return IOUtils.toString(Thread.currentThread().getContextClassLoader().getResourceAsStream(filePath));
+		} catch (NullPointerException e) {
+			LOGGER.error(String.format("File %s is not found.", filePath));
+			throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
+		}
+	}
 
 }

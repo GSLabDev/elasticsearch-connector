@@ -32,13 +32,13 @@ public class BaseSearchOperation extends ElasticsearchOperations {
     protected SearchRequest getSearchRequest(SearchRequestConfiguration searchRequestConfig, SearchRequestOptionalConfiguration searchRequestOptionalConfig) {
         SearchRequest searchRequest = new SearchRequest();
 
-        if (searchRequestConfig.getIndices() != null) {
-            searchRequest.indices(searchRequestConfig.getIndices().toArray(new String[0]));
-        }
+
+        searchRequest.indices(searchRequestConfig.getIndices().toArray(new String[0]));
+
 
         if(searchRequestConfig.getSearchType() != null) {
             searchRequest.searchType(SearchType.valueOf(searchRequestConfig.getSearchType().name()));
-        }
+       }
 
         if (searchRequestConfig.getRouting() != null) {
             // Set a routing parameter
@@ -97,15 +97,9 @@ public class BaseSearchOperation extends ElasticsearchOperations {
 
         searchSourceBuilder.fetchSource(searchSourceConfig.isFetchSource());
 
-        if (searchSourceConfig.getIncludeFields() != null && searchSourceConfig.getExcludeFields() != null) {
-            searchSourceBuilder.fetchSource(searchSourceConfig.getIncludeFields().toArray(new String[0]), searchSourceConfig.getExcludeFields().toArray(new String[0]));
+       
+        searchSourceBuilder.fetchSource(searchSourceConfig.getIncludeFields().toArray(new String[0]), searchSourceConfig.getExcludeFields().toArray(new String[0]));
             
-        } else if (searchSourceConfig.getIncludeFields() != null) {
-            searchSourceBuilder.fetchSource(searchSourceConfig.getIncludeFields().toArray(new String[0]), new String[0]);
-            
-        } else if (searchSourceConfig.getExcludeFields() != null) {
-            searchSourceBuilder.fetchSource(new String[0], searchSourceConfig.getExcludeFields().toArray(new String[0]));
-        }
 
         return searchSourceBuilder.from(searchSourceConfig.getFrom())
                 .size(searchSourceConfig.getSize())

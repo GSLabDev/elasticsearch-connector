@@ -29,7 +29,6 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			<elasticsearch:index-document doc:name="Document - Index"
 				doc:id="6e422bda-d927-4c21-934a-17f694bd6b97" config-ref="Elasticsearch_HTTP_Config5"
 				index="dummy_index" documentId="dummy_id" jsonInputPath="testInputDummy.json" />
-
 			<logger level="INFO" doc:name="Logger"
 				doc:id="2d615081-9e96-4f2a-9882-aa443d60006e" message="#[payload]" />
 		</munit:execution>
@@ -96,6 +95,111 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 			</elasticsearch:bulk-operation>
 			<logger level="INFO" doc:name="Logger"
 				doc:id="098dbde4-7873-4bb3-8cdc-0ecd71234307" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="IndexDocumentWithJSONInputFileFlowTest2"
+		description="Test" doc:id="200f7e01-834b-4a45-8ec7-1c8cee0940ba" timeOut="600000" expectedErrorType="ANY">
+		<munit:execution>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="d3f2af66-c4de-40ef-8156-2002d7de6c1d" config-ref="Elasticsearch_HTTP_Config5"
+				index="test_index_2" documentId="test_doc_id_2" jsonInputPath="${index.jsoninputpath}">
+				<elasticsearch:index-document-configuration operationType="CREATE" routing="routing" pipeline="ww"  timeoutInSec="5" refreshPolicy="WAIT_UNTIL" version="10" versionType="INTERNAL" />
+			
+			</elasticsearch:index-document>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="f979ff17-2c11-420f-bd5c-bd4dcbcde6f1" message="#[payload]" />
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="0958b114-99f8-47e3-9da8-2bb5bc16ecdb"
+				config-ref="Elasticsearch_HTTP_Config5" index="test_index_2"
+				documentId="test_doc_id_2" />
+			<elasticsearch:delete-index doc:name="Index - Delete"
+				doc:id="9082d7ee-9e06-41c4-bf31-aba6a86cc601" config-ref="Elasticsearch_HTTP_Config5"
+				index="test_index_2" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="IndexDocumentWithJSONInputFileFlowTest3"
+		description="Test" doc:id="760c7c47-cb36-4dd4-8f4f-8cc9f8e21ff8" timeOut="600000" expectedErrorType="ANY">
+		<munit:execution>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="48c797c0-e61f-49f5-8f92-7602af4857c0" config-ref="Elasticsearch_HTTP_Config5"
+				index="test_index_2" documentId="test_doc_id_2" jsonInputPath="${index.jsoninputpath}">
+				<elasticsearch:index-document-configuration operationType="DELETE" routing="routing"  refreshPolicy="WAIT_UNTIL"  versionType="INTERNAL" />
+			</elasticsearch:index-document>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="3f034ebd-9b62-4947-a432-d19719518dfa" message="#[payload]" />
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="22eed3ad-230d-4a68-899c-1c018d0e1ca4"
+				config-ref="Elasticsearch_HTTP_Config5" index="test_index_2"
+				documentId="test_doc_id_2" />
+			<elasticsearch:delete-index doc:name="Index - Delete"
+				doc:id="2a8683ab-a5b2-41c9-89d8-813d05d90492" config-ref="Elasticsearch_HTTP_Config5"
+				index="test_index_2" />
+		</munit:execution>
+	</munit:test>
+	
+	<munit:test name="DeleteDocumentWithNUllFlowTest" description="Test" expectedErrorType="ANY"
+		doc:id="a2ccdcf6-74e0-43ba-8398-d64318260bbb" timeOut="600000">
+		<munit:execution>
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="e3d4aaa6-59b4-481a-95f6-a9f1ad185fe8"
+				config-ref="Elasticsearch_HTTP_Config5" index="dummy_index_doc"
+				documentId="dummy_doc_id">
+				<elasticsearch:delete-document-configuration routing="routing" 
+				refreshPolicy="IMMEDIATE"  versionType="EXTERNAL" />
+			</elasticsearch:delete-document>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="5512290a-1854-4d42-b194-be01f471e1b6" message="#[payload]" />
+		</munit:execution>
+	</munit:test>
+	
+	<munit:test name="UpdateDocumentWithJsonFilePathFlowTest2" expectedErrorType="ANY"
+		description="Test" doc:id="7415848d-ad3c-47d1-849b-d06cc7b2c952" timeOut="600000">
+		<munit:execution>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="51122d43-8c06-465f-8547-e133deb70dd6" config-ref="Elasticsearch_HTTP_Config3"
+				index="update_doc_index_1" documentId="update_doc_id_1">
+				<elasticsearch:document-sources>
+					<elasticsearch:document-source key="key1"
+						value="value1" />
+					<elasticsearch:document-source key="key2"
+						value="value2" />
+				</elasticsearch:document-sources>
+			</elasticsearch:index-document>
+			<elasticsearch:update-document
+				doc:name="Document - Update" doc:id="522e5969-e54c-4cb5-ae26-436d64126c39"
+				config-ref="Elasticsearch_HTTP_Config3" index="update_doc_index_1"
+				documentId="update_doc_id_1" jsonInputPath="${index.jsoninputpath}" >
+				<elasticsearch:update-document-configuration routing="routing" timeoutInSec="6" ifSeqNo="22" ifPrimaryTerm="33" waitForActiveShards="55"
+				refreshPolicy="WAIT_UNTIL" retryOnConflict="1" fetchSource="true" 
+				detectNoop="false" scriptedUpsert="true" docAsUpsert="true"/>
+			</elasticsearch:update-document>
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="d3f87115-f0f7-4cfb-b325-44e5bb8729ed"
+				config-ref="Elasticsearch_HTTP_Config3" index="update_doc_index_1"
+				documentId="update_doc_id_1" />
+			<elasticsearch:delete-index doc:name="Index - Delete"
+				doc:id="0521bf2d-883d-4503-b52b-77633c35cf03" config-ref="Elasticsearch_HTTP_Config3"
+				index="update_doc_index_1" />
+		</munit:execution>
+	</munit:test>
+	<munit:test name="IndexDocumentWithJSONInputFileFlowTest5"
+		description="Test" doc:id="617cd16b-2d99-4ca2-b438-5f760be16067" timeOut="600000" expectedErrorType="ANY">
+		<munit:execution>
+			<elasticsearch:index-document doc:name="Document - Index"
+				doc:id="68784ae9-7b74-4741-80a9-0dc9f22bebff" config-ref="Elasticsearch_HTTP_Config5"
+				index="test_index_2" documentId="test_doc_id_2" jsonInputPath="${index.jsoninputpath}">
+				<elasticsearch:index-document-configuration operationType="UPDATE" routing="routing" pipeline="ww"  timeoutInSec="5" refreshPolicy="WAIT_UNTIL" version="10" versionType="INTERNAL" />
+			
+			</elasticsearch:index-document>
+			<logger level="INFO" doc:name="Logger"
+				doc:id="7c4d74cd-feb7-4d08-9d2d-8b096e888445" message="#[payload]" />
+			<elasticsearch:delete-document
+				doc:name="Document - Delete" doc:id="2623ddf9-3a4d-4157-b13e-7472e59c9822"
+				config-ref="Elasticsearch_HTTP_Config5" index="test_index_2"
+				documentId="test_doc_id_2" />
+			<elasticsearch:delete-index doc:name="Index - Delete"
+				doc:id="6ee06b81-b343-4fd0-86e3-c4e6f46546e3" config-ref="Elasticsearch_HTTP_Config5"
+				index="test_index_2" />
 		</munit:execution>
 	</munit:test>
 </mule>

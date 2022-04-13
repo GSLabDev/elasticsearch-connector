@@ -19,19 +19,19 @@ import com.mulesoft.connectors.elasticsearch.internal.error.exception.Elasticsea
  */
 public class ElasticsearchOperations {
 
-    private static final Logger logger = LoggerFactory.getLogger(ElasticsearchOperations.class);
-    static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-    
-    @Ignore
-    protected <P> String getJsonResponse(P response) {
-        String jsonResponse = null;
-        try {
-            jsonResponse = OBJECT_MAPPER.writeValueAsString(response);
-        } catch (JsonProcessingException e) {
-            logger.error(e.getMessage());
-            throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
-        }
-        return jsonResponse;
-    }
+	private static final Logger LOGGER = LoggerFactory.getLogger(ElasticsearchOperations.class);
+	static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+	@Ignore
+	protected <P> String getJsonResponse(P response) {
+		String jsonResponse = null;
+		try {
+			jsonResponse = OBJECT_MAPPER.writeValueAsString(response);
+		} catch (JsonProcessingException e) {
+			LOGGER.error(e.getMessage());
+			throw new ElasticsearchException(ElasticsearchErrorTypes.EXECUTION, e);
+		}
+		return jsonResponse;
+	}
 
 }

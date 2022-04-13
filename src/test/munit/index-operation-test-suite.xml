@@ -31,7 +31,7 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 
 				<elasticsearch:index-configuration
 					indexAlias="twitter_alias1" timeoutInSec="5"
-					masterNodeTimeoutInSec="5" waitForActiveShards="2"
+					masterNodeTimeoutInSec="5" waitForActiveShards="2" 
 					indexMappingsJSONFile="munit/createIndexMapping.json">
 					<elasticsearch:index-settings>
 						<elasticsearch:index-setting key="index.number_of_shards"
@@ -62,8 +62,8 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 				doc:id="4888a71e-db8a-4bf2-80ff-9ac77b946577" config-ref="Elasticsearch_HTTP_Config1"
 				index="create2">
 				<elasticsearch:index-configuration
-					indexAlias="twitter_alias_new" timeoutInSec="5"
-					masterNodeTimeoutInSec="5" waitForActiveShards="2"
+					indexAlias="twitter_alias_new" timeoutInSec="5" 
+					masterNodeTimeoutInSec="5" waitForActiveShards="2" 
 					indexSettingsJSONFile="munit/createIndexSetting.json">
 				</elasticsearch:index-configuration>
 			</elasticsearch:create-index>
@@ -181,4 +181,21 @@ http://www.mulesoft.org/schema/mule/elasticsearch http://www.mulesoft.org/schema
 
 		</munit:validation>
 	</munit:test>
+	<munit:test name="createIndexWithSourceJSONFileFlowTest2"
+        description="Test" doc:id="881ee626-9c3f-42d7-9edf-4a37143ce3bc">
+        <munit:execution>
+            <elasticsearch:create-index doc:name="Index - Create"
+                doc:id="fb5f550e-1b2a-499d-b193-e9cb1a520bb4" config-ref="Elasticsearch_HTTP_Config1"
+                index="create3">
+                <elasticsearch:index-configuration
+                    sourceJSONFile="munit/createIndexSource.json">
+                </elasticsearch:index-configuration>
+            </elasticsearch:create-index>
+            <logger level="INFO" doc:name="Logger"
+                doc:id="e6fee52f-1a96-4aee-bc9c-b3cd0cfc173c" message="#[payload]" />
+            <elasticsearch:delete-index doc:name="Index - Delete"
+                doc:id="9879be59-cc62-47de-96db-beed5914127b" config-ref="Elasticsearch_HTTP_Config1"
+                index="create3" />
+        </munit:execution>
+    </munit:test>
 </mule>
